@@ -1,4 +1,4 @@
-CEF China User Group FAQ
+CEF FAQ
 ========================
 
 #### 如何做进程间同步通信
