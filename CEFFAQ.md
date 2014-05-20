@@ -3,6 +3,7 @@ CEF China User Group FAQ
 
 #### 如何做进程间同步通信
 参考CEF官方论坛的[这个帖子](http://www.magpcss.org/ceforum/viewtopic.php?f=6&t=10680)，尽量不要在CEF里做进程间同步通信，但如果你非要做。以下步骤是一个方案：
+
 1. Start the call in the Browser process by "SendMessage".
 2. In the BrowserProcess, configure a wait handle on an event until it gets signaled and wait.
 3. The Render process receives the sent message from the Browser process.
