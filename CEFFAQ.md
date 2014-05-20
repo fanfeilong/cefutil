@@ -13,3 +13,5 @@ CEF China User Group FAQ
 7. The event object is being signaled.
 8. The Browser process returns to the caller the result of the JavaScript call.
 
+如果是在Render进程首先发起调用，不要在CEFV8Handler的Execute里阻塞住执行流，参考CEF官方论坛的[这个使用Task的帖子](http://www.magpcss.org/ceforum/viewtopic.php?f=14&t=11132)。
+
