@@ -1,10 +1,14 @@
-CEF Util 货币
-- [ ] DEBUG币
-- [ ] DEBUG币
-- [ ] DEBUG币
-- [ ] DEBUG币
-- [ ] DEBUG币
-- [ ] DOC币
+CEF Util 货币 xi
+- [ ] $(DEBUG)
+- [ ] $(DEBUG)
+- [ ] $(DEBUG)
+- [ ] $(DEBUG)
+- [ ] $(DEBUG)
+- [ ] $(Translate)
+- [ ] $(Translate)
+- [ ] $(Translate)
+- [ ] $(Translate)
+- [ ] $(Translate)
 
 CEF FAQ
 ========================
