@@ -1,10 +1,10 @@
-﻿- [ ] 开始
-- [ ] 使用二进制包
+﻿- [x] @fanfeilong 开始
+- [x] @fanfeilong 使用二进制包
 - [ ] Building from Source Code
 - [ ] Sample Application
 - [ ] Important Concepts
  - [ ] C++ Wrapper
- - [笨笨] Processes
+ - [x] @笨笨 Processes
  - [ ] Threads
  - [ ] Reference Counting
  - [ ] Strings
