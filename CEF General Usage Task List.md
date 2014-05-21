@@ -1,5 +1,5 @@
-- [ ] ¿ªÊ¼
-- [ ] Ê¹ÓÃ¶þ½øÖÆ°ü
+ï»¿- [ ] å¼€å§‹
+- [ ] ä½¿ç”¨äºŒè¿›åˆ¶åŒ…
 - [ ] Building from Source Code
 - [ ] Sample Application
 - [ ] Important Concepts
