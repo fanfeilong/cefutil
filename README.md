@@ -1,15 +1,6 @@
 CEF Util 货币 系统
 ==================
-- [ ] $(DEBUG)
-- [ ] $(DEBUG)
-- [ ] $(DEBUG)
-- [ ] $(DEBUG)
-- [ ] $(DEBUG)
-- [ ] $(Translate)
-- [ ] $(Translate)
-- [ ] $(Translate)
-- [ ] $(Translate)
-- [ ] $(Translate)
+每个TaskList里，领取了任务的同学所获得的cef货币都直接列在TaskList后面。
 
 CEF FAQ
 ========================
