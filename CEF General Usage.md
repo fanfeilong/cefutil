@@ -73,15 +73,27 @@ CEF3 supports a single-process run mode for debugging purposes via the "--single
 
 ##### Threads
 
+##### 线程
+
 Each process in CEF3 runs multiple threads. For a complete list of threads see the cef_thread_id_t enumeration. The browser process for example contains the following commonly-referenced threads:
+
+在CEF3中，每个进程都会运行多个线程。完整的线程类型表请参照cef_thread_id_t。例如，在browser进程中包含如下主要的线程：
 
 - **TID_UI** thread is the main thread in the browser. This will be the same as the main application thread if CefInitialize() is called with a CefSettings.multi_threaded_message_loop value of false.
 - **TID_IO** thread is used to process IPC and network messages.
 - **TID_FILE** thread is used to interact with the file system. 
 
+- **TID_UI** 线程是浏览器的主线程。如果应用程序在调用调用CefInitialize()时，传递CefSettings.multi_threaded_message_loop=false，这个线程也是应用程序的主线程。
+- **TID_IO** 线程主要负责处理IPC消息以及网络通信。
+- **TID_FILE** 线程负责与文件系统交互。 
+
 Due to the multi-threaded nature of CEF it’s important to use locking or message passing to protect data members from access on multiple threads. The IMPLEMENT_LOCKING macro provides Lock() and Unlock() methods and an AutoLock scoped object for synchronizing access to blocks of code. The CefPostTask family of functions support easy asynchronous message passing between threads. See the “Posting Tasks” section for more information.
 
+由于CEF采用多线程架构，有必要使用锁和闭包来保证在多不同线程安全的传递数据。IMPLEMENT_LOCKING定义提供了Lock()和Unlock()方法以及AutoLock对象来保证不同代码块同步访问数据。CefPostTask函数组支持简易的线程间异步消息传递。更多信息，请参考"Posting Tasks"章节。
+
 The current thread can be verified using the CefCurrentlyOn() function. The cefclient application uses the following defines to verify that methods are executed on the expected thread:
+
+判断当前工作线程可以通过使用CefCurrentlyOn()方法，cefclient工程使用下面的定义来确保方法在期望的线程中被执行。
 
 ```
 #define REQUIRE_UI_THREAD()   ASSERT(CefCurrentlyOn(TID_UI));
