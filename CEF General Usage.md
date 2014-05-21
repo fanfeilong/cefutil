@@ -208,13 +208,30 @@ cef_string_from_ascii(path, strlen(path), &settings.log_file);
 Many features in CEF3 and Chromium can be configured using command line arguments. These arguments take the form "--some-argument[=optional-param]" and are passed into CEF via CefExecuteProcess() and the CefMainArgs structure (see the “Application Structure” section below). To disable processing of arguments from the command line set CefSettings.command_line_args_disabled to true before passing the CefSettings structure into CefInitialize(). To specify command line arguments inside the host application implement the CefApp::OnBeforeCommandLineProcessing() method. See comments in client_switches.cpp for more information on how to discover supported command line switches.
 
 #### Application Layout
+#### 应用资源布局
 
 Application layout can differ significantly depending on the platform. For example, on Mac OS X your application layout must follow a specific app bundle structure. Windows and Linux are more flexible, allowing you to customize the location where CEF libraries and resources are stored. For a complete working example of the required layout you can download a client archive from the project Downloads page. Some files are optional and some are required as detailed in the README.txt file for each platform.
 
+应用资源布局依赖于平台，有很大的不同。比如，在Mac OS X系统上，你的资源布局必须遵循特定的应用程序包结构；Window与Linux则更灵活，允许你定制CEF库文件与资源文件所在的位置。为了获取到特定地、可以正常工作的示例，你可以从工程的下载页面，下载到一个client压缩包，每个平台对应的README.txt文件详细说明了哪些文件是可选的，哪些文件是必须的。
+
 ##### Windows
+##### Windows操作系统
 
 On Windows the default layout places the libcef library and related resources next to the application executable. The directory structure looks like this:
 
+在Windows平台上，默认的资源布局将libcef库文件、相关资源与可执行文件放置在同级目录，文件夹结构如下类似：
+
+```
+Application/
+    cefclient.exe  <= cefclient application executable
+    libcef.dll <= main CEF library
+    icudt.dll <= ICU unicode support library
+    ffmpegsumo.dll <= HTML5 audio/video support library
+    libEGL.dll, libGLESv2.dll, … <= accelerated compositing support libraries
+    cef.pak, devtools_resources.pak <= non-localized resources and strings
+    locales/
+        en-US.pak, … <= locale-specific resources and strings
+```
 ```
 Application/
     cefclient.exe  <= cefclient application executable
@@ -229,9 +246,26 @@ Application/
 
 The location of the CEF libraries and resource files can be customized using the CefSettings structure (see the README.txt file or “CefSettings” section for details). The cefclient application on Windows compiles in resources via the BINARY resource type in cefclient.rc but an application could just as easily load resources from the local file system.
 
+使用结构体CefSettings可以定制CEF库文件、资源文件的位置（查看README.txt文件或者本文中CefSettings部分获取更详细的信息）。虽然Windows平台下的cefclient编译了在cefclient.rc中定义的BINARY的资源类型，但是从本地文件系统中加载资源也很容易。
+
 ##### Linux
+##### Linux操作系统
 
 On Linux the default layout places the libcef library and related resources next to the application executable. Note however that there’s a discrepancy between where libcef.so is located in the client distribution and where it’s located in the binary distribution that you build yourself. The location depends on how the linker rpath value is set when building the application executable. For example, a value of “-Wl,-rpath,.” (“.” meaning the current directory) will allow you to place libcef.so next to the application executable. The path to libcef.so can also be specified using the LD_LIBRARY_PATH environment variable.
+
+在Linux平台上，默认的资源布局将libcef库文件、相关资源与可执行文件放置在同级目录。注意：在你编译的版本与发行版本应用程序中，libcef.so的位置是有差异的，此文件的位置取决于编译可执行程序时，编译器rpath的值。比如，编译选项为“-Wl,-rpath,.”（“.”意思是当前文件夹），这样libcef.so与可执行文件处于同级目录。libcef.so文件的路径可以通过环境变量中的“LD_LIBRARY_PATH”指定。
+
+```
+Application/
+    cefclient  <= cefclient application executable
+    libcef.so <= main CEF library
+    ffmpegsumo.so <-- HTML5 audio/video support library
+    cef.pak, devtools_resources.pak <= non-localized resources and strings
+    locales/
+        en-US.pak, … <= locale-specific resources and strings
+    files/
+        binding.html, … <= cefclient application resources
+```
 
 ```
 Application/
@@ -247,9 +281,53 @@ Application/
 
 The location of the CEF libraries and resource files can be customized using the CefSettings structure (see the README.txt file of “CefSettings” section for details).
 
+使用结构体CefSettings可以定制CEF库文件、资源文件（查看README.txt文件或者本文中CefSettings部分获取更详细的信息）。
+
 ##### Mac OS X
+##### Mac X平台
 
 The application (app bundle) layout on Mac OS X is mandated by the Chromium implementation and consequently is not very flexible. The directory structure looks like this:
+
+在Mac X平台上，应用资源布局委托给了Chromium实现，因此不是很灵活。文件夹结构如下类似：
+
+```
+cefclient.app/
+    Contents/
+        Frameworks/
+            Chromium Embedded Framework.framework/
+                Libraries/
+                    ffmpegsumo.so <= HTML5 audio/video support library
+                    libcef.dylib <= main CEF library
+                Resources/
+                    cef.pak, devtools_resources.pak <= non-localized resources and strings
+                    *.png, *.tiff <= Blink image and cursor resources
+                    en.lproj/, … <= locale-specific resources and strings
+            libplugin_carbon_interpose.dylib <= plugin support library
+            cefclient Helper.app/
+                Contents/
+                    Info.plist
+                    MacOS/
+                        cefclient Helper <= helper executable
+                    Pkginfo
+            cefclient Helper EH.app/
+                Contents/
+                    Info.plist
+                    MacOS/
+                        cefclient Helper EH <= helper executable
+                    Pkginfo
+            cefclient Helper NP.app/
+                Contents/
+                    Info.plist
+                    MacOS/
+                        cefclient Helper NP <= helper executable
+                    Pkginfo
+        Info.plist
+        MacOS/
+            cefclient <= cefclient application executable
+        Pkginfo
+        Resources/
+            binding.html, … <= cefclient application resources
+```
 
 ```
 cefclient.app/
@@ -292,7 +370,11 @@ cefclient.app/
 
 The "Chromium Embedded Framework.framework" is an unversioned framework that contains all CEF binaries and resources. Executables (cefclient, cefclient Helper, etc) are linked to libcef.dylib using install_name_tool and a path relative to @executable_path.
 
+“Chromium Embedded Framework”这个未受版本管控的框架包含了所有的CEF库文件、资源文件。使用install_name_tool与@executable_path，将cefclient，cefclient helper等可执行文件，连接到了libcef.dylib上。
+
 The "cefclient Helper" apps are used for executing separate processes (renderer, plugin, etc) with different characteristics. They need to have separate app bundles and Info.plist files so that, among other things, they don't show dock icons. The "EH" helper, which is used when launching plugin processes, has the MH_NO_HEAP_EXECUTION bit cleared to allow an executable heap. The "NP" helper, which is used when launching NaCl plugin processes only, has the MH_PIE bit cleared to disable ASLR. This is set up as part of the build process using scripts from the tools/ directory. Examine the Xcode project included with the binary distribution or the originating cefclient.gyp file for a better idea of the script dependencies.
+
+应用程序cefclient helper用来执行不同特点、独立的进程（renderer，plugin等），这些进程需要独立的资源布局与Info.plist等文件，因此它们没有显示停靠图标。用来启动插件进程的EH Helper清除了MH_NO_HEAP_EXECUTION标志位，这样就允许一个可执行堆。只能用来启动NaCL插件进程的NP Helper，清除了MH_PIE标志位，这样就禁用了ASLR。这些都是tools文件夹下面，用来构建进程脚本的一部分。为了脚本的依赖关系，更好的做法是检查发行版本中的Xcode工程或者原始文件cefclient.gyp。
 
 #### Application Structure
 
