@@ -9,10 +9,10 @@
  - [ ] Reference Counting
  - [ ] Strings
  - [ ] Command Line Arguments
-- [ ] Application Layout
- - [ ] Windows
- - [ ] Linux
- - [ ] Mac OS X
+- [x] Application Layout
+ - [x] @老细Windows
+ - [x] @老细Linux
+ - [x] @老细Mac OS X
 - [ ] Application Structure
  - [ ] Entry-Point Function
  - [ ] Single Executable
