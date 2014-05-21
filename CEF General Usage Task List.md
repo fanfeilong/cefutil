@@ -10,9 +10,9 @@
  - [ ] Strings
  - [ ] Command Line Arguments
 - [x] Application Layout
- - [x] @老细Windows
- - [x] @老细Linux
- - [x] @老细Mac OS X
+ - [x] @老细Windows $(Translate)+1
+ - [x] @老细Linux   $(Translate)+1
+ - [x] @老细Mac OS X $(Translate)+1
 - [ ] Application Structure
  - [ ] Entry-Point Function
  - [ ] Single Executable
