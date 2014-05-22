@@ -1,0 +1,33 @@
+﻿- [x] @fanfeilong 开始
+- [x] @fanfeilong 使用二进制包
+- [ ] Building from Source Code
+- [ ] Sample Application
+- [ ] Important Concepts
+ - [ ] C++ Wrapper
+ - [x] @笨笨 Processes  $(Translate)+1
+ - [x] @给自己加油 Threads
+ - [x] @给自己加油 Reference Counting
+ - [x] @给自己加油 Strings
+ - [x] @柔然兮道 Command Line Arguments $(Translate)+1
+- [x] Application Layout
+ - [x] @老细 `Windows`  $(Translate)+1
+ - [x] @老细 `Linux`    $(Translate)+1
+ - [x] @老细 `Mac OS X` $(Translate)+1
+- [x] Application Structure
+ - [x] Entry-Point Function
+ - [x] Single Executable
+ - [x] Separate Sub-Proess Executable
+ - [x] Message Loop Integration
+ - [ ] CefSettings
+ - [ ] CefBrowser and CefFrame
+ - [ ] CefClient
+ - [ ] Browser Life Span
+ - [ ] Inter-Process Communication (IPC)
+ - [ ] Asynchronous JavaScript Bindings
+ - [ ] Synchronous Requests
+ - [ ] Browser-Independent Requests
+ - [ ] Request Handling
+ - [ ] Scheme Handler
+ - [ ] Request Interception
+ - [ ] Other Callbacks
+ - [ ] Proxy Resolution
