@@ -210,8 +210,9 @@ cef_string_from_ascii(path, strlen(path), &settings.log_file);
 ```
 
 ##### Command Line Arguments
-
+##### 命令行参数
 Many features in CEF3 and Chromium can be configured using command line arguments. These arguments take the form "--some-argument[=optional-param]" and are passed into CEF via CefExecuteProcess() and the CefMainArgs structure (see the “Application Structure” section below). To disable processing of arguments from the command line set CefSettings.command_line_args_disabled to true before passing the CefSettings structure into CefInitialize(). To specify command line arguments inside the host application implement the CefApp::OnBeforeCommandLineProcessing() method. See comments in client_switches.cpp for more information on how to discover supported command line switches.
+在CEF3和Chromium中许多特性可以使用命令行参数进行配置。这些参数采用"--some-argument[=optional-param]"形式，并通过CefExecuteProcess()和CefMainArgs结构（参考下面的"应用资源布局"章节）传递给CEF。在传递CefSettings结构给CefInitialize()之前，我们可以设置CefSettings.command_line_args_disabled为false来禁用对命令行参数的处理。如果想指定命令行参数传入主应用程序，实现CefApp::OnBeforeCommandLineProcessing()方法。关于如何发现支持的命令行开关，请参阅client_switches.cpp内容获取更多信息。
 
 #### Application Layout
 #### 应用资源布局
