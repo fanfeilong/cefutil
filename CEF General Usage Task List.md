@@ -8,7 +8,7 @@
  - [x] @给自己加油 Threads
  - [x] @给自己加油 Reference Counting
  - [x] @给自己加油 Strings
- - [ ] Command Line Arguments
+ - [x] @柔然兮道 Command Line Arguments
 - [x] Application Layout
  - [x] @老细 `Windows`  $(Translate)+1
  - [x] @老细 `Linux`    $(Translate)+1
