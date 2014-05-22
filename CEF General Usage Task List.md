@@ -4,11 +4,11 @@
 - [ ] Sample Application
 - [ ] Important Concepts
  - [ ] C++ Wrapper
- - [x] @笨笨 Processes  $(Translate)+1
+ - [x] @笨笨 `Processes`  $(Translate)+1
  - [x] @给自己加油 Threads
- - [x] @给自己加油 Reference Counting $(Translate)+1
- - [x] @给自己加油 Strings
- - [x] @柔然兮道 Command Line Arguments $(Translate)+1
+ - [x] @给自己加油 `Reference Counting` $(Translate)+1
+ - [x] @给自己加油 `Strings` $(Translate)+1
+ - [x] @柔然兮道 `Command Line Arguments` $(Translate)+1
 - [x] Application Layout
  - [x] @老细 `Windows`  $(Translate)+1
  - [x] @老细 `Linux`    $(Translate)+1
