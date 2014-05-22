@@ -6,8 +6,8 @@
  - [ ] C++ Wrapper
  - [x] @笨笨 Processes
  - [x] @给自己加油 Threads
- - [ ] Reference Counting
- - [ ] Strings
+ - [x] @给自己加油 Reference Counting
+ - [x] @给自己加油 Strings
  - [ ] Command Line Arguments
 - [x] Application Layout
  - [x] @老细 `Windows`  $(Translate)+1
