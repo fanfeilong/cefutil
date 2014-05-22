@@ -4,7 +4,7 @@
 - [ ] Sample Application
 - [ ] Important Concepts
  - [ ] C++ Wrapper
- - [x] @笨笨 Processes
+ - [x] @笨笨 Processes  $(Translate)+1
  - [x] @给自己加油 Threads
  - [x] @给自己加油 Reference Counting
  - [x] @给自己加油 Strings
