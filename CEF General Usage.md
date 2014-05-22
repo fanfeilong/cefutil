@@ -111,6 +111,8 @@ The current thread can be verified using the CefCurrentlyOn() function. The cefc
 
 All framework classes implement the CefBase interface and all instance pointers are handled using the CefRefPtr smart pointer implementation that automatically handles reference counting via calls to AddRef() and Release().The easiest way to implement these classes is as follows:
 
+所有的框架类从CefBase继承，实例指针由CefRefPtr管理，CefRefPtr通过调用AddRef()和Release()方法自动管理引用计数。框架类的实现方式如下：
+
 ```
 class MyClass : public CefBase {
  public:
@@ -128,12 +130,21 @@ CefRefPtr<MyClass> my_class = new MyClass();
 
 ##### Strings
 
+##### 字符串
+
 CEF defines its own data structure for representing strings. This is for a few different reasons:
+
+CEF为字符串定义了自己的数据结构。下面是这样做的理由：
 
 - The libcef library and the host application may use different runtimes for managing heap memory. All objects, including strings, need to be freed using the same runtime that allocated the memory.
 - The libcef library can be compiled to support different underlying string types (UTF8, UTF16 or wide). The default is UTF16 but it can be changed by modifying the defines in cef_string.h and recompiling CEF. When choosing the wide string type keep in mind that the size will vary depending on the platform. 
 
+- libcef包和宿主程序可能使用不同的运行时，对堆管理的方式也不同。所有的对象，包括字符串，需要确保和申请堆内存使用相同的运行时环境。
+- libcef包可以编译为支持不同的字符串类型(UTF8，UTF16以及WIDE)。默认采用的是UTF16，默认字符集可以通过更改cef_string.h文件中的定义，然后重新编译来修改。当使用宽字节集的时候，切记字符的长度由当前使用的平台决定。
+
 For UTF16 the string structure looks like this:
+
+UTF16字符串结构体示例如下：
 
 ```
 typedef struct _cef_string_utf16_t {
@@ -145,6 +156,8 @@ typedef struct _cef_string_utf16_t {
 
 The selected string type is then typedef’d to the generic type:
 
+通过typedef来设置常用的字符编码。
+
 ```
 typedef char16 cef_char_t;
 typedef cef_string_utf16_t cef_string_t;
@@ -152,15 +165,27 @@ typedef cef_string_utf16_t cef_string_t;
 
 CEF provides a number of C API functions for operating on the CEF string types (mapped via #defines to the type-specific functions). For example:
 
+CEF提供了一批C语言的方法来操作字符串(通过#define的方式来适应不同的字符编码)
+
 - **cef_string_set** will assign a string value to the structure with or without copying the value.
 - **cef_string_clear** will clear the string value.
 - **cef_string_cmp** will compare two string values. 
 
+- **cef_string_set** 对制定的字符串变量赋值(支持深拷贝或浅拷贝)。
+- **cef_string_clear** 清空字符串。
+- **cef_string_cmp** 比较两个字符串. 
+
 CEF also provides functions for converting between all supported string types (ASCII, UTF8, UTF16 and wide). See the cef_string.h and cef_string_types.h headers for the complete list of functions.
+
+CEF也提供了所有的字符编码的字符串格式之间相互转换的方法。具体函数列表请查阅cef_string.h和cef_string_types.h文件。
 
 Usage of CEF strings in C++ is simplified by the CefString class. CefString provides automatic conversion to and from std::string (UTF8) and std::wstring (wide) types. It can also be used to wrap an existing cef_string_t structure for assignment purposes.
 
+在C++中，通常使用CefString类来管理CEF的字符串。CefString支持与std::string(UTF8)、std::wstring(wide)类型的相互转换。也可以用来包裹一个cef_string_t结构来对其进行赋值。
+
 Assignment to and from std::string:
+
+和std::string的相互转换：
 
 ```
 std::string str = “Some UTF8 string”;
@@ -177,6 +202,8 @@ str = cef_str.ToString();
 
 Assignment to and from std::wstring:
 
+和std::wstring的相互转换：
+
 ```
 std::wstring str = “Some wide string”;
 
@@ -192,6 +219,8 @@ str = cef_str.ToWString();
 
 Use the FromASCII() method if you know that the format is ASCII:
 
+如果是ASCII编码，使用FromASCII进行赋值：
+
 ```
 const char* cstr = “Some ASCII string”;
 CefString cef_str;
@@ -199,6 +228,8 @@ cef_str.FromASCII(cstr);
 ```
 
 Some structures like CefSettings have cef_string_t members. CefString can be used to simplify the assignment to those members:
+
+一些结构体(比如CefSettings)含有cef_string_t类型的成员，CefString支持直接赋值给这些成员。
 
 ```
 CefSettings settings;
