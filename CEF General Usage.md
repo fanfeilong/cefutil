@@ -65,11 +65,17 @@ The libcef shared library exports a C API that isolates the user from the CEF ru
 
 CEF3 runs using multiple processes. The main process which handles window creation, painting and network access is called the “browser” process. This is generally the same process as the host application and the majority of the application logic will run in the browser process. Blink rendering and JavaScript execution occur in a separate “render” process. Some application logic, such as JavaScript bindings and DOM access, will also run in the render process. The default process model will spawn a new render process for each unique origin (scheme + domain). Other processes will be spawned as needed, such as “plugin” processes to handle plugins like Flash and “gpu” processes to handle accelerated compositing.
 
+CEF3是多线程架构的。"browser"被定义为主线程，负责窗口管理，界面绘制和网络交互。Blink的渲染和Js的执行被放在一个独立的"render"
+进程中；除此之外，render进程还负责Js Binding和对Dom节点的访问。
+默认的进程模型中，会为每个标签页创建一个新的"render"进程。其他进程按需创建，象管理插件的进程和处理合成加速的进程。
+
 By default the main application executable will be spawned multiple times to represent separate processes. This is handled via command-line flags that are passed into the CefExecuteProcess function. If the main application executable is large, takes a long time to load, or is otherwise unsuitable for non-browser processes the host can use a separate executable for those other processes. This can be configured via the CefSettings.browser_subprocess_path variable. See the “Application Structure” section for more information.
 
 The separate processes spawned by CEF3 communicate using Inter-Process Communication (IPC). Application logic implemented in the browser and render processes can communicate by sending asynchronous messages back and forth. JavaScriptIntegration in the render process can expose asynchronous APIs that are handled in the browser process. See the “Inter-Process Communication” section for more information.
+CEF3的进程之间可以通过IPC进行通信。"browser"和"render"进程可以通过发送异步消息进行双向通信。"JavaScriptIntegration"可以向"render"进程注册"browser"进程的异步API。想了解详细信息，请参考"Inter-Process Communication"节。
 
 CEF3 supports a single-process run mode for debugging purposes via the "--single-process" command-line flag. Platform-specific debugging tips are also available for Windows, Mac OS X and Linux.
+通过设置命令行的"--single-process"，CEF3就可以支持用于调试目的的单进程运行模型。支持的平台为：Windows，Mac OS X 和Linux。
 
 ##### Threads
 
@@ -204,8 +210,10 @@ cef_string_from_ascii(path, strlen(path), &settings.log_file);
 ```
 
 ##### Command Line Arguments
-
+##### 命令行参数
 Many features in CEF3 and Chromium can be configured using command line arguments. These arguments take the form "--some-argument[=optional-param]" and are passed into CEF via CefExecuteProcess() and the CefMainArgs structure (see the “Application Structure” section below). To disable processing of arguments from the command line set CefSettings.command_line_args_disabled to true before passing the CefSettings structure into CefInitialize(). To specify command line arguments inside the host application implement the CefApp::OnBeforeCommandLineProcessing() method. See comments in client_switches.cpp for more information on how to discover supported command line switches.
+
+在CEF3和Chromium中许多特性可以使用命令行参数进行配置。这些参数采用"--some-argument[=optional-param]"形式，并通过CefExecuteProcess()和CefMainArgs结构（参考下面的"应用资源布局"章节）传递给CEF。在传递CefSettings结构给CefInitialize()之前，我们可以设置CefSettings.command_line_args_disabled为false来禁用对命令行参数的处理。如果想指定命令行参数传入主应用程序，实现CefApp::OnBeforeCommandLineProcessing()方法。更多关于如何查找已支持的命令行选项的信息，请查看client_switches.cpp文件的注释。
 
 #### Application Layout
 #### 应用资源布局
