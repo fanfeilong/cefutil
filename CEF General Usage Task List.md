@@ -13,11 +13,11 @@
  - [x] @老细 `Windows`  $(Translate)+1
  - [x] @老细 `Linux`    $(Translate)+1
  - [x] @老细 `Mac OS X` $(Translate)+1
-- [ ] Application Structure
- - [ ] Entry-Point Function
- - [ ] Single Executable
- - [ ] Separate Sub-Proess Executable
- - [ ] Message Loop Integration
+- [x] Application Structure
+ - [x] @老细 Entry-Point Function
+ - [x] @老细 Single Executable
+ - [x] @老细 Separate Sub-Proess Executable
+ - [x] @老细 Message Loop Integration
  - [ ] CefSettings
  - [ ] CefBrowser and CefFrame
  - [ ] CefClient
