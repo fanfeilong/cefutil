@@ -18,7 +18,7 @@
  - [x] @老细 Single Executable
  - [x] @老细 Separate Sub-Proess Executable
  - [x] @老细 Message Loop Integration
- - [ ] CefSettings
+ - [x] @老细 CefSettings
  - [ ] CefBrowser and CefFrame
  - [ ] CefClient
  - [ ] Browser Life Span
