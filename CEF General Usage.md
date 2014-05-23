@@ -220,7 +220,7 @@ Many features in CEF3 and Chromium can be configured using command line argument
 
 Application layout can differ significantly depending on the platform. For example, on Mac OS X your application layout must follow a specific app bundle structure. Windows and Linux are more flexible, allowing you to customize the location where CEF libraries and resources are stored. For a complete working example of the required layout you can download a client archive from the project Downloads page. Some files are optional and some are required as detailed in the README.txt file for each platform.
 
-应用资源布局依赖于平台，有很大的不同。比如，在Mac OS X系统上，你的资源布局必须遵循特定的应用程序包结构；Window与Linux则更灵活，允许你定制CEF库文件与资源文件所在的位置。为了获取到特定地、可以正常工作的示例，你可以从工程的下载页面，下载到一个client压缩包，每个平台对应的README.txt文件详细说明了哪些文件是可选的，哪些文件是必须的。
+应用资源布局依赖于平台，有很大的不同。比如，在Mac OS X上，你的资源布局必须遵循特定的app bundles结构；Window与Linux则更灵活，允许你定制CEF库文件与资源文件所在的位置。为了获取到特定地、可以正常工作的示例，你可以从工程的下载页面，下载到一个client压缩包，每个平台对应的README.txt文件详细说明了哪些文件是可选的，哪些文件是必须的。
 
 ##### Windows
 ##### Windows操作系统
@@ -231,60 +231,38 @@ On Windows the default layout places the libcef library and related resources ne
 
 ```
 Application/
-    cefclient.exe  <= cefclient application executable
-    libcef.dll <= main CEF library
-    icudt.dll <= ICU unicode support library
-    ffmpegsumo.dll <= HTML5 audio/video support library
-    libEGL.dll, libGLESv2.dll, … <= accelerated compositing support libraries
-    cef.pak, devtools_resources.pak <= non-localized resources and strings
+    cefclient.exe  <= cefclient application executable <= cefclient可执行程序
+    libcef.dll <= main CEF library <= CEF基本库
+    icudt.dll <= ICU unicode support library <= ICU unicode支持库
+    ffmpegsumo.dll <= HTML5 audio/video support library <= HTML5音频视频支持库
+    libEGL.dll, libGLESv2.dll, … <= accelerated compositing support libraries <= 加速合成支持库
+    cef.pak, devtools_resources.pak <= non-localized resources and strings <= 非本地语言资源与字符串
     locales/
-        en-US.pak, … <= locale-specific resources and strings
-```
-```
-Application/
-    cefclient.exe  <= cefclient application executable
-    libcef.dll <= main CEF library
-    icudt.dll <= ICU unicode support library
-    ffmpegsumo.dll <= HTML5 audio/video support library
-    libEGL.dll, libGLESv2.dll, … <= accelerated compositing support libraries
-    cef.pak, devtools_resources.pak <= non-localized resources and strings
-    locales/
-        en-US.pak, … <= locale-specific resources and strings
+        en-US.pak, … <= locale-specific resources and strings <= 本地语言相关资源与字符串
 ```
 
 The location of the CEF libraries and resource files can be customized using the CefSettings structure (see the README.txt file or “CefSettings” section for details). The cefclient application on Windows compiles in resources via the BINARY resource type in cefclient.rc but an application could just as easily load resources from the local file system.
 
-使用结构体CefSettings可以定制CEF库文件、资源文件的位置（查看README.txt文件或者本文中CefSettings部分获取更详细的信息）。虽然Windows平台下的cefclient编译了在cefclient.rc中定义的BINARY的资源类型，但是从本地文件系统中加载资源也很容易。
+使用结构体CefSettings可以定制CEF库文件、资源文件的位置（查看README.txt文件或者本文中CefSettings部分获取更详细的信息）。虽然在Windows平台上，cefclient项目将资源文件以二进制形式编译进cefclient.rc文件，但是改为从文件系统加载资源也很容易。
+
 
 ##### Linux
 ##### Linux操作系统
 
 On Linux the default layout places the libcef library and related resources next to the application executable. Note however that there’s a discrepancy between where libcef.so is located in the client distribution and where it’s located in the binary distribution that you build yourself. The location depends on how the linker rpath value is set when building the application executable. For example, a value of “-Wl,-rpath,.” (“.” meaning the current directory) will allow you to place libcef.so next to the application executable. The path to libcef.so can also be specified using the LD_LIBRARY_PATH environment variable.
 
-在Linux平台上，默认的资源布局将libcef库文件、相关资源与可执行文件放置在同级目录。注意：在你编译的版本与发行版本应用程序中，libcef.so的位置是有差异的，此文件的位置取决于编译可执行程序时，编译器rpath的值。比如，编译选项为“-Wl,-rpath,.”（“.”意思是当前文件夹），这样libcef.so与可执行文件处于同级目录。libcef.so文件的路径可以通过环境变量中的“LD_LIBRARY_PATH”指定。
+在Linux平台上，默认的资源布局将libcef库文件、相关资源与可执行文件放置在同级目录。注意：在你编译的版本与发行版本应用程序中，libcef.so的位置是有差异的，此文件的位置取决于编译可执行程序时，编译器rpath的值。比如，编译选项为“-Wl,-rpath,.”（“.”意思是当前文件夹），这样libcef.so与可执行文件处于同级目录。libcef.so文件的路径可以通过环境变量中的“`LD_LIBRARY_PATH`”指定。
 
 ```
 Application/
-    cefclient  <= cefclient application executable
-    libcef.so <= main CEF library
-    ffmpegsumo.so <-- HTML5 audio/video support library
-    cef.pak, devtools_resources.pak <= non-localized resources and strings
+    cefclient  <= cefclient application executable <= cefclient可执行程序
+    libcef.so <= main CEF library <= CEF基本库
+    ffmpegsumo.so <-- HTML5 audio/video support library <-- HTML5音频视频支持库
+    cef.pak, devtools_resources.pak <= non-localized resources and strings <= 非本地语言资源与字符串
     locales/
-        en-US.pak, … <= locale-specific resources and strings
+        en-US.pak, … <= locale-specific resources and strings <= 本地语言相关资源与字符串
     files/
-        binding.html, … <= cefclient application resources
-```
-
-```
-Application/
-    cefclient  <= cefclient application executable
-    libcef.so <= main CEF library
-    ffmpegsumo.so <-- HTML5 audio/video support library
-    cef.pak, devtools_resources.pak <= non-localized resources and strings
-    locales/
-        en-US.pak, … <= locale-specific resources and strings
-    files/
-        binding.html, … <= cefclient application resources
+        binding.html, … <= cefclient application resources <= cefclient程序需要的资源
 ```
 
 The location of the CEF libraries and resource files can be customized using the CefSettings structure (see the README.txt file of “CefSettings” section for details).
@@ -296,7 +274,7 @@ The location of the CEF libraries and resource files can be customized using the
 
 The application (app bundle) layout on Mac OS X is mandated by the Chromium implementation and consequently is not very flexible. The directory structure looks like this:
 
-在Mac X平台上，应用资源布局委托给了Chromium实现，因此不是很灵活。文件夹结构如下类似：
+在Mac X平台上，app bundles委托给了Chromium实现，因此不是很灵活。文件夹结构如下类似：
 
 ```
 cefclient.app/
@@ -304,87 +282,49 @@ cefclient.app/
         Frameworks/
             Chromium Embedded Framework.framework/
                 Libraries/
-                    ffmpegsumo.so <= HTML5 audio/video support library
-                    libcef.dylib <= main CEF library
+                    ffmpegsumo.so <= HTML5 audio/video support library <= HTML5音频视频文件
+                    libcef.dylib <= main CEF library <= CEF基本库
                 Resources/
                     cef.pak, devtools_resources.pak <= non-localized resources and strings
-                    *.png, *.tiff <= Blink image and cursor resources
-                    en.lproj/, … <= locale-specific resources and strings
-            libplugin_carbon_interpose.dylib <= plugin support library
+                    *.png, *.tiff <= Blink image and cursor resources <= Blink图片与光标样式资源
+                    en.lproj/, … <= locale-specific resources and strings <= 本地语言资源与字符串
+            libplugin_carbon_interpose.dylib <= plugin support library <= 插件支持库
             cefclient Helper.app/
                 Contents/
                     Info.plist
                     MacOS/
-                        cefclient Helper <= helper executable
+                        cefclient Helper <= helper executable <= 可执行的帮助器
                     Pkginfo
             cefclient Helper EH.app/
                 Contents/
                     Info.plist
                     MacOS/
-                        cefclient Helper EH <= helper executable
+                        cefclient Helper EH <= helper executable <= 可执行的帮助器
                     Pkginfo
             cefclient Helper NP.app/
                 Contents/
                     Info.plist
                     MacOS/
-                        cefclient Helper NP <= helper executable
+                        cefclient Helper NP <= helper executable <= 可执行的帮助器
                     Pkginfo
         Info.plist
         MacOS/
-            cefclient <= cefclient application executable
+            cefclient <= cefclient application executable <= cefclient可执行程序
         Pkginfo
         Resources/
-            binding.html, … <= cefclient application resources
-```
-
-```
-cefclient.app/
-    Contents/
-        Frameworks/
-            Chromium Embedded Framework.framework/
-                Libraries/
-                    ffmpegsumo.so <= HTML5 audio/video support library
-                    libcef.dylib <= main CEF library
-                Resources/
-                    cef.pak, devtools_resources.pak <= non-localized resources and strings
-                    *.png, *.tiff <= Blink image and cursor resources
-                    en.lproj/, … <= locale-specific resources and strings
-            libplugin_carbon_interpose.dylib <= plugin support library
-            cefclient Helper.app/
-                Contents/
-                    Info.plist
-                    MacOS/
-                        cefclient Helper <= helper executable
-                    Pkginfo
-            cefclient Helper EH.app/
-                Contents/
-                    Info.plist
-                    MacOS/
-                        cefclient Helper EH <= helper executable
-                    Pkginfo
-            cefclient Helper NP.app/
-                Contents/
-                    Info.plist
-                    MacOS/
-                        cefclient Helper NP <= helper executable
-                    Pkginfo
-        Info.plist
-        MacOS/
-            cefclient <= cefclient application executable
-        Pkginfo
-        Resources/
-            binding.html, … <= cefclient application resources
+            binding.html, … <= cefclient application resources <= cefclient程序需要的资源
 ```
 
 The "Chromium Embedded Framework.framework" is an unversioned framework that contains all CEF binaries and resources. Executables (cefclient, cefclient Helper, etc) are linked to libcef.dylib using install_name_tool and a path relative to @executable_path.
 
-“Chromium Embedded Framework”这个未受版本管控的框架包含了所有的CEF库文件、资源文件。使用install_name_tool与@executable_path，将cefclient，cefclient helper等可执行文件，连接到了libcef.dylib上。
+列表中的“Chromium Embedded Framework.framework”，这个未受版本管控的框架包含了所有的CEF库文件、资源文件。使用install_name_tool与@executable_path，将cefclient，cefclient helper等可执行文件，连接到了libcef.dylib上。
 
 The "cefclient Helper" apps are used for executing separate processes (renderer, plugin, etc) with different characteristics. They need to have separate app bundles and Info.plist files so that, among other things, they don't show dock icons. The "EH" helper, which is used when launching plugin processes, has the MH_NO_HEAP_EXECUTION bit cleared to allow an executable heap. The "NP" helper, which is used when launching NaCl plugin processes only, has the MH_PIE bit cleared to disable ASLR. This is set up as part of the build process using scripts from the tools/ directory. Examine the Xcode project included with the binary distribution or the originating cefclient.gyp file for a better idea of the script dependencies.
 
-应用程序cefclient helper用来执行不同特点、独立的进程（renderer，plugin等），这些进程需要独立的资源布局与Info.plist等文件，因此它们没有显示停靠图标。用来启动插件进程的EH Helper清除了MH_NO_HEAP_EXECUTION标志位，这样就允许一个可执行堆。只能用来启动NaCL插件进程的NP Helper，清除了MH_PIE标志位，这样就禁用了ASLR。这些都是tools文件夹下面，用来构建进程脚本的一部分。为了脚本的依赖关系，更好的做法是检查发行版本中的Xcode工程或者原始文件cefclient.gyp。
+应用程序cefclient helper用来执行不同特点、独立的进程（renderer，plugin等），这些进程需要独立的资源布局与Info.plist等文件，它们没有显示停靠图标。用来启动插件进程的EH Helper清除了MH_NO_HEAP_EXECUTION标志位，这样就允许一个可执行堆。只能用来启动NaCL插件进程的NP Helper，清除了MH_PIE标志位，这样就禁用了ASLR。这些都是tools文件夹下面，用来构建进程脚本的一部分。为了理清脚本的依赖关系，更好的做法是检查发行版本中的Xcode工程或者原始文件cefclient.gyp。
 
 #### Application Structure
+#### 应用程序结构
 
 Every CEF3 application has the same general structure.
 
@@ -393,11 +333,23 @@ Every CEF3 application has the same general structure.
 - Provide an implementation of CefClient to handle browser-instance-specific callbacks.
 - Call CefBrowserHost::CreateBrowser() to create a browser instance and manage the browser life span using CefLifeSpanHandler. 
 
+每个CEF3应用程序都是相同的结构
+
+- 提供入口函数，用于初始化CEF、运行子进程执行逻辑或者CEF消息循环。
+- 提供CefApp实现，用于处理进程相关的回调。
+- 提供CefClient实现，用于处理browser实例相关的回调
+- 执行CefBrowserHost::CreateBrowser()创建一个browser实例，使用CefLifeSpanHandler管理browser对象生命周期。
+
 ##### Entry-Point Function
+##### 入口函数
 
 As described in the “Processes” section a CEF3 application will run multiple processes. The processes can all use the same executable or a separate executable can be specified for the sub-processes. Execution of the process begins in the entry-point function. Complete platform-specific examples for Windows, Linux and Mac OS-X are available in cefclient_win.cc, cefclient_gtk.cc and cefclient_mac.mm respectively.
 
+像本文中进程章节描述的那样，一个CEF3应用程序会运行多个进程，这些进程能够使用同一个执行器或者为子进程定制的、单独的执行器。进程的执行从入口函数开始，示例cefclient_win.cc、cefclient_gtk.cc、cefclient_mac.mm分别对应Windows、Linux和Mac OS-X平台下的实现。
+
 When launching sub-processes CEF will specify configuration information using the command-line that must be passed into the CefExecuteProcess function via the CefMainArgs structure. The definition of CefMainArgs is platform-specific. On Linux and Mac OS X it accepts the argc and argv values which are passed into the main() function.
+
+当执行子进程是，CEF将使用命令行参数指定配置信息，这些命令行参数必须通过CefMainArgs结构体传入到CefExecuteProcess函数。CefMainArgs的定义与平台相关，在Linux、Mac OS X平台下，它接收main函数传入的argc和argv参数值。
 
 ```
 CefMainArgs main_args(argc, argv);
@@ -405,42 +357,57 @@ CefMainArgs main_args(argc, argv);
 
 On Windows it accepts the instance handle (HINSTANCE) which is passed into the wWinMain() function. The instance handle is also retrievable via GetModuleHandle(NULL).
 
+在Windows平台下，它接收wWinMain函数传入的参数：实例句柄（HINSTANCE），这个实例能够通过函数GetModuleHandle(NULL)获取。
+
 ```
 CefMainArgs main_args(hInstance);
 ```
 
 ##### Single Executable
+##### 单个执行器
 
 When running as a single executable the entry-point function is required to differentiate between the different process types. The single executable structure is supported on Windows and Linux but not on Mac OS X.
 
+当运行单个执行器时，根据不同的进程类型，入口函数有差异。Windows、Linux平台支持单个执行器架构，Mac OS X平台则不行。
+
+
 ```
-// Program entry-point function.
+// 程序执行函数
 int main(int argc, char* argv[]) {
   // Structure for passing command-line arguments.
   // The definition of this structure is platform-specific.
+  // 传递命令行参数的结构体。
+  // 这个结构体的定义与平台相关。
   CefMainArgs main_args(argc, argv);
 
   // Optional implementation of the CefApp interface.
+  // 可选择地实现CefApp接口
   CefRefPtr<MyApp> app(new MyApp);
 
   // Execute the sub-process logic, if any. This will either return immediately for the browser
   // process or block until the sub-process should exit.
+  // 可能会执行子进程逻辑，这个函数的执行在browser进程时会立即返回，在子进程时会堵塞直到退出时返回。
   int exit_code = CefExecuteProcess(main_args, app.get());
   if (exit_code >= 0) {
     // The sub-process terminated, exit now.
+	// 子进程被终结，立即结束。
     return exit_code;
   }
 
   // Populate this structure to customize CEF behavior.
+  // 填充这个结构体，用于定制CEF的行为。
   CefSettings settings;
 
   // Initialize CEF in the main process.
+  // 在main进程中初始化CEF
   CefInitialize(main_args, settings, app.get());
 
   // Run the CEF message loop. This will block until CefQuitMessageLoop() is called.
+  // 执行消息循环，此时会堵塞，直到CefQuitMessageLoop()函数被调用。
   CefRunMessageLoop();
 
   // Shut down CEF.
+  // 退出CEF。
   CefShutdown();
 
   return 0;
@@ -448,34 +415,48 @@ int main(int argc, char* argv[]) {
 ```
 
 ##### Separate Sub-Process Executable
+##### 单独子进程执行器
 
 When using a separate sub-process executable you need two separate executable projects and two separate entry-point functions.
 
+当使用一个单独子进程执行器时，你需要2个分开的可执行工程和2个分开的入口函数。
+
 Main application entry-point function:
+
+主程序的入口函数：
 
 ```
 // Program entry-point function.
+// 程序入口函数
 int main(int argc, char* argv[]) {
   // Structure for passing command-line arguments.
   // The definition of this structure is platform-specific.
+  // 传递命令行参数的结构体。
+  // 这个结构体的定义与平台相关。
   CefMainArgs main_args(argc, argv);
 
   // Optional implementation of the CefApp interface.
+  // 可选择性地实现CefApp接口
   CefRefPtr<MyApp> app(new MyApp);
 
   // Populate this structure to customize CEF behavior.
+  // 填充这个结构体，用于定制CEF的行为。
   CefSettings settings;
 
   // Specify the path for the sub-process executable.
+  // 指定子进程的执行路径
   CefString(&settings.browser_subprocess_path).FromASCII(“/path/to/subprocess”);
 
   // Initialize CEF in the main process.
+  // 在主进程中初始化CEF 
   CefInitialize(main_args, settings, app.get());
 
   // Run the CEF message loop. This will block until CefQuitMessageLoop() is called.
+  // 执行消息循环，此时会堵塞，直到CefQuitMessageLoop()函数被调用。
   CefRunMessageLoop();
 
   // Shut down CEF.
+  // 关闭CEF
   CefShutdown();
 
   return 0;
@@ -483,32 +464,47 @@ int main(int argc, char* argv[]) {
 ```
 
 Sub-process application entry-point function:
+子进程程序的入口函数：
 
 ```
 // Program entry-point function.
+// 程序入口函数
 int main(int argc, char* argv[]) {
   // Structure for passing command-line arguments.
   // The definition of this structure is platform-specific.
+  // 传递命令行参数的结构体。
+  // 这个结构体的定义与平台相关。
   CefMainArgs main_args(argc, argv);
 
   // Optional implementation of the CefApp interface.
+  // 可选择性地实现CefApp接口
   CefRefPtr<MyApp> app(new MyApp);
 
   // Execute the sub-process logic. This will block until the sub-process should exit.
+  // 执行子进程逻辑，此时会堵塞直到子进程退出。
   return CefExecuteProcess(main_args, app.get());
 }
 ```
 
 ##### Message Loop Integration
+##### 集成消息循环
 
 CEF can also integrate with an existing application message loop instead of running its own message loop. There are two ways to do this.
+
+CEF可以不用它自己提供的消息循环，而与已经存在的程序中消息环境集成在一起，有两种方式可以做到：
 
 1. Call CefDoMessageLoopWork() on a regular basis instead of calling CefRunMessageLoop(). Each call to CefDoMessageLoopWork() will perform a single iteration of the CEF message loop. Caution should be used with this approach. Calling the method too infrequently will starve the CEF message loop and negatively impact browser performance. Calling the method too frequently will negatively impact CPU usage.
 2. Set CefSettings.multi_threaded_message_loop = true (Windows only). This will cause CEF to run the browser UI thread on a separate thread from the main application thread. With this approach neither CefDoMessageLoopWork() nor CefRunMessageLoop() need to be called. CefInitialize() and CefShutdown() should still be called on the main application thread. You will need to provide your own mechanism for communicating with the main application thread (see for example the message window usage in cefclient_win.cpp). You can test this mode in cefclient on Windows by running with the “--multi-threaded-message-loop” command-line flag. 
 
+1. 周期性执行CefDoMessageLoopWork()函数，替代调用CefRunMessageLoop()。CefDoMessageLoopWork()的每一次调用，都将执行一次CEF消息循环的单次迭代。需要注意的是，此方法调用次数太少时，CEF消息循环会饿死，将极大的影响browser的性能，调用次数太频繁又将影响CPU使用率。
+2. 设置CefSettings.multi_threaded_message_loop=true（Windows平台下有效），这个设置项将导致CEF运行browser UI运行在单独的线程上，而不是在主线程上，这种场景下CefDoMessageLoopWork()或者CefRunMessageLoop()都不需要调用，CefInitialze()、CefShutdown()仍然在主线程中调用。你需要提供主程序线程通信的机制（查看cefclient_win.cpp中提供的消息窗口实例）。在Windows平台下，你可以通过命令行参数“--multi-threaded-message-loop”测试上述消息模型。
+
+##### CefSettings
 ##### CefSettings
 
 The CefSettings structure allows configuration of application-wide CEF settings. Some commonly configured members include:
+
+CefSettings结构体允许定义全局的CEF配置，经常用到的配置项如下：
 
 - **single_process** Set to true to use a single process for the browser and renderer. Also configurable using the "single-process" command-line switch. See the “Processes” section for more information.
 - **browser_subprocess_path** The path to a separate executable that will be launched for sub-processes. See the “Separate Sub-Process Executable” section for more information.
@@ -521,6 +517,16 @@ The CefSettings structure allows configuration of application-wide CEF settings.
 - **resources_dir_path** The fully qualified path for the resources directory. If this value is empty the cef.pak and/or devtools_resources.pak files must be located in the module directory on Windows/Linux or the app bundle Resources directory on Mac OS X. Also configurable using the "resources-dir-path" command-line switch.
 - **locales_dir_path** The fully qualified path for the locales directory. If this value is empty the locales directory must be located in the module directory. This value is ignored on Mac OS X where pack files are always loaded from the app bundle Resources directory. Also configurable using the "locales-dir-path" command-line switch.
 - **remote_debugging_port** Set to a value between 1024 and 65535 to enable remote debugging on the specified port. For example, if 8080 is specified the remote debugging URL will be http://localhost:8080. CEF can be remotely debugged from any CEF or Chrome browser window. Also configurable using the "remote-debugging-port" command-line switch. 
+
+- **single_process** 设置为true时，browser和renderer使用一个进程。此项也可以通过命令行参数“single-process”配置。查看本文中“进程”章节获取更多的信息。
+- **browser_subprocess_path** 设置用于启动子进程单独执行器的路径。参考本文中“单独子进程执行器”章节获取更多的信息。
+- **cache_path** 设置磁盘上用于存放缓存数据的位置。如果此项为空，某些功能将使用内存缓存，多数功能将使用临时的磁盘缓存。形如本地存储的HTML5数据库只能在设置了缓存路径才能跨session存储。
+- **locale** 此设置项将传递给Blink。如果此项为空，将使用默认值“en-US”。在Linux平台下此项被忽略，使用环境变量中的值，解析的依次顺序为：LANGUAE，LC_ALL，LC_MESSAGES和LANG。此项也可以通过命令行参数“lang”配置。
+- **log_file** 此项设置的文件夹和文件名将用于输出debug日志。如果此项为空，默认的日志文件名为debug.log，位于应用程序所在的目录。此项也可以通过命令参数“log-file”配置。
+- **log_severity** 此项设置日志级别。只有此等级、或者比此等级高的日志的才会被记录。此项可以通过命令行参数“log-severity”配置，可以设置的值为“verbose”，“info”，“warning”，“error”，“error-report”，“disable”
+- **resources_dir_path** 此项设置资源文件夹的位置。如果此项为空，Windows平台下cef.pak、Linux平台下devtools_resourcs.pak、Mac OS X下的app bundle Resources目录必须位于组件目录。此项也可以通过命令行参数“resource-dir-path”配置。
+- **locales_dir_path** 此项设置locale文件夹位置。如果此项为空，locale文件夹必须位于组件目录，在Mac OS X平台下此项被忽略，pak文件从app bundle Resources目录。此项也可以通过命令行参数“locales-dir-path”配置。
+- **remote_debugging_port** 此项可以设置1024-65535之间的值，用于在指定端口开启远程调试。例如，如果设置的值为8080，远程调试的URL为http://localhost:8080。CEF或者Chrome浏览器能够调试CEF。此项也可以通过命令行参数“remote-debugging-port”配置。
 
 ##### CefBrowser and CefFrame
 
