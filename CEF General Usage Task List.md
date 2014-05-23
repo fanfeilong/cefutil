@@ -14,11 +14,11 @@
  - [x] @老细 `Linux`    $(Translate)+1
  - [x] @老细 `Mac OS X` $(Translate)+1
 - [x] Application Structure
- - [x] @老细 Entry-Point Function
- - [x] @老细 Single Executable
- - [x] @老细 Separate Sub-Proess Executable
- - [x] @老细 Message Loop Integration
- - [x] @老细 CefSettings
+ - [x] @老细 `Entry-Point Function` $(Translate)+1
+ - [x] @老细 `Single Executable` $(Translate)+1
+ - [x] @老细 `Separate Sub-Proess Executable` $(Translate)+1
+ - [x] @老细 `Message Loop Integration` $(Translate)+1
+ - [x] @老细 `CefSettings` $(Translate)+1
  - [ ] CefBrowser and CefFrame
  - [ ] CefClient
  - [ ] Browser Life Span
