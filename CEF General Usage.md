@@ -703,8 +703,12 @@ class MyApp : public CefApp,
 
 The CefClient interface provides access to browser-instance-specific callbacks. A single CefClient instance can be shared among any number of browsers. Important callbacks include:
 
+CefClient提供访问browser-instance-specific的回调接口。单实例CefClient可以共数任意数量的浏览器进程。以下为几个重要的回调：
+
 - Handlers for things like browser life span, context menus, dialogs, display notifications, drag events, focus events, keyboard events and more. The majority of handlers are optional. See the documentation in cef_client.h for the side effects, if any, of not implementing a specific handler.
 - **OnProcessMessageReceived** which is called when an IPC message is received from the render process. See the “Inter-Process Communication” section for more information. 
+
+- 比如处理browser的生命周期，右键菜单，对话框，通知显示， 拖曳事件，焦点事件，键盘事件等等。如果没有对某个特定的处理接口进行实现会造成什么影响，请查看cef_client.h文件中相关说明。
 
 Example CefClient implementation:
 
@@ -904,11 +908,18 @@ class MyHandler : public CefClient,
 
 ##### Browser Life Span
 
+Browser生命周期
+
 Browser life span begins with a call to CefBrowserHost::CreateBrowser() or CefBrowserHost::CreateBrowserSync(). Convenient places to execute this logic include the CefBrowserProcessHandler::OnContextInitialized() callback or platform-specific message handlers like WM_CREATE on Windows.
+
+Browser生命周期从执行 CefBrowserHost::CreateBrowser() 或者 CefBrowserHost::CreateBrowserSync() 开始。可以在CefBrowserProcessHandler::OnContextInitialized() 回调或者特殊平台例如windows的WM_CREATE 中方便的执行业务逻辑。
 
 ```
 // Information about the window that will be created including parenting, size, etc.
 // The definition of this structure is platform-specific.
+
+// 定义的结构体与平台相关
+
 CefWindowInfo info;
 // On Windows for example...
 info.SetAsChild(parent_hwnd, client_rect);
@@ -923,6 +934,8 @@ CefRefPtr<MyClient> client(new MyClient);
 CefBrowserHost::CreateBrowser(info, client.get(), “http://www.google.com”, settings);
 
 The CefLifeSpanHandler class provides the callbacks necessary for managing browser life span. Below is an extract of the relevant methods and members.
+
+CefLifeSpanHandler 类提供管理 browser生合周期必需的回调。以下为相关方法和成员。
 
 class MyClient : public CefClient,
                  public CefLifeSpanHandler,
@@ -954,6 +967,8 @@ class MyClient : public CefClient,
 
 The OnAfterCreated() method will be called immediately after the browser object is created. The host application can use this method to keep a reference to the main browser object.
 
+当browser对象创建后OnAfterCreated() 方法立即执行。宿主程序可以用这个方法来保持对browser对象的引用。
+
 ```
 void MyClient::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
   // Must be executed on the UI thread.
@@ -974,6 +989,8 @@ void MyClient::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
 
 To destroy the browser call CefBrowserHost::CloseBrowser().
 
+执行CefBrowserHost::CloseBrowser()销毁browser对象。
+
 ```
 // Notify the browser window that we would like to close it. This will result in a call to 
 // MyHandler::DoClose() if the JavaScript 'onbeforeunload' event handler allows it.
@@ -981,6 +998,8 @@ browser->GetHost()->CloseBrowser(false);
 ```
 
 If the browser is parented to another window then the close event may originate in the OS function for that parent window (for example, by clicking the X on the parent window). The parent window then needs to call CloseBrowser(false) and wait for a second OS close event to indicate that the browser has allowed the close. The second OS close event will not be sent if the close is canceled by a JavaScript ‘onbeforeunload’ event handler or by the DoClose() callback. Notice the IsClosing() check in the below examples -- it will return false for the first OS close event and true for the second (after DoClose is called).
+
+browser对象的关闭事件来源于他的父窗口的关闭方法（比如，在父窗口上点击X控钮。）。父窗口需要调用  CloseBrowser(false) 并且等待操作系统的第二个关闭事件来决定是否允许关闭。如果在JavaScript 'onbeforeunload'事件处理或者 DoClose()回调中取消了关闭操作，则操作系统的第二个关闭事件可能不会发送。注意一下面示例中对IsCloseing()的判断-它在第一个关闭事件中返回false，在第二个关闭事件中返回true(当 DoCloase 被调用后)。
 
 Handling in the parent window WndProc on Windows:
 
