@@ -22,7 +22,7 @@
  - [ ] CefBrowser and CefFrame
  - [ ] CefClient
  - [ ] Browser Life Span
- - [ ] Inter-Process Communication (IPC)
+ - [x] @笨笨Inter-Process Communication (IPC)
  - [ ] Asynchronous JavaScript Bindings
  - [ ] Synchronous Requests
  - [ ] Browser-Independent Requests
