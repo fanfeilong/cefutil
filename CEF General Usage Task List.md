@@ -1,7 +1,7 @@
 - [x] @fanfeilong 开始
 - [x] @fanfeilong 使用二进制包
 - [ ] Building from Source Code
-- [ ] Sample Application
+- [ ] @NIGHT `Sample Application` $(Translate)+1
 - [ ] Important Concepts
  - [ ] C++ Wrapper
  - [x] @笨笨 `Processes`  $(Translate)+1
