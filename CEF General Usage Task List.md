@@ -20,8 +20,8 @@
  - [x] @老细 `Message Loop Integration` $(Translate)+1
  - [x] @老细 `CefSettings` $(Translate)+1
  - [ ] CefBrowser and CefFrame
- - [ ] CefClient
- - [ ] Browser Life Span
+ - [ ] @NIGHT `CefClient` $(Translate)+1
+ - [ ] @NIGHT `Browser Life Span` $(Translate)+1
  - [x] @笨笨Inter-Process Communication (IPC)
  - [ ] Asynchronous JavaScript Bindings
  - [ ] Synchronous Requests
