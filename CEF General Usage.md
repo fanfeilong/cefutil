@@ -65,7 +65,7 @@ The libcef shared library exports a C API that isolates the user from the CEF ru
 
 CEF3 runs using multiple processes. The main process which handles window creation, painting and network access is called the “browser” process. This is generally the same process as the host application and the majority of the application logic will run in the browser process. Blink rendering and JavaScript execution occur in a separate “render” process. Some application logic, such as JavaScript bindings and DOM access, will also run in the render process. The default process model will spawn a new render process for each unique origin (scheme + domain). Other processes will be spawned as needed, such as “plugin” processes to handle plugins like Flash and “gpu” processes to handle accelerated compositing.
 
-CEF3是多线程架构的。"browser"被定义为主线程，负责窗口管理，界面绘制和网络交互。Blink的渲染和Js的执行被放在一个独立的"render"
+CEF3是多进程架构的。"browser"被定义为主进程，负责窗口管理，界面绘制和网络交互。Blink的渲染和Js的执行被放在一个独立的"render"
 进程中；除此之外，render进程还负责Js Binding和对Dom节点的访问。
 默认的进程模型中，会为每个标签页创建一个新的"render"进程。其他进程按需创建，象管理插件的进程和处理合成加速的进程。
 
