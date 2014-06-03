@@ -1,28 +1,28 @@
-﻿- [ ] 开始
-- [ ] 使用二进制包
+- [x] @fanfeilong 开始
+- [x] @fanfeilong 使用二进制包
 - [ ] Building from Source Code
-- [ ] Sample Application
+- [ ] @NIGHT `Sample Application` $(Translate)+1
 - [ ] Important Concepts
  - [ ] C++ Wrapper
- - [ ] Processes
- - [ ] Threads
- - [ ] Reference Counting
- - [ ] Strings
- - [ ] Command Line Arguments
-- [ ] Application Layout
- - [ ] Windows
- - [ ] Linux
- - [ ] Mac OS X
-- [ ] Application Structure
- - [ ] Entry-Point Function
- - [ ] Single Executable
- - [ ] Separate Sub-Proess Executable
- - [ ] Message Loop Integration
- - [ ] CefSettings
+ - [x] @笨笨 `Processes`  $(Translate)+1
+ - [ ] @给自己加油 Threads
+ - [x] @给自己加油 `Reference Counting` $(Translate)+1
+ - [x] @给自己加油 `Strings` $(Translate)+1
+ - [x] @柔然兮道 `Command Line Arguments` $(Translate)+1
+- [x] Application Layout
+ - [x] @老细 `Windows`  $(Translate)+1
+ - [x] @老细 `Linux`    $(Translate)+1
+ - [x] @老细 `Mac OS X` $(Translate)+1
+- [x] Application Structure
+ - [x] @老细 `Entry-Point Function` $(Translate)+1
+ - [x] @老细 `Single Executable` $(Translate)+1
+ - [x] @老细 `Separate Sub-Proess Executable` $(Translate)+1
+ - [x] @老细 `Message Loop Integration` $(Translate)+1
+ - [x] @老细 `CefSettings` $(Translate)+1
  - [ ] CefBrowser and CefFrame
- - [ ] CefClient
- - [ ] Browser Life Span
- - [ ] Inter-Process Communication (IPC)
+ - [ ] @NIGHT `CefClient` $(Translate)+1
+ - [ ] @NIGHT `Browser Life Span` $(Translate)+1
+ - [x] @笨笨Inter-Process Communication (IPC)
  - [ ] Asynchronous JavaScript Bindings
  - [ ] Synchronous Requests
  - [ ] Browser-Independent Requests
