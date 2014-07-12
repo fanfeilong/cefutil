@@ -1,11 +1,11 @@
 - [x] @fanfeilong 开始
 - [x] @fanfeilong 使用二进制包
-- [ ] Building from Source Code
-- [ ] @NIGHT `Sample Application` $(Translate)+1
-- [ ] Important Concepts
- - [ ] C++ Wrapper
+- [x] @fanfeilong Building from Source Code
+- [x] @NIGHT `Sample Application` $(Translate)+1
+- [x] @fanfeilong Important Concepts
+ - [x] @fanfeilong C++ Wrapper
  - [x] @笨笨 `Processes`  $(Translate)+1
- - [ ] @给自己加油 Threads
+ - [x] @给自己加油 Threads
  - [x] @给自己加油 `Reference Counting` $(Translate)+1
  - [x] @给自己加油 `Strings` $(Translate)+1
  - [x] @柔然兮道 `Command Line Arguments` $(Translate)+1
@@ -19,15 +19,15 @@
  - [x] @老细 `Separate Sub-Proess Executable` $(Translate)+1
  - [x] @老细 `Message Loop Integration` $(Translate)+1
  - [x] @老细 `CefSettings` $(Translate)+1
- - [ ] CefBrowser and CefFrame
- - [ ] @NIGHT `CefClient` $(Translate)+1
- - [ ] @NIGHT `Browser Life Span` $(Translate)+1
+ - [x] @fanfeilong CefBrowser and CefFrame
+ - [x] @NIGHT `CefClient` $(Translate)+1
+ - [x] @NIGHT `Browser Life Span` $(Translate)+1
  - [x] @笨笨Inter-Process Communication (IPC)
- - [ ] Asynchronous JavaScript Bindings
- - [ ] Synchronous Requests
- - [ ] Browser-Independent Requests
- - [ ] Request Handling
- - [ ] Scheme Handler
- - [ ] Request Interception
- - [ ] Other Callbacks
- - [ ] Proxy Resolution
+ - [x] @fanfeilong Asynchronous JavaScript Bindings
+ - [x] @fanfeilong Synchronous Requests
+ - [x] @fanfeilong Browser-Independent Requests
+ - [x] @fanfeilong Request Handling
+ - [x] @fanfeilong Scheme Handler
+ - [x] @fanfeilong Request Interception
+ - [x] @fanfeilong Other Callbacks
+ - [x] @fanfeilong Proxy Resolution
