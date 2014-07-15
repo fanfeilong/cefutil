@@ -59,7 +59,7 @@ CEF3是基于Chomuim Content API多进程构架的下一代CEF，拥有下列优
 	- [通用消息转发(Generic Message Router)](#generic-message-router)
 	- [自定义实现(Custom Implementation)](#javascirpt-custome-handler)
 - [同步请求(Synchronous Requests)](#synchronous-requests)
-- [网络层(Network Layer)](#network-laryer)
+- [网络层(Network Layer)](#network-layer)
 - [自定义请求(Custom Requests)](#custom-requests)
 - [浏览器无关请求(Browser-Independent Requests)](#browser-independent-requests)
 - [请求响应(Request Handling)](#request-handling)
@@ -1298,7 +1298,7 @@ void MyHandler::OnContextReleased(CefRefPtr<CefBrowser> browser,
 
 某些特殊场景下，也许会需要在Browser进程和Render进程做进程间同步通信。这应该被尽可能避免，因为这会对Render进程的性能造成负面影响。然而如果你一定要做进程间同步通信，可以考虑使用XMLHttpRequest，XMLHttpRequest在等待Browser进程的网络响应的时候会等待。Browser进程可以通过自定义scheme Handler或者网络交互处理XMLHttpRequest。更多细节，请参考[Network Layer](#network-layer)一节。
 
-#### <a name="network-laryer"></a>网络层(Network Layer)
+#### <a name="network-layer"></a>网络层(Network Layer)
 
 默认情况下，CEF3的网络请求会被宿主程序手工处理。然而CEF3也暴露了一系列网络相关的函数用以处理网络请求。
 
