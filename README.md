@@ -4,9 +4,9 @@ CEF Util以文件+文件Task List的形式组织协调开发。每个文件`File
 
 CEF 文档中文翻译任务
 --------------------
-- [`CEF General Usage`](https://github.com/fanfeilong/cefutil/blob/master/CEF%20General%20Usage.md)
-  [`CEF General Usage Task List`](https://github.com/fanfeilong/cefutil/blob/master/CEF%20General%20Usage%20Task%20List.md)
-
+- [x][`CEF General Usage`](https://github.com/fanfeilong/cefutil/blob/master/CEF%20General%20Usage.md)
+  [x][`CEF General Usage Task List`](https://github.com/fanfeilong/cefutil/blob/master/CEF%20General%20Usage%20Task%20List.md)
+  [x][CEF General Usage中文版，欢迎查阅](https://github.com/fanfeilong/cefutil/blob/master/CEF%20General%20Usage-zh-cn.md)
 
 CEF FAQ
 -------
