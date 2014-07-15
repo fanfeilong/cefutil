@@ -6,7 +6,7 @@ CEF General Usage(CEF3预览)
 介绍
 ----
 
-CEF全称Chromium Embedded Framework,是一个基于Google Chromium 的开源项目。Google Chromium项目主要是为Google Chrome应用开发的，而CEF的目标则是为第三方应用提供可嵌入浏览器支持。CEF隔离底层Chromium和Blink的复杂代码，并提供一套产品级稳定的API，发布跟踪具体Chromium版本的分支，以及二进制包。CEF的大部分特性都提供了丰富的默认实现，让使用者做尽量少的定制即可满足需求。在本文发布的时候，世界上已经有很多公司和机构采用CEF，CEF的安装量超过了100万。[CEF wikipedia]页面上有使用CEF的公司和机构的不完全的列表。CEF的典型应用场景包括：
+CEF全称Chromium Embedded Framework，是一个基于Google Chromium 的开源项目。Google Chromium项目主要是为Google Chrome应用开发的，而CEF的目标则是为第三方应用提供可嵌入浏览器支持。CEF隔离底层Chromium和Blink的复杂代码，并提供一套产品级稳定的API，发布跟踪具体Chromium版本的分支，以及二进制包。CEF的大部分特性都提供了丰富的默认实现，让使用者做尽量少的定制即可满足需求。在本文发布的时候，世界上已经有很多公司和机构采用CEF，CEF的安装量超过了100万。[CEF wikipedia]页面上有使用CEF的公司和机构的不完全的列表。CEF的典型应用场景包括：
 
 - 嵌入一个兼容HTML5的浏览器控件到一个已经存在的本地应用。
 - 创建一个轻量化的壳浏览器，用以托管主要用Web技术开发的应用。
@@ -16,18 +16,59 @@ CEF全称Chromium Embedded Framework,是一个基于Google Chromium 的开源项
 CEF3是基于Chomuim Content API多进程构架的下一代CEF，拥有下列优势：
 
 - 改进的性能和稳定性（JavaScript和插件在一个独立的进程内执行）。
-- 支持Retina显示器
-- 支持WebGL和3D CSS的GPU加速
+- 支持Retina显示器。
+- 支持WebGL和3D CSS的GPU加速。
 - 类似WebRTC和语音输入这样的前卫特性。
-- 通过DevTools远程调试协议以及ChromeDriver2提供更好的自动化UI测试
-- 更快获得当前以及未来的Web特性和标准的能力
+- 通过DevTools远程调试协议以及ChromeDriver2提供更好的自动化UI测试。
+- 更快获得当前以及未来的Web特性和标准的能力。
 
 本文档介绍CEF3开发中涉及到的一般概念。
 
 开始
 ----
 
-#### 使用二进制包
+- [使用二进制包](#using-binray)
+- [从源码编译(Building from Source Code)](#building-from-source-code)
+- [示例应用程序(Sample Application)](#sample-application)
+- [重要概念(Important Concepts)](#important-concepts)
+- [C++ 封装(C++ Wrapper)](#cpp-wrapper)
+	- [进程(Processes)](#processes)
+	- [线程(Threads)](#threads)
+	- [引用计数(Reference Counting)](#reference-couting)
+	- [字符串(Strings)](#strings)
+	- [命令行参数(Command Line Arguments)](#command-line-arguments)
+- [应用程序布局(Application Layout)](#application-layout)
+- [应用程序结构(Application Structure)](#application-structure)
+	- [Windows操作系统(Windows)](#application-window)
+	- [Linux操作系统(Linux)](#application-linux)
+	- [Mac X平台(Mac OS X)](#application-mac)
+- [单一执行体(Single Executable)](#single-executable)
+- [分离子进程执行体(Separate Sub-Process Executable)](#seperate-subprocess-executable)
+- [集成消息循环(Message Loop Integration)](#message-loop-integration)
+- [CefSettings](#cefsettings)
+- [CefBrowser和CefFrame](#cefbrowser-and-cefframe)
+- [CefApp](#cefapp)
+- [CefClient](#cefclient)
+- [Browser生命周期(Browser Life Span)](#browser-life-span)
+- [离屏渲染(Off-Screen Rendering)](#off-screen-rendering)
+- [投递任务(Posting Tasks)](#posting-task)
+- [进程间通信(Inter-Process Communication (IPC))](#inter-process-communication)
+- [处理启动消息(Process Startup Messages)](#process-startup-messages)
+- [处理运行时消息(Process Runtime Messages)](#process-runtime-messages)
+- [异步JavaScript绑定(Asynchronous JavaScript Bindings)](#asynchronous-javascript-bindings)
+	- [通用消息转发(Generic Message Router)](#generic-message-router)
+	- [自定义实现(Custom Implementation)](#javascirpt-custome-handler)
+- [同步请求(Synchronous Requests)](#synchronous-requests)
+- [网络层(Network Layer)](#network-laryer)
+- [自定义请求(Custom Requests)](#custom-requests)
+- [浏览器无关请求(Browser-Independent Requests)](#browser-independent-requests)
+- [请求响应(Request Handling)](#request-handling)
+- [Scheme响应(Scheme Handler)](#scheme-handler)
+- [请求拦截(Request Interception)](#request-interception)
+- [其他回调(Other Callbacks)](#other-callbacks)
+- [Proxy Resolution](#proxy-resolution)
+
+#### <a name="using-binray"></a>使用二进制包
 
 CEF3的二进制包可以在[这个页面下载](http://www.magpcss.net/cef_downloads/)。其中包含了在特定平台（Windows，Mac OS X 以及 Linux）编译特定版本CEF3所需的全部文件。不同平台拥有共同的结构：
 
@@ -39,51 +80,52 @@ CEF3的二进制包可以在[这个页面下载](http://www.magpcss.net/cef_down
 - **Resources**
 - **tools**
 
-每个二进制包包含一个README.txt文件和一个LICENSE.txt文件，README.txt用以描述平台相关的细节，而LICENSE.txt包含CEF的BSD版权说明。如果你发布了基于CEF的应用，则应该应用程序的某个地方包含该版权声明。例如，你可以在"关于”和“授权"页面列出该版权声明，或者单独一个文档包含该版权声明。“关于”和“授权”信息也可以分别在CEF浏览器的"about:license"和"about:credits"页面查看。
+每个二进制包包含一个README.txt文件和一个LICENSE.txt文件，README.txt用以描述平台相关的细节，而LICENSE.txt包含CEF的BSD版权说明。如果你发布了基于CEF的应用，则应该在应用程序的某个地方包含该版权声明。例如，你可以在"关于”和“授权"页面列出该版权声明，或者单独一个文档包含该版权声明。“关于”和“授权”信息也可以分别在CEF浏览器的"about:license"和"about:credits"页面查看。
 
 基于CEF二进制包的应用程序可以使用每个平台上的经典编译工具。包括Windows平台上的Visual Studio，Mac OSX平台上的Xcode，以及Linux平台上的gcc/make编译工具链。CEF项目的下载页面包含了这些平台上编译特定版本CEF所需的编译工具的版本信息。在Linux上编译CEF时需要特别注意依赖工具链。
 
 Tutorial Wiki页面有更多关于如何使用CEF3二进制包创建简单应用程序的细节。
 
-#### 从源码编译(Building from Source Code)
+#### <a name="building-from-source-code"></a>从源码编译(Building from Source Code)
 
-CEF可以从源码编译，用户可以使用本地编译系统或者像TeamCity这样的自动化编译系统编译。首先你需要使用svn或者git下载Chromium和CEF的源码。由于Chromium源码很大，只建议在内存大于4GB的现代机器上编译。编译Chromium和CEF的细节请参考 [BranchesAndBuilding]()页面。
+CEF可以从源码编译，用户可以使用本地编译系统或者像TeamCity这样的自动化编译系统编译。首先你需要使用svn或者git下载Chromium和CEF的源码。由于Chromium源码很大，只建议在内存大于4GB的现代机器上编译。编译Chromium和CEF的细节请参考[BranchesAndBuilding]()页面。
 
-#### 示例应用程序(Sample Application)
+#### <a name="sample-application"></a>示例应用程序(Sample Application)
 
 cefclient是一个完整的CEF客户端应用程序示例，并且它的源码包含在CEF每个二进制发布包中。使用CEF创建一个新的应用程序，最简单的方法是先从cefclient应用程序开始，删除你不需要的部分。本文档中许多示例都是来源于cefclient应用程序。
 
-#### 重要概念(Important Concepts)
+#### <a name="important-concepts"></a>重要概念(Important Concepts)
 
 在开发基于CEF3的应用程序前，有一些重要的基础概念应该被理解。
 
-##### C++ 封装(C++ Wrapper)
+##### <a name="cpp-wrapper"></a>C++ 封装(C++ Wrapper)
 
-libcef 动态链接库导出 C API 使得使用者不用关心CEF运行库和基础代码。libcef_dll_wrapper 工程把 C API 封装成 C++ API同时包含在客户端应用程序工程中，与cefclient一样，源代码作为CEF二进制发布包的一部份共同发布。C/C++ API的转换层代码是由转换工具自动生成。UsingTheCAPI 页面描述了如何使用C API。
+libcef 动态链接库导出 C API 使得使用者不用关心CEF运行库和基础代码。libcef_dll_wrapper 工程把 C API 封装成 C++ API同时包含在客户端应用程序工程中，与cefclient一样，源代码作为CEF二进制发布包的一部分共同发布。C/C++ API的转换层代码是由转换工具自动生成。UsingTheCAPI 页面描述了如何使用C API。
 
-##### 进程(Processes)
+##### <a name="processes"></a>进程(Processes)
 
-CEF3是多进程架构的。"browser"被定义为主进程，负责窗口管理，界面绘制和网络交互。Blink的渲染和Js的执行被放在一个独立的"render"
-进程中；除此之外，render进程还负责Js Binding和对Dom节点的访问。
-默认的进程模型中，会为每个标签页创建一个新的"render"进程。其他进程按需创建，象管理插件的进程和处理合成加速的进程。
+CEF3是多进程架构的。Browser被定义为主进程，负责窗口管理，界面绘制和网络交互。Blink的渲染和Js的执行被放在一个独立的Render
+进程中；除此之外，Render进程还负责Js Binding和对Dom节点的访问。
+默认的进程模型中，会为每个标签页创建一个新的Render进程。其他进程按需创建，例如管理插件的进程以及处理合成加速的进程等都是按需创建。
 
-默认情况下，主应用程序会被多次启动运行各自独立的进程。这是通过传递不同的命令行参数给CefExecuteProcess函数做到的。如果主应用程序很大，加载时间比较长，或者不能在非浏览器进程里使用，则宿主程序可使用独立的可执行文件去运行这些进程。这可以通过配置CefSettings.browser_subprocess_path变量做到。更多细节请参考`Application Structure`一节。
+默认情况下，主应用程序会被多次启动运行各自独立的进程。这是通过传递不同的命令行参数给CefExecuteProcess函数做到的。如果主应用程序很大，加载时间比较长，或者不能在非浏览器进程里使用，则宿主程序可使用独立的可执行文件去运行这些进程。这可以通过配置CefSettings.browser_subprocess_path变量做到。更多细节请参考[Application Structure](#application-structure)一节。
 
-CEF3的进程之间可以通过IPC进行通信。"Browser"和"Render"进程可以通过发送异步消息进行双向通信。甚至在Render进程可以注册在Browser进程响应的异步JavaScript API。更多细节，请参考`Inter-Process Communication`一节。
+CEF3的进程之间可以通过IPC进行通信。Browser和Render进程可以通过发送异步消息进行双向通信。甚至在Render进程可以注册在Browser进程响应的异步JavaScript API。
+更多细节，请参考[Inter-Process Communication](#inter-process-communication)一节。
 
-通过设置命令行的"--single-process"，CEF3就可以支持用于调试目的的单进程运行模型。支持的平台为：Windows，Mac OS X 和Linux。
+通过设置命令行的`--single-process`，CEF3就可以支持用于调试目的的单进程运行模型。支持的平台为：Windows，Mac OS X 和Linux。
 
-##### 线程(Threads)
+##### <a name="threads"></a>线程(Threads)
 
-在CEF3中，每个进程都会运行多个线程。完整的线程类型表请参照cef_thread_id_t。例如，在browser进程中包含如下主要的线程：
+在CEF3中，每个进程都会运行多个线程。完整的线程类型表请参照cef_thread_id_t。例如，在Browser进程中包含如下主要的线程：
 
 - **TID_UI** 线程是浏览器的主线程。如果应用程序在调用调用CefInitialize()时，传递CefSettings.multi_threaded_message_loop=false，这个线程也是应用程序的主线程。
 - **TID_IO** 线程主要负责处理IPC消息以及网络通信。
 - **TID_FILE** 线程负责与文件系统交互。 
 
-由于CEF采用多线程架构，有必要使用锁和闭包来保证在多不同线程安全的传递数据。IMPLEMENT_LOCKING定义提供了Lock()和Unlock()方法以及AutoLock对象来保证不同代码块同步访问数据。CefPostTask函数组支持简易的线程间异步消息传递。更多信息，请参考"Posting Tasks"章节。
+由于CEF采用多线程架构，有必要使用锁和闭包来保证数据的线程安全语义。IMPLEMENT_LOCKING定义提供了Lock()和Unlock()方法以及AutoLock对象来保证不同代码块同步访问数据。CefPostTask函数组支持简易的线程间异步消息传递。更多信息，请参考[Posting Tasks](posting-task)章节。
 
-判断当前工作线程可以通过使用CefCurrentlyOn()方法，cefclient工程使用下面的定义来确保方法在期望的线程中被执行。
+可以通过CefCurrentlyOn()方法判断当前所在的线程环境，cefclient工程使用下面的定义来确保方法在期望的线程中被执行。
 
 ```
 #define REQUIRE_UI_THREAD()   ASSERT(CefCurrentlyOn(TID_UI));
@@ -91,7 +133,7 @@ CEF3的进程之间可以通过IPC进行通信。"Browser"和"Render"进程可�
 #define REQUIRE_FILE_THREAD() ASSERT(CefCurrentlyOn(TID_FILE));
 ```
 
-##### 引用计数(Reference Counting)
+##### <a name="reference-couting"></a>引用计数(Reference Counting)
 
 所有的框架类从CefBase继承，实例指针由CefRefPtr管理，CefRefPtr通过调用AddRef()和Release()方法自动管理引用计数。框架类的实现方式如下：
 
@@ -110,9 +152,9 @@ class MyClass : public CefBase {
 CefRefPtr<MyClass> my_class = new MyClass();
 ```
 
-##### 字符串(Strings)
+##### <a name="strings"></a>字符串(Strings)
 
-CEF为字符串定义了自己的数据结构。下面是这样做的理由：
+CEF为字符串定义了自己的数据结构。主要是出于以下原因：
 - libcef包和宿主程序可能使用不同的运行时，对堆管理的方式也不同。所有的对象，包括字符串，需要确保和申请堆内存使用相同的运行时环境。
 - libcef包可以编译为支持不同的字符串类型(UTF8，UTF16以及WIDE)。默认采用的是UTF16，默认字符集可以通过更改cef_string.h文件中的定义，然后重新编译来修改。当使用宽字节集的时候，切记字符的长度由当前使用的平台决定。
 
@@ -136,9 +178,9 @@ CEF提供了一批C语言的方法来操作字符串(通过#define的方式来�
 
 - **cef_string_set** 对制定的字符串变量赋值(支持深拷贝或浅拷贝)。
 - **cef_string_clear** 清空字符串。
-- **cef_string_cmp** 比较两个字符串. 
+- **cef_string_cmp** 比较两个字符串。
 
-CEF也提供了所有的字符编码的字符串格式之间相互转换的方法。具体函数列表请查阅cef_string.h和cef_string_types.h文件。
+CEF也提供了字符串不同编码之间相互转换的方法。具体函数列表请查阅cef_string.h和cef_string_types.h文件。
 
 在C++中，通常使用CefString类来管理CEF的字符串。CefString支持与std::string(UTF8)、std::wstring(wide)类型的相互转换。也可以用来包裹一个cef_string_t结构来对其进行赋值。
 
@@ -191,17 +233,17 @@ CefString(&settings.log_file).FromASCII(path);
 cef_string_from_ascii(path, strlen(path), &settings.log_file);
 ```
 
-##### 命令行参数(Command Line Arguments)
+##### <a name="command-line-arguments"></a>命令行参数(Command Line Arguments)
 
-在CEF3和Chromium中许多特性可以使用命令行参数进行配置。这些参数采用"--some-argument[=optional-param]"形式，并通过CefExecuteProcess()和CefMainArgs结构（参考下面的"应用资源布局"章节）传递给CEF。在传递CefSettings结构给CefInitialize()之前，我们可以设置CefSettings.command_line_args_disabled为false来禁用对命令行参数的处理。如果想指定命令行参数传入主应用程序，实现CefApp::OnBeforeCommandLineProcessing()方法。更多关于如何查找已支持的命令行选项的信息，请查看client_switches.cpp文件的注释。
+在CEF3和Chromium中许多特性可以使用命令行参数进行配置。这些参数采用`--some-argument[=optional-param]`形式，并通过CefExecuteProcess()和CefMainArgs结构（参考下面的[应用资源布局](#application-layout)章节）传递给CEF。在传递CefSettings结构给CefInitialize()之前，我们可以设置CefSettings.command_line_args_disabled为true来禁用对命令行参数的处理。如果想指定命令行参数传入主应用程序，实现CefApp::OnBeforeCommandLineProcessing()方法。更多关于如何查找已支持的命令行选项的信息，请查看client_switches.cpp文件的注释。
 
-#### 应用程序文件结构(Application Layout)
+#### <a name="application-layout"></a>应用程序布局(Application Layout)
 
-应用资源布局依赖于平台，有很大的不同。比如，在Mac OS X上，你的资源布局必须遵循特定的app bundles结构；Window与Linux则更灵活，允许你定制CEF库文件与资源文件所在的位置。为了获取到特定地、可以正常工作的示例，你可以从工程的下载页面，下载到一个client压缩包，每个平台对应的README.txt文件详细说明了哪些文件是可选的，哪些文件是必须的。
+应用资源布局依赖于平台，有很大的不同。比如，在Mac OS X上，你的资源布局必须遵循特定的app bundles结构；Window与Linux则更灵活，允许你定制CEF库文件与资源文件所在的位置。为了获取到特定可以正常工作的示例，你可以从工程的下载页面下载到一个client压缩包。每个平台对应的README.txt文件详细说明了哪些文件是可选的，哪些文件是必须的。
 
-##### Windows操作系统(Windows)
+##### <a name="application-window"></a>Windows操作系统(Windows)
 
-在Windows平台上，默认的资源布局将libcef库文件、相关资源与可执行文件放置在同级目录，文件夹结构如下类似：
+在Windows平台上，默认的资源布局将libcef库文件、相关资源与可执行文件放置在同级目录，文件夹结构大致如下：
 
 ```
 Application/
@@ -218,7 +260,7 @@ Application/
 使用结构体CefSettings可以定制CEF库文件、资源文件的位置（查看README.txt文件或者本文中CefSettings部分获取更详细的信息）。虽然在Windows平台上，cefclient项目将资源文件以二进制形式编译进cefclient.rc文件，但是改为从文件系统加载资源也很容易。
 
 
-##### Linux操作系统(Linux)
+##### <a name="application-linux"></a>Linux操作系统(Linux)
 
 在Linux平台上，默认的资源布局将libcef库文件、相关资源与可执行文件放置在同级目录。注意：在你编译的版本与发行版本应用程序中，libcef.so的位置是有差异的，此文件的位置取决于编译可执行程序时，编译器rpath的值。比如，编译选项为“-Wl,-rpath,.”（“.”意思是当前文件夹），这样libcef.so与可执行文件处于同级目录。libcef.so文件的路径可以通过环境变量中的“`LD_LIBRARY_PATH`”指定。
 
@@ -236,9 +278,9 @@ Application/
 
 使用结构体CefSettings可以定制CEF库文件、资源文件（查看README.txt文件或者本文中CefSettings部分获取更详细的信息）。
 
-##### Mac X平台(Mac OS X)
+##### <a name="application-mac"></a>Mac X平台(Mac OS X)
 
-在Mac X平台上，app bundles委托给了Chromium实现，因此不是很灵活。文件夹结构如下类似：
+在Mac X平台上，app bundles委托给了Chromium实现，因此不是很灵活。文件夹结构大致如下：
 
 ```
 cefclient.app/
@@ -281,22 +323,22 @@ cefclient.app/
 
 列表中的“Chromium Embedded Framework.framework”，这个未受版本管控的框架包含了所有的CEF库文件、资源文件。使用install_name_tool与@executable_path，将cefclient，cefclient helper等可执行文件，连接到了libcef.dylib上。
 
-应用程序cefclient helper用来执行不同特点、独立的进程（renderer，plugin等），这些进程需要独立的资源布局与Info.plist等文件，它们没有显示停靠图标。用来启动插件进程的EH Helper清除了MH_NO_HEAP_EXECUTION标志位，这样就允许一个可执行堆。只能用来启动NaCL插件进程的NP Helper，清除了MH_PIE标志位，这样就禁用了ASLR。这些都是tools文件夹下面，用来构建进程脚本的一部分。为了理清脚本的依赖关系，更好的做法是检查发行版本中的Xcode工程或者原始文件cefclient.gyp。
+应用程序cefclient helper用来执行不同特点、独立的进程（Renderer，plugin等），这些进程需要独立的资源布局与Info.plist等文件，它们没有显示停靠图标。用来启动插件进程的EH Helper清除了MH_NO_HEAP_EXECUTION标志位，这样就允许一个可执行堆。只能用来启动NaCL插件进程的NP Helper，清除了MH_PIE标志位，这样就禁用了ASLR。这些都是tools文件夹下面，用来构建进程脚本的一部分。为了理清脚本的依赖关系，更好的做法是检查发行版本中的Xcode工程或者原始文件cefclient.gyp。
 
-#### 应用程序结构(Application Structure)
+#### <a name="application-structure"></a>应用程序结构(Application Structure)
 
 每个CEF3应用程序都是相同的结构
 
 - 提供入口函数，用于初始化CEF、运行子进程执行逻辑或者CEF消息循环。
 - 提供CefApp实现，用于处理进程相关的回调。
-- 提供CefClient实现，用于处理browser实例相关的回调
-- 执行CefBrowserHost::CreateBrowser()创建一个browser实例，使用CefLifeSpanHandler管理browser对象生命周期。
+- 提供CefClient实现，用于处理Browser实例相关的回调。
+- 执行CefBrowserHost::CreateBrowser()创建一个Browser实例，使用CefLifeSpanHandler管理Browser对象生命周期。
 
 ##### 入口函数(Entry-Point Function)
 
 像本文中进程章节描述的那样，一个CEF3应用程序会运行多个进程，这些进程能够使用同一个执行器或者为子进程定制的、单独的执行器。进程的执行从入口函数开始，示例cefclient_win.cc、cefclient_gtk.cc、cefclient_mac.mm分别对应Windows、Linux和Mac OS-X平台下的实现。
 
-当执行子进程是，CEF将使用命令行参数指定配置信息，这些命令行参数必须通过CefMainArgs结构体传入到CefExecuteProcess函数。CefMainArgs的定义与平台相关，在Linux、Mac OS X平台下，它接收main函数传入的argc和argv参数值。
+当执行子进程时，CEF将使用命令行参数指定配置信息，这些命令行参数必须通过CefMainArgs结构体传入到CefExecuteProcess函数。CefMainArgs的定义与平台相关，在Linux、Mac OS X平台下，它接收main函数传入的argc和argv参数值。
 
 ```
 CefMainArgs main_args(argc, argv);
@@ -308,7 +350,7 @@ CefMainArgs main_args(argc, argv);
 CefMainArgs main_args(hInstance);
 ```
 
-##### 单一执行体(Single Executable)
+#### <a name="single-executable"></a>单一执行体(Single Executable)
 
 当以单一执行体运行时，根据不同的进程类型，入口函数有差异。Windows、Linux平台支持单一执行体架构，Mac OS X平台则不行。
 
@@ -346,7 +388,7 @@ int main(int argc, char* argv[]) {
 }
 ```
 
-##### 独立的子进程执行体(Separate Sub-Process Executable)
+#### <a name="seperate-subprocess-executable"></a>分离子进程执行体(Separate Sub-Process Executable)
 
 当使用独立的子进程执行体时，你需要2个分开的可执行工程和2个分开的入口函数。
 
@@ -412,29 +454,29 @@ int main(int argc, char* argv[]) {
 }
 ```
 
-##### 集成消息循环(Message Loop Integration)
+#### <a name="message-loop-integration"></a>集成消息循环(Message Loop Integration)
 
 CEF可以不用它自己提供的消息循环，而与已经存在的程序中消息环境集成在一起，有两种方式可以做到：
 
-1. 周期性执行CefDoMessageLoopWork()函数，替代调用CefRunMessageLoop()。CefDoMessageLoopWork()的每一次调用，都将执行一次CEF消息循环的单次迭代。需要注意的是，此方法调用次数太少时，CEF消息循环会饿死，将极大的影响browser的性能，调用次数太频繁又将影响CPU使用率。
+1. 周期性执行CefDoMessageLoopWork()函数，替代调用CefRunMessageLoop()。CefDoMessageLoopWork()的每一次调用，都将执行一次CEF消息循环的单次迭代。需要注意的是，此方法调用次数太少时，CEF消息循环会饿死，将极大的影响Browser的性能，调用次数太频繁又将影响CPU使用率。
 
-2. 设置CefSettings.multi_threaded_message_loop=true（Windows平台下有效），这个设置项将导致CEF运行browser UI运行在单独的线程上，而不是在主线程上，这种场景下CefDoMessageLoopWork()或者CefRunMessageLoop()都不需要调用，CefInitialze()、CefShutdown()仍然在主线程中调用。你需要提供主程序线程通信的机制（查看cefclient_win.cpp中提供的消息窗口实例）。在Windows平台下，你可以通过命令行参数“--multi-threaded-message-loop”测试上述消息模型。
+2. 设置CefSettings.multi_threaded_message_loop=true（Windows平台下有效），这个设置项将导致CEF在单独的线程上运行Browser的界面，而不是在主线程上，这种场景下CefDoMessageLoopWork()或者CefRunMessageLoop()都不需要调用，CefInitialze()、CefShutdown()仍然在主线程中调用。你需要提供主程序线程通信的机制（查看cefclient_win.cpp中提供的消息窗口实例）。在Windows平台下，你可以通过命令行参数`--multi-threaded-message-loop`测试上述消息模型。
 
-##### CefSettings
+#### <a name="cefsettings"></a>CefSettings
 
 CefSettings结构体允许定义全局的CEF配置，经常用到的配置项如下：
 
-- **single_process** 设置为true时，browser和renderer使用一个进程。此项也可以通过命令行参数“single-process”配置。查看本文中“进程”章节获取更多的信息。
-- **browser_subprocess_path** 设置用于启动子进程单独执行器的路径。参考本文中“单独子进程执行器”章节获取更多的信息。
+- **single_process** 设置为true时，Browser和Renderer使用一个进程。此项也可以通过命令行参数“single-process”配置。查看本文中“进程”章节获取更多的信息。
+- **browser_subprocess_path** 设置用于启动子进程单独执行器的路径。参考本文中[单进程执行体](#single-executable)章节获取更多的信息。
 - **cache_path** 设置磁盘上用于存放缓存数据的位置。如果此项为空，某些功能将使用内存缓存，多数功能将使用临时的磁盘缓存。形如本地存储的HTML5数据库只能在设置了缓存路径才能跨session存储。
 - **locale** 此设置项将传递给Blink。如果此项为空，将使用默认值“en-US”。在Linux平台下此项被忽略，使用环境变量中的值，解析的依次顺序为：LANGUAE，LC_ALL，LC_MESSAGES和LANG。此项也可以通过命令行参数“lang”配置。
 - **log_file** 此项设置的文件夹和文件名将用于输出debug日志。如果此项为空，默认的日志文件名为debug.log，位于应用程序所在的目录。此项也可以通过命令参数“log-file”配置。
-- **log_severity** 此项设置日志级别。只有此等级、或者比此等级高的日志的才会被记录。此项可以通过命令行参数“log-severity”配置，可以设置的值为“verbose”，“info”，“warning”，“error”，“error-report”，“disable”
+- **log_severity** 此项设置日志级别。只有此等级、或者比此等级高的日志的才会被记录。此项可以通过命令行参数“log-severity”配置，可以设置的值为“verbose”，“info”，“warning”，“error”，“error-report”，“disable”。
 - **resources_dir_path** 此项设置资源文件夹的位置。如果此项为空，Windows平台下cef.pak、Linux平台下devtools_resourcs.pak、Mac OS X下的app bundle Resources目录必须位于组件目录。此项也可以通过命令行参数“resource-dir-path”配置。
 - **locales_dir_path** 此项设置locale文件夹位置。如果此项为空，locale文件夹必须位于组件目录，在Mac OS X平台下此项被忽略，pak文件从app bundle Resources目录。此项也可以通过命令行参数“locales-dir-path”配置。
 - **remote_debugging_port** 此项可以设置1024-65535之间的值，用于在指定端口开启远程调试。例如，如果设置的值为8080，远程调试的URL为http://localhost:8080。CEF或者Chrome浏览器能够调试CEF。此项也可以通过命令行参数“remote-debugging-port”配置。
 
-##### CefBrowser和CefFrame
+#### <a name="cefbrowser-and-cefframe"></a>CefBrowser和CefFrame
 
 CefBrowser和CefFrame对象被用来发送命令给浏览器以及在回调函数里获取状态信息。每个CefBrowser对象包含一个主CefFrame对象，主CefFrame对象代表页面的顶层frame；同时每个CefBrowser对象可以包含零个或多个的CefFrame对象，分别代表不同的子Frame。例如，一个浏览器加载了两个iframe，则该CefBrowser对象拥有三个CefFrame对象（顶层frame和两个iframe）。
 
@@ -476,14 +518,15 @@ CefWindowHandle window_handle = browser->GetHost()->GetWindowHandle();
 
 其他方法包括历史导航，加载字符串和请求，发送编辑命令，提取text/html内容等。请参考支持函数相关的文档或者CefBrowser的头文件注释。
 
-##### CefApp
+#### <a name="cefapp"></a>CefApp
 
 CefApp接口提供了不同进程的可定制回调函数。毕竟重要的回调函数如下：
 
-- **OnBeforeCommandLineProcessing**  提供了以编程方式设置命令行参数的机会，更多细节，请参考`Command Line Arguments`一节。
-- **OnRegisterCustomSchemes**  提供了注册自定义schemes的机会，更多细节，请参考`Request Handling`一节。
+- **OnBeforeCommandLineProcessing**  提供了以编程方式设置命令行参数的机会，更多细节，请参考[Command Line Arguments](#command-line-arguments)一节。
+- **OnRegisterCustomSchemes**  提供了注册自定义schemes的机会，更多细节，请参考[Request Handling](#request-handling)一节。
 - **GetBrowserProcessHandler** 返回定制Browser进程的Handler，该Handler包括了诸如OnContextInitialized的回调。
-- **GetRenderProcessHandler** 返回定制Render进程的Handler，该Handler包含了JavaScript相关的一些回调以及消息处理的回调。更多细节，请参考`JavascriptIntegration`和`Inter-Process Communication`两节。
+- **GetRenderProcessHandler** 返回定制Render进程的Handler，该Handler包含了JavaScript相关的一些回调以及消息处理的回调。
+更多细节，请参考[JavascriptIntegration](#javascript-integration)和[Inter-Process Communication](#inter-process-communication)两节。
 
 CefApp子类的例子：
 
@@ -562,15 +605,12 @@ class MyApp : public CefApp,
 };
 ```
 
-##### CefClient
+#### <a name="cefclient"></a>CefClient
 
 CefClient提供访问browser-instance-specific的回调接口。单实例CefClient可以共数任意数量的浏览器进程。以下为几个重要的回调：
 
-- Handlers for things like browser life span, context menus, dialogs, display notifications, drag events, focus events, keyboard events and more. The majority of handlers are optional. See the documentation in cef_client.h for the side effects, if any, of not implementing a specific handler.
-- **OnProcessMessageReceived** which is called when an IPC message is received from the render process. See the “Inter-Process Communication” section for more information. 
-
-- 比如处理browser的生命周期，右键菜单，对话框，通知显示， 拖曳事件，焦点事件，键盘事件等等。如果没有对某个特定的处理接口进行实现会造成什么影响，请查看cef_client.h文件中相关说明。
-- **OnProcessMessageReceived**在Render进程收到进程间消息时被调用。更多细节，请参考`Inter-Process Communication`一节。
+- 比如处理Browser的生命周期，右键菜单，对话框，通知显示， 拖曳事件，焦点事件，键盘事件等等。如果没有对某个特定的处理接口进行实现会造成什么影响，请查看cef_client.h文件中相关说明。
+- **OnProcessMessageReceived**在Render进程收到进程间消息时被调用。更多细节，请参考[Inter-Process Communication](inter-process-communication)一节。
 
 CefClient子类的例子：
 
@@ -768,7 +808,7 @@ class MyHandler : public CefClient,
 };
 ```
 
-##### Browser生命周期(Browser Life Span)
+#### <a name="browser-life-span"></a>Browser生命周期(Browser Life Span)
 
 Browser生命周期从执行 CefBrowserHost::CreateBrowser() 或者 CefBrowserHost::CreateBrowserSync() 开始。可以在CefBrowserProcessHandler::OnContextInitialized() 回调或者特殊平台例如windows的WM_CREATE 中方便的执行业务逻辑。
 
@@ -793,7 +833,7 @@ CefBrowserHost::CreateBrowser(info, client.get(), “http://www.google.com”, s
 
 The CefLifeSpanHandler class provides the callbacks necessary for managing browser life span. Below is an extract of the relevant methods and members.
 
-CefLifeSpanHandler 类提供管理 browser生合周期必需的回调。以下为相关方法和成员。
+CefLifeSpanHandler 类提供管理 Browser生命周期必需的回调。以下为相关方法和成员。
 
 class MyClient : public CefClient,
                  public CefLifeSpanHandler,
@@ -822,7 +862,7 @@ class MyClient : public CefClient,
   IMPLEMENT_LOCKING(MyHandler);
 };
 ```
-当browser对象创建后OnAfterCreated() 方法立即执行。宿主程序可以用这个方法来保持对browser对象的引用。
+当Browser对象创建后OnAfterCreated() 方法立即执行。宿主程序可以用这个方法来保持对Browser对象的引用。
 
 ```
 void MyClient::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
@@ -842,7 +882,7 @@ void MyClient::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
 }
 ```
 
-执行CefBrowserHost::CloseBrowser()销毁browser对象。
+执行CefBrowserHost::CloseBrowser()销毁Browser对象。
 
 ```
 // Notify the browser window that we would like to close it. This will result in a call to 
@@ -850,7 +890,7 @@ void MyClient::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
 browser->GetHost()->CloseBrowser(false);
 ```
 
-browser对象的关闭事件来源于他的父窗口的关闭方法（比如，在父窗口上点击X控钮。）。父窗口需要调用  CloseBrowser(false) 并且等待操作系统的第二个关闭事件来决定是否允许关闭。如果在JavaScript 'onbeforeunload'事件处理或者 DoClose()回调中取消了关闭操作，则操作系统的第二个关闭事件可能不会发送。注意一下面示例中对IsCloseing()的判断-它在第一个关闭事件中返回false，在第二个关闭事件中返回true(当 DoCloase 被调用后)。
+Browser对象的关闭事件来源于他的父窗口的关闭方法（比如，在父窗口上点击X控钮。）。父窗口需要调用  CloseBrowser(false) 并且等待操作系统的第二个关闭事件来决定是否允许关闭。如果在JavaScript 'onbeforeunload'事件处理或者 DoClose()回调中取消了关闭操作，则操作系统的第二个关闭事件可能不会发送。注意一下面示例中对IsCloseing()的判断-它在第一个关闭事件中返回false，在第二个关闭事件中返回true(当 DoCloase 被调用后)。
 
 Windows平台下，在父窗口的WndProc里处理WM_ClOSE消息：
 ```
@@ -977,7 +1017,7 @@ void MyHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
 
 完整的流程，请参考cefclient例子里对不同平台的处理。
 
-##### 离屏渲染(Off-Screen Rendering)
+#### <a name="off-screen-rendering"></a>离屏渲染(Off-Screen Rendering)
 
 在离屏渲染模式下，CEF不会创建原生浏览器窗口。CEF为宿主程序提供无效的区域和像素缓存区，而宿主程序负责通知鼠标键盘以及焦点事件给CEF。离屏渲染目前不支持混合加速，所以性能上可能无法和非离屏渲染相比。离屏浏览器将收到和窗口浏览器同样的事件通知，例如前一节介绍的生命周期事件。下面介绍如何使用离屏渲染：
 
@@ -991,7 +1031,7 @@ void MyHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
 
 使用命令行参数`--off-screen-rendering-enabled`运行cefclient，可以测试离屏渲染的效果。
 
-##### 投递任务(Posting Tasks)
+#### <a name="posting-task"></a>投递任务(Posting Tasks)
 
 任务(Task)可以通过CefPostTask在一个进程内的不同的线程之间投递。CefPostTask有一系列的重载方法，详细内容请参考cef_task.h头文件。任务将会在被投递线程的消息循环里异步执行。例如，为了在UI线程上执行MyObject::MyMethod方法，并传递两个参数，代码如下：
 
@@ -1013,16 +1053,16 @@ CefPostTask(TID_IO, NewCefRunnableFunction(MyFunction, param1, param2));
 CefRefPtr<CefTaskRunner> task_runner = CefTaskRunner::GetForThread(TID_UI);
 ```
 
-##### 进程间通信(Inter-Process Communication (IPC))
+#### <a name="inter-process-communication"></a>进程间通信(Inter-Process Communication (IPC))
 
 由于CEF3运行在多进程环境下，所以需要提供一个进程间通信机制。CefBrowser和CefFrame对象在Borwser和Render进程里都有代理对象。CefBrowser和CefFrame对象都有一个唯一ID值绑定，便于在两个进程间定位匹配的代理对象。
 
-###### 处理启动消息(Process Startup Messages)
+#### <a name="process-startup-messages"></a>处理启动消息(Process Startup Messages)
 
 为了给所有的Render进程提供一样的启动信息，请在Browser进程实现CefBrowserProcessHander::OnRenderProcessThreadCreated()方法。在这里传入的信息会在Render进程的CefRenderProcessHandler::OnRenderThreadCreated()方法里接受。
 
-###### 处理运行时消息(Process Runtime Messages)
-在进程声明周期内，任何时候你都可以通过CefProcessMessage类传递进程间消息。这些信息和特定的CefBrowser实例绑定在一起，用户可以通过CefBrowser::SendProcessMessage()方法发送。进程间消息可以包含任意的状态信息，用户可以通过CefProcessMessage::GetArgumentList()获取。
+#### <a name="process-runtime-messages"></a>处理运行时消息(Process Runtime Messages)
+在进程生命周期内，任何时候你都可以通过CefProcessMessage类传递进程间消息。这些信息和特定的CefBrowser实例绑定在一起，用户可以通过CefBrowser::SendProcessMessage()方法发送。进程间消息可以包含任意的状态信息，用户可以通过CefProcessMessage::GetArgumentList()获取。
 
 ```
 // Create the message object.
@@ -1076,11 +1116,11 @@ const int64 frame_id = MAKE_INT64(args->GetInt(0), args->GetInt(1));
 CefRefPtr<CefFrame> frame = browser->GetFrame(frame_id);
 ```
 
-##### 异步JavaScript绑定(Asynchronous JavaScript Bindings)
+#### <a name="asynchronous-javascript-bindings"></a>异步JavaScript绑定(Asynchronous JavaScript Bindings)
 
-JavaScritp被集成在Render进程，但是需要频繁和Browser进程交互。 JavaScript API应该被设计成可使用闭包异步执行。
+JavaScript被集成在Render进程，但是需要频繁和Browser进程交互。 JavaScript API应该被设计成可使用闭包异步执行。
 
-###### 通用消息转发(Generic Message Router)
+##### <a name="generic-message-router"></a>通用消息转发(Generic Message Router)
 
 从1574版本开始，CEF提供了在Render进程执行的JavaScript和在Browser进程执行的C++代码之间同步通信的转发器。应用程序通过C++回调函数（OnBeforeBrowse, OnProcessMessageRecieved, OnContextCreated等）传递数据。Render进程支持通用的JavaScript回调函数注册机制，Browser进程则支持应用程序注册特定的Handler进行处理。
 
@@ -1155,7 +1195,7 @@ class Handler {
 ```
 完整的用法请参考wrapper/cef_message_router.h
 
-###### 自定义实现(Custom Implementation)
+##### <a name="javascirpt-custome-handler"></a>自定义实现(Custom Implementation)
 
 一个CEF应用程序也可以提供自己的异步JavaScript绑定。典型的实现如下：
 
@@ -1254,17 +1294,17 @@ void MyHandler::OnContextReleased(CefRefPtr<CefBrowser> browser,
 }
 ```
 
-##### 同步请求(Synchronous Requests)
+#### <a name="synchronous-requests"></a>同步请求(Synchronous Requests)
 
-某些特殊场景下，也许会需要在Browser进程和Render进程做进程间同步通信。这应该被尽可能避免，因为这会对Render进程的性能造成负面影响。然而如果你一定要做进程间同步通信，可以考虑使用XMLHttpRequest，XMLHttpRequest在等待Browser进程的网络响应的时候会等待。Browser进程可以通过自定义scheme Handler或者网络交互处理XMLHttpRequest。更多细节，请参考`Network Layer`一节。
+某些特殊场景下，也许会需要在Browser进程和Render进程做进程间同步通信。这应该被尽可能避免，因为这会对Render进程的性能造成负面影响。然而如果你一定要做进程间同步通信，可以考虑使用XMLHttpRequest，XMLHttpRequest在等待Browser进程的网络响应的时候会等待。Browser进程可以通过自定义scheme Handler或者网络交互处理XMLHttpRequest。更多细节，请参考[Network Layer](#network-layer)一节。
 
-###### 网络层(Network Layer)
+#### <a name="network-laryer"></a>网络层(Network Layer)
 
 默认情况下，CEF3的网络请求会被宿主程序手工处理。然而CEF3也暴露了一系列网络相关的函数用以处理网络请求。
 
 网络相关的回调函数可在不同线程被调用，因此要注意相关文档的说明，并对自己的数据进行线程安全保护。
 
-###### 自定义请求(Custom Requests)
+#### <a name="custom-requests"></a>自定义请求(Custom Requests)
 通过CefFrame::LoadURL()方法可简单加载一个url:
 
 ```
@@ -1301,7 +1341,7 @@ postData->AddElement(element);
 request->SetPostData(postData);
 ```
 
-####### 浏览器无关请求(Browser-Independent Requests)
+#### <a name="browser-independent-requests"></a>浏览器无关请求(Browser-Independent Requests)
 
 应用程序可以通过CefURLRequest类发送和浏览器无关的网络请求。并实现CefURLRequestClient接口处理响应。CefURLRequest可以在Browser和Render进程被使用。
 
@@ -1380,7 +1420,7 @@ CefRefPtr<CefURLRequest> url_request = CefURLRequest::Create(request, client.get
 request->SetFlags(UR_FLAG_SKIP_CACHE | UR_FLAG_NO_DOWNLOAD_DATA);
 ```
 
-####### 请求响应(Request Handling)
+#### <a name="request-handling"></a>请求响应(Request Handling)
 
 CEF3 支持两种方式处理网络请求。一种是实现scheme Handler，这种方式允许为特定的(sheme+domain)请求注册特定的请求响应。另一种是请求拦截，允许处理任意的网络请求。
 
@@ -1393,7 +1433,7 @@ void MyApp::OnRegisterCustomSchemes(CefRefPtr<CefSchemeRegistrar> registrar) {
 }
 ```
 
-##### Scheme响应(Scheme Handler)
+#### <a name="scheme-handler"></a>Scheme响应(Scheme Handler)
 
 通过CefRegisterSchemeHandlerFactory方法注册一个scheme响应，最好在CefBrowserProcessHandler::OnContextInitialized()方法里调用。例如，你可以注册一个"client://myapp/"的请求：
 
@@ -1483,7 +1523,7 @@ CefRefPtr<CefStreamReader> stream =
 return new CefStreamResourceHandler("text/html", stream);
 ```
 
-##### 请求拦截(Request Interception)
+#### <a name="request-interception"></a>请求拦截(Request Interception)
 
 CefRequestHandler::GetResourceHandler()方法支持拦截任意请求。参考client_handler.cpp。
 
@@ -1501,11 +1541,11 @@ CefRefPtr<CefResourceHandler> MyHandler::GetResourceHandler(
 }
 ```
 
-####### 其他回调(Other Callbacks)
+#### <a name="other-callbacks"></a>其他回调(Other Callbacks)
 
-CefRequestHander接口还提供了其他回调函数以定制其他网络相关事件。包括授权、cookei处理、外部协议处理、证书错误等。
+CefRequestHander接口还提供了其他回调函数以定制其他网络相关事件。包括授权、cookie处理、外部协议处理、证书错误等。
 
-##### Proxy Resolution
+#### <a name="proxy-resolution"></a>Proxy Resolution
 
 CEF3使用类似Google Chrome一样的方式，通过命令行参数传递代理配置。
 
