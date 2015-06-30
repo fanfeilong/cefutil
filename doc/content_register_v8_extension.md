@@ -258,11 +258,17 @@ function Point(x, y) {
 ```
 
 第一步：当执行new Point(x,y)时，一个新的Point对象被创建，当v8首次创建一个Point对象时，会同时创建一个Point的隐藏类C0，结构图如下：
+
 ![](https://github.com/fanfeilong/cefutil/blob/master/doc/images/image001.png)
+
 第二步：执行函数里的第一行代码this.x=x;此时，v8会以隐藏类C0为原型创建新的隐藏类C1，C1拥有属性x，偏移位置为0。然后通过类型转移将之前的Point对象指向的C0隐藏类改为指向C1隐藏类。此时Point的隐藏类是C1。
+
 ![](https://github.com/fanfeilong/cefutil/blob/master/doc/images/image002.png) 
+
 第三步：执行函数里的第二行代码this.y=y;此时，v8会以隐藏类C1为原型创建新的隐藏类C2，C2拥有属性x，y，x的偏移位置依然是0，y的偏移位置为1。然后通过类型转移将之前的Point对象指向的C1隐藏类改为指向C2隐藏类。此时Point的隐藏类是C2。
- ![](https://github.com/fanfeilong/cefutil/blob/master/doc/images/image003.png)
+
+![](https://github.com/fanfeilong/cefutil/blob/master/doc/images/image003.png)
+
 这个过程本身并不高效，但v8引擎通过缓存这些隐藏类，在下一次创建Point对象时复用这些隐藏类从而达到高效创建隐藏类。下一次创建Point对象时的过程如下：
 第一步，初始化Point对象，指向隐藏类C0.
 第二步，添加x属性，Point指向隐藏类C1.
