@@ -258,11 +258,11 @@ function Point(x, y) {
 ```
 
 第一步：当执行new Point(x,y)时，一个新的Point对象被创建，当v8首次创建一个Point对象时，会同时创建一个Point的隐藏类C0，结构图如下：
-![](https://github.com/fanfeilong/cefutil/blob/master/doc/images/image001.jpg)
+![](https://github.com/fanfeilong/cefutil/blob/master/doc/images/image001.png)
 第二步：执行函数里的第一行代码this.x=x;此时，v8会以隐藏类C0为原型创建新的隐藏类C1，C1拥有属性x，偏移位置为0。然后通过类型转移将之前的Point对象指向的C0隐藏类改为指向C1隐藏类。此时Point的隐藏类是C1。
-![](https://github.com/fanfeilong/cefutil/blob/master/doc/images/image002.jpg) 
+![](https://github.com/fanfeilong/cefutil/blob/master/doc/images/image002.png) 
 第三步：执行函数里的第二行代码this.y=y;此时，v8会以隐藏类C1为原型创建新的隐藏类C2，C2拥有属性x，y，x的偏移位置依然是0，y的偏移位置为1。然后通过类型转移将之前的Point对象指向的C1隐藏类改为指向C2隐藏类。此时Point的隐藏类是C2。
- ![](https://github.com/fanfeilong/cefutil/blob/master/doc/images/image003.jpg)
+ ![](https://github.com/fanfeilong/cefutil/blob/master/doc/images/image003.png)
 这个过程本身并不高效，但v8引擎通过缓存这些隐藏类，在下一次创建Point对象时复用这些隐藏类从而达到高效创建隐藏类。下一次创建Point对象时的过程如下：
 第一步，初始化Point对象，指向隐藏类C0.
 第二步，添加x属性，Point指向隐藏类C1.
@@ -378,7 +378,7 @@ https://developers.google.com/v8/embed?csw=1#interceptors
 
 v8一共有两种句柄，局部句柄和持久化句柄。
 
-![](https://github.com/fanfeilong/cefutil/blob/master/doc/images/image004.jpg)
+![](https://github.com/fanfeilong/cefutil/blob/master/doc/images/image004.png)
 
 #### 局部句柄(v8::Local<T>)
 
@@ -398,7 +398,7 @@ v8一共有两种句柄，局部句柄和持久化句柄。
 
 以3.2的例子，下图给出了对象在内存中的示例图：
 
-![](https://github.com/fanfeilong/cefutil/blob/master/doc/images/image005.jpg) 
+![](https://github.com/fanfeilong/cefutil/blob/master/doc/images/image005.png) 
 
 当函数退出时，HandleScope::~HandleScope被调用，则句柄容器管理的所有局部句柄都被删除，从而垃圾回收器将从堆上移除source_obj和script_obj，因为它们既没有句柄指向他们，也无法从JavaScript里访问。而persistent是一个持久句柄，必须手工调用Dispose方法释放之。函数里面声明的局部句柄不能直接返回给函数调用者，如果需要返回，需要调用Handle::Scope::Close(handle)。下面是一个例子：
 
@@ -432,7 +432,7 @@ v8的上下文(Context)是独立的JavaScript执行环境，通过使用上下�
 
 v8的上下文通过Enter和Exist进入和退出，并且v8的上下文可以嵌套使用，比如在进入上下文A后接着进入上下文B，然后退出上下文B回到上下文A，最后退出上下文A。面的图示例来这个过程。
 
-![](https://github.com/fanfeilong/cefutil/blob/master/doc/images/image006.jpg)
+![](https://github.com/fanfeilong/cefutil/blob/master/doc/images/image006.png)
 	 
 
 
@@ -644,16 +644,16 @@ IdleNotification()当嵌入器空闲的时候进行资源清理；LowMemoryNotif
 
 ### v8的类型体系
 
-![](https://github.com/fanfeilong/cefutil/blob/master/doc/images/image007.jpg)
+![](https://github.com/fanfeilong/cefutil/blob/master/doc/images/image007.png)
 
 v8的类型体系继承关系图如上，基类是v8::Data，v8::Data下有v8::Signature,v8::Template,v8::TypeSwitch,v8::Value几个子类。其中v8::Template下有两个子类， 分别是前几节介绍过的v8::FunctionTemplate和v8::ObjectTemplate。而v8::Value下面则有v8:External，v8::Object，v8::Primitive三个子类。v8::External我们在前面介绍v8::ObjectTemplate的内部成员持有外部对象的引用时有介绍过；而v8::Primitive是基本值类型，包括Boolean、Number、String；剩下的Arrray、BooleanObject、Date、Function、NumberObject、RegExp、StringObject都属于对象类型。
 
 上图有点小，我们分开列出：
 
-![](https://github.com/fanfeilong/cefutil/blob/master/doc/images/image008.jpg)
-![](https://github.com/fanfeilong/cefutil/blob/master/doc/images/image009.jpg)
-![](https://github.com/fanfeilong/cefutil/blob/master/doc/images/image010.jpg)
-![](https://github.com/fanfeilong/cefutil/blob/master/doc/images/image011.jpg)
+![](https://github.com/fanfeilong/cefutil/blob/master/doc/images/image008.png)
+![](https://github.com/fanfeilong/cefutil/blob/master/doc/images/image009.png)
+![](https://github.com/fanfeilong/cefutil/blob/master/doc/images/image010.png)
+![](https://github.com/fanfeilong/cefutil/blob/master/doc/images/image011.png)
  
 
 ## v8 API手册
