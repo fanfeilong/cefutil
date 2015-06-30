@@ -16,10 +16,12 @@ Windows7 64位系统编译Chromium指南
 4. 安装VisualStudio2010 SP1。
 5. 安装windows 8.0 sdk（不要安装8.1），并修改Windows Kits\8.0\Include\WinRT\asyncinfo.h
    注释第66行的class关键字：
+
    ```
    65 namespace ABI (namespace Windows { namespace Foundation { 
    66 enum /*class*/ AsyncStatus {                
-	```
+   ```
+   
 6. 安装June 2010 DirectX SDK。如果有遇到”Error Code:S1023”，则通过控制面板将
    Microsoft Visual C++ 2010 x86 Redistributable
    Microsoft Visual C++ 2010 x64 Redistributable
