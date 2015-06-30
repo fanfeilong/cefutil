@@ -252,6 +252,7 @@ function Point(x, y) {
   this.y = y;
 }
 ```
+
 第一步：当执行new Point(x,y)时，一个新的Point对象被创建，当v8首次创建一个Point对象时，会同时创建一个Point的隐藏类C0，结构图如下：
 ![](https://github.com/fanfeilong/cefutil/blob/master/doc/images/image001.jpg)
 第二步：执行函数里的第一行代码this.x=x;此时，v8会以隐藏类C0为原型创建新的隐藏类C1，C1拥有属性x，偏移位置为0。然后通过类型转移将之前的Point对象指向的C0隐藏类改为指向C1隐藏类。此时Point的隐藏类是C1。
@@ -269,23 +270,26 @@ function Point(x, y) {
 在隐藏类的基础上，v8引擎进一步通过JIT技术提高属性的访问效率。具体来说，访问代码在首次执行时直接被编译成了目标机器代码，属性访问直接内联了缓存的目标机器代码。如果隐藏类发生改变，缓存的目标机器代码会被更新。
 具体来说，以point.x为例，首次编译时生成的代码如下：
 
-```# ebx = the point object
+```
+# ebx = the point object
 cmp [ebx,<hidden class offset>],<cached hidden class>
 jne <inline cache miss>
 mov eax,[ebx, <cached x offset>]
 ```
+
 如果Point的隐藏类跟缓存的隐藏类不匹配，则指令跳转到v8运行时进行即时编译，否则直接返回指定偏移位置的x的值。
 
 
 ### 高效垃圾回收。
-	v8引擎设计了高效的垃圾回收机制，以保证快速的对象内存分配、短暂的垃圾回收暂停、无内存碎片。具体来说：
-	在垃圾回收时，停止程序运行。
-	在大部分垃圾回收周期内只处理一小部分堆内存，这样最大限度减少程序暂停时间。
-	保持对所有对象和指针在内存的位置信息，从而杜绝内存泄漏。
 
+v8引擎设计了高效的垃圾回收机制，以保证快速的对象内存分配、短暂的垃圾回收暂停、无内存碎片。具体来说：
+在垃圾回收时，停止程序运行。
+在大部分垃圾回收周期内只处理一小部分堆内存，这样最大限度减少程序暂停时间。
+保持对所有对象和指针在内存的位置信息，从而杜绝内存泄漏。
 
 ## v8的hello world。
-	这个例子首先给出不添加任何新概念的示例代码，然后给出添加了v8的对象生命周期管理的示例代码以引出v8的对象生命周期相关的几个重要概念。
+
+这个例子首先给出不添加任何新概念的示例代码，然后给出添加了v8的对象生命周期管理的示例代码以引出v8的对象生命周期相关的几个重要概念。
 https://developers.google.com/v8/get_started
 首先是一个裸代码：
 
@@ -306,9 +310,11 @@ int main(int argc, char* argv[]) {
   return 0;
 }
 ```
+
 与所有的脚本引擎类似，上述代码只是简单的将JavaScript脚本送进v8引擎编译，运行并返回结果。下面我们看添加了v8的对象生命周期管理的代码：
 
-```#include <v8.h>
+```
+#include <v8.h>
 
 using namespace v8;
 
@@ -347,26 +353,34 @@ int main(int argc, char* argv[]) {
   return 0;
 }
 ```
-	上述代码引进了几个重要的概念，他们都是与v8的对象生命周期管理相关的，下面先简要给出说明，详细介绍在下一小节给出。
-	v8::Handle是v8的智能指针，负责垃圾回收机制下的对象生命周期管理。
-	v8::HandleScope是v8的智能指针容器，当对象的Handle生命周期结束时，通过HandleScope批量删除对象来替代逐个删除Handle。
-	V8::Context是v8用来隔离JavaScript代码运行的机制，v8的JavaScript代码运行必须指定Context。
+
+上述代码引进了几个重要的概念，他们都是与v8的对象生命周期管理相关的，下面先简要给出说明，详细介绍在下一小节给出。
+v8::Handle是v8的智能指针，负责垃圾回收机制下的对象生命周期管理。
+v8::HandleScope是v8的智能指针容器，当对象的Handle生命周期结束时，通过HandleScope批量删除对象来替代逐个删除Handle。
+V8::Context是v8用来隔离JavaScript代码运行的机制，v8的JavaScript代码运行必须指定Context。
 
 
 ## v8的重要概念。
-	v8 API不仅提供了编译和运行JavaScript代码的功能，还提供了其他与C++交互的功能，包括函数和数据结构的注册，错误处理，安全检查等。C++应用程序可以将v8当作一个普通类库使用，只需引用v8.h即可。下面这个链接是C++里使用v8类库的指南，同样的，我们做简要翻译，以理解v8的几个重要概念。
+
+v8 API不仅提供了编译和运行JavaScript代码的功能，还提供了其他与C++交互的功能，包括函数和数据结构的注册，错误处理，安全检查等。C++应用程序可以将v8当作一个普通类库使用，只需引用v8.h即可。下面这个链接是C++里使用v8类库的指南，同样的，我们做简要翻译，以理解v8的几个重要概念。
+
 https://developers.google.com/v8/embed?csw=1#interceptors
 
 
 ### 句柄（Handles）和垃圾回收（Garbage Collection）
-	一个句柄对象(v8::Handle<T>)引用了JavaScript对象在堆上的位置。v8垃圾回收会将没有被引用的对象的内存回收掉。在垃圾回收的过程中，堆上的JavaScript对象会被移动，垃圾回收器会自动更新所有引用了被移动对象的句柄。
-	如果一个对象不能在JavaScript里访问，也没有句柄指向它，则被认为是垃圾对象。垃圾回收器在每次垃圾回收时移除垃圾对象。v8的垃圾回收机制是v8引擎高效的关键因素。
-	v8一共有两种句柄，局部句柄和持久化句柄。
+
+一个句柄对象(v8::Handle<T>)引用了JavaScript对象在堆上的位置。v8垃圾回收会将没有被引用的对象的内存回收掉。在垃圾回收的过程中，堆上的JavaScript对象会被移动，垃圾回收器会自动更新所有引用了被移动对象的句柄。
+如果一个对象不能在JavaScript里访问，也没有句柄指向它，则被认为是垃圾对象。垃圾回收器在每次垃圾回收时移除垃圾对象。v8的垃圾回收机制是v8引擎高效的关键因素。
+
+v8一共有两种句柄，局部句柄和持久化句柄。
+
 ![](https://github.com/fanfeilong/cefutil/blob/master/doc/images/image004.jpg)
 
 #### 局部句柄(v8::Local<T>)
-	局部句柄(v8::Local<T>)在栈上，在析构函数调用时失效。局部句柄的生命周期由v8::HandleScope确定。一般在函数的开头创建v8::HandleScope，则当v8::HandleScope被删除时，垃圾回收器就可以释放在v8::HandleScope管理下的局部句柄对象，从而这些对象不可以在JavaScript代码里访问或者被其他句柄持有。
-	需要注意的是，句柄所在的栈并不是C++的函数调用栈，而是由v8::HandleScope的生命周期所确定的一个逻辑上的栈。另外，v8::HandleScope只可以在C++栈上分配，不可以使用new在堆上分配。
+
+局部句柄(v8::Local<T>)在栈上，在析构函数调用时失效。局部句柄的生命周期由v8::HandleScope确定。一般在函数的开头创建v8::HandleScope，则当v8::HandleScope被删除时，垃圾回收器就可以释放在v8::HandleScope管理下的局部句柄对象，从而这些对象不可以在JavaScript代码里访问或者被其他句柄持有。
+
+需要注意的是，句柄所在的栈并不是C++的函数调用栈，而是由v8::HandleScope的生命周期所确定的一个逻辑上的栈。另外，v8::HandleScope只可以在C++栈上分配，不可以使用new在堆上分配。
 
 
 #### 持久句柄(v8::Persistent<T>)
@@ -375,10 +389,14 @@ https://developers.google.com/v8/embed?csw=1#interceptors
 
 
 #### 句柄范围(v8::HandleScope)
-	每次创建一个对象就创建一个句柄会产生大量的句柄对象，因此v8引入了句柄范围这个概念(v8::HandleScope)，句柄范围可以看做是局部句柄(v8::Local<T>)的容器，在句柄范围的析构函数被调用后，所有在容器内的句柄都被从栈上移除，从而可以被垃圾回收。
-	以3.2的例子，下图给出了对象在内存中的示例图：
+
+每次创建一个对象就创建一个句柄会产生大量的句柄对象，因此v8引入了句柄范围这个概念(v8::HandleScope)，句柄范围可以看做是局部句柄(v8::Local<T>)的容器，在句柄范围的析构函数被调用后，所有在容器内的句柄都被从栈上移除，从而可以被垃圾回收。
+
+以3.2的例子，下图给出了对象在内存中的示例图：
+
 ![](https://github.com/fanfeilong/cefutil/blob/master/doc/images/image005.jpg) 
-	当函数退出时，HandleScope::~HandleScope被调用，则句柄容器管理的所有局部句柄都被删除，从而垃圾回收器将从堆上移除source_obj和script_obj，因为它们既没有句柄指向他们，也无法从JavaScript里访问。而persistent是一个持久句柄，必须手工调用Dispose方法释放之。函数里面声明的局部句柄不能直接返回给函数调用者，如果需要返回，需要调用Handle::Scope::Close(handle)。下面是一个例子：
+
+当函数退出时，HandleScope::~HandleScope被调用，则句柄容器管理的所有局部句柄都被删除，从而垃圾回收器将从堆上移除source_obj和script_obj，因为它们既没有句柄指向他们，也无法从JavaScript里访问。而persistent是一个持久句柄，必须手工调用Dispose方法释放之。函数里面声明的局部句柄不能直接返回给函数调用者，如果需要返回，需要调用Handle::Scope::Close(handle)。下面是一个例子：
 
 ```
 // This function returns a new array with three elements, x, y, and z.
@@ -402,28 +420,38 @@ Handle<Array> NewPointArray(int x, int y, int z) {
 
 
 ### 上下文(Context)
-	v8的上下文(Context)是独立的JavaScript执行环境，通过使用上下文允许JavaScript应用程序跑在不同的v8实例上。执行一段JavaScript代码必须显示指定上下文。
+
+v8的上下文(Context)是独立的JavaScript执行环境，通过使用上下文允许JavaScript应用程序跑在不同的v8实例上。执行一段JavaScript代码必须显示指定上下文。
 为什么必须指定上下文呢？这是因为JavaScript提供了一系列内置辅助函数和全局对象，它们可以被JavaScript代码调用和修改。如果两段不相关的JavaScript代码同时修改全局对象，可能会导致用户不希望看到的结果。
-	从节省CPU和内存的角度考虑，重复的创建内置函数和全局对象的开销并不低。然而，得益于v8可扩展的缓存机制，只会在首次创建上下文时产生大的开销，后续的子上下文创建的开销低的多。这是由于首次创建上下文时，v8需要创建内置对象，同时转换内置JavaScript代码，而后续的上下文创建则只需创建内置对象即可。进一步，得益于v8的快照特性，首次创建上下文也很高效。这是由于快照包含了已序列化的堆数据，里面有已经编译好的内置JavaScript代码。
+
+从节省CPU和内存的角度考虑，重复的创建内置函数和全局对象的开销并不低。然而，得益于v8可扩展的缓存机制，只会在首次创建上下文时产生大的开销，后续的子上下文创建的开销低的多。这是由于首次创建上下文时，v8需要创建内置对象，同时转换内置JavaScript代码，而后续的上下文创建则只需创建内置对象即可。进一步，得益于v8的快照特性，首次创建上下文也很高效。这是由于快照包含了已序列化的堆数据，里面有已经编译好的内置JavaScript代码。
+
 v8的上下文通过Enter和Exist进入和退出，并且v8的上下文可以嵌套使用，比如在进入上下文A后接着进入上下文B，然后退出上下文B回到上下文A，最后退出上下文A。面的图示例来这个过程。
+
 ![](https://github.com/fanfeilong/cefutil/blob/master/doc/images/image006.jpg)
 	 
 
 
 ### 模板(Templates)
-	V8里通过模板将C++函数和数据结构封装成JavaScript对象，从而使得JavaScript代码可以使用C++函数和数据结构。例如，Google Chrome使用模板将DOM节点封装成JavaScript对象，以及通过模板添加全局函数。你可以创建一系列模板，然后在每个新的上下文里同时使用它们。需要注意到是，你可以创建不限个数的模板，但是在一个给定的上下文里每个模板只会有一个实例。
-	在JavaScript语言里，函数和对象是强对偶的。在C++或者Java语言里，创建一个新类型的对象，你通常需要定义一个新的类型。但是在JavaScript里，你只需创建一个函数就可以，将这个函数作为类型的构造函数，从而创建类型的实例。JavaScript对象的布局和功能和创建对象的函数非常接近。这个特点直接反映在v8的模板设计里。
-	v8有两种类型的模板：函数模板(Function templates)和对象模板(Object templates)。
+
+V8里通过模板将C++函数和数据结构封装成JavaScript对象，从而使得JavaScript代码可以使用C++函数和数据结构。例如，Google Chrome使用模板将DOM节点封装成JavaScript对象，以及通过模板添加全局函数。你可以创建一系列模板，然后在每个新的上下文里同时使用它们。需要注意到是，你可以创建不限个数的模板，但是在一个给定的上下文里每个模板只会有一个实例。
+
+在JavaScript语言里，函数和对象是强对偶的。在C++或者Java语言里，创建一个新类型的对象，你通常需要定义一个新的类型。但是在JavaScript里，你只需创建一个函数就可以，将这个函数作为类型的构造函数，从而创建类型的实例。JavaScript对象的布局和功能和创建对象的函数非常接近。这个特点直接反映在v8的模板设计里。
+
+v8有两种类型的模板：函数模板(Function templates)和对象模板(Object templates)。
 
 
 #### 函数模板（Function templates）
-	在v8上下文里，你可以调用函数模板的GetFunction创建一个JavaScript模板实例。你也可以将C++回调函数绑定到函数模板，从而使得JavaScrpit拥有调用C++本地函数的能力。
+
+在v8上下文里，你可以调用函数模板的GetFunction创建一个JavaScript模板实例。你也可以将C++回调函数绑定到函数模板，从而使得JavaScrpit拥有调用C++本地函数的能力。
 	
 
 #### 对象模板（Object templates）
-	每个函数模板有一个伴随的对象模板，在JavaScript调用函数创建新对象时，伴随的对象模板可以被用来配置相关的对象。你可以将两种类型的C++回调函数绑定到对象模板。
-存取器回调函数（Accessor），用于访问指定的对象属性。
-拦截器回调函数（Interceptor），用户访问任意的对象属性。
+
+每个函数模板有一个伴随的对象模板，在JavaScript调用函数创建新对象时，伴随的对象模板可以被用来配置相关的对象。你可以将两种类型的C++回调函数绑定到对象模板。
+- 存取器回调函数（Accessor），用于访问指定的对象属性。
+- 拦截器回调函数（Interceptor），用户访问任意的对象属性。
+
 下面的代码示例了如何创建一个全局对象模板，并设置内置全局函数
 
 ```
@@ -439,12 +467,15 @@ Persistent<Context> context = Context::New(NULL, global);
 
 
 ### 存取器（Accessor）
-	一个存取器是一个C++回调函数，当JavaScript代码调用某个对象的属性时，该回调函数负责计算并返回对应的属性值。模板对象通过该SetAccessor设置存取器。
+
+一个存取器是一个C++回调函数，当JavaScript代码调用某个对象的属性时，该回调函数负责计算并返回对应的属性值。模板对象通过该SetAccessor设置存取器。
 
 #### 访问全局静态变量
-	假设x和y是两个C++整型变量，我们希望在某个上下文里将x和y设置为JavaScript的全局变量。为了达到这个目的，我们需要为对象模板设置C++存取器回掉函数，以便JavaScript读写x和y时调用。存取器回调函数将C++整型变量通过Integer::New转为JavaScript的整型变量，通过Int32Value将JavaScript整型变量转为C++整型变量。示例代码如下：
 
-```  Handle<Value> XGetter(Local<String> property, const AccessorInfo& info) {
+假设x和y是两个C++整型变量，我们希望在某个上下文里将x和y设置为JavaScript的全局变量。为了达到这个目的，我们需要为对象模板设置C++存取器回掉函数，以便JavaScript读写x和y时调用。存取器回调函数将C++整型变量通过Integer::New转为JavaScript的整型变量，通过Int32Value将JavaScript整型变量转为C++整型变量。示例代码如下：
+
+```  
+  Handle<Value> XGetter(Local<String> property, const AccessorInfo& info) {
     return Integer::New(x);
   }
     
@@ -461,7 +492,8 @@ Persistent<Context> context = Context::New(NULL, global);
 
 
 #### 访问动态变量
-	上一小节的例子是静态全局变量，更多的时候，我们希望在JavaScript里使用动态变量，比如浏览器的DOM树。假设x和y是C++类Point的两个成功变量。
+
+上一小节的例子是静态全局变量，更多的时候，我们希望在JavaScript里使用动态变量，比如浏览器的DOM树。假设x和y是C++类Point的两个成功变量。
 
 ```
 class Point {
@@ -470,8 +502,9 @@ class Point {
     int x_, y_;
   }
 ```
-	为了在JavaScript里使用任意数量的C++ Point实例，我们需要为每个C++ Point实例创建JavaScript封装。在v8里，我们通过外部值(External values)和对象内部成员(internal object fileds)来做到这点。
-	首先，我们需要创建一个point对象模板：
+
+为了在JavaScript里使用任意数量的C++ Point实例，我们需要为每个C++ Point实例创建JavaScript封装。在v8里，我们通过外部值(External values)和对象内部成员(internal object fileds)来做到这点。
+首先，我们需要创建一个point对象模板：
 
 ```
 Handle<ObjectTemplate> point_templ = ObjectTemplate::New();
@@ -485,14 +518,16 @@ point_templ->SetInternalFieldCount(1);
 	
 接着封装一个C++ Point实例，并且让point_templ的第0个成员变量指向它：
 
-```  Point* p = ...;
+```  
+  Point* p = ...;
   Local<Object> obj = point_templ->NewInstance();
   obj->SetInternalField(0, External::New(p));
 ```
 	
 	然后，我们设置x和y属性的存取器：
 
-```  point_templ.SetAccessor(String::New("x"), GetPointX, SetPointX);
+```  
+  point_templ.SetAccessor(String::New("x"), GetPointX, SetPointX);
   point_templ.SetAccessor(String::New("y"), GetPointY, SetPointY);
 
   Handle<Value> GetPointX(Local<String> property,const AccessorInfo &info) {
@@ -509,18 +544,22 @@ point_templ->SetInternalFieldCount(1);
     static_cast<Point*>(ptr)->x_ = value->Int32Value();
   }
 ```
-	与全局静态变量相比，这个做法实际上只是让对象模板保持动态变量的引用，从而在属性存取器里可以读写相应的动态变量。
+
+与全局静态变量相比，这个做法实际上只是让对象模板保持动态变量的引用，从而在属性存取器里可以读写相应的动态变量。
 
 
 ### 拦截器（Interceptor）
-	在v8里，我们也可以设置拦截器回调函数，使得JavaScript代码可以访问任意的对象属性，有两种高效的拦截器：命名属性拦截器和索引属性拦截器。
+
+在v8里，我们也可以设置拦截器回调函数，使得JavaScript代码可以访问任意的对象属性，有两种高效的拦截器：命名属性拦截器和索引属性拦截器。
 
 #### 命名属性拦截器
-	使用字符串访问对象属性，比如：document.theFormName.elementName。
+
+使用字符串访问对象属性，比如：document.theFormName.elementName。
 
 #### 索引属性拦截器
-	使用索引访问对象属性，比如：document.forms.elements[0].
-	下面给出拦截器的例子：
+
+使用索引访问对象属性，比如：document.forms.elements[0].
+下面给出拦截器的例子：
 
 ```
 Handle<ObjectTemplate> result = ObjectTemplate::New();
@@ -545,9 +584,12 @@ Handle<Value> JsHttpRequestProcessor::MapGet(Local<String> name,
   return String::New(value.c_str(), value.length());
 }
 ```
-	存取器和拦截器的区别在于，存取器只针对某个具体的属性，而拦截器则可以处理所有的属性。
-3.3.7、异常（Exception）
-	v8会在遇到错误时抛出异常，并返回空句柄。所以异常处理的惯用法如下：
+
+存取器和拦截器的区别在于，存取器只针对某个具体的属性，而拦截器则可以处理所有的属性。
+
+##### 异常（Exception）
+
+v8会在遇到错误时抛出异常，并返回空句柄。所以异常处理的惯用法如下：
 
 ```  TryCatch trycatch;
   Handle<Value> v = script->Run();
@@ -561,12 +603,15 @@ Handle<Value> JsHttpRequestProcessor::MapGet(Local<String> name,
 
 
 ### 安全（Security）
-	同源策略（same orign policy，在Netscape Navigator 2.0里首次引入）防止某个源的文档或脚本读取其他源的设置属性。这里的同源是指域名、协议、端口共同决定的。
-	在v8引擎里，源被定义为一个上下文（Context），默认情况下v8禁止访问代码跨上下文访问。如果需要跨上下文访问，你需要使用安全口令或者安全回调。安全口令可以任意的值，通常是一个唯一符号串。在创建一个上下文时，可以通过SetSerurityToken设置安全口令。如果上下文没有设置口令，v8会自动为其生成安全口令。当尝试去访问一个全局对象时，v8会比较全局对象的安全口令和访问代码的安全口令，如果口令不匹配，v8会调用一个回调函数以确认是否允许访问。所以你可以通过SetAccessCheckCallbacks来控制对象的访问权限。
+
+同源策略（same orign policy，在Netscape Navigator 2.0里首次引入）防止某个源的文档或脚本读取其他源的设置属性。这里的同源是指域名、协议、端口共同决定的。
+
+在v8引擎里，源被定义为一个上下文（Context），默认情况下v8禁止访问代码跨上下文访问。如果需要跨上下文访问，你需要使用安全口令或者安全回调。安全口令可以任意的值，通常是一个唯一符号串。在创建一个上下文时，可以通过SetSerurityToken设置安全口令。如果上下文没有设置口令，v8会自动为其生成安全口令。当尝试去访问一个全局对象时，v8会比较全局对象的安全口令和访问代码的安全口令，如果口令不匹配，v8会调用一个回调函数以确认是否允许访问。所以你可以通过SetAccessCheckCallbacks来控制对象的访问权限。
 
 
 ### 继承（Inheritance）
-	我们知道JavaScript是通过prototype实现继承机制的。相应的一个函数模板可以获取原型模板以动态修改属性，并且v8通过了Inherit函数实现函数模板的继承：
+
+我们知道JavaScript是通过prototype实现继承机制的。相应的一个函数模板可以获取原型模板以动态修改属性，并且v8通过了Inherit函数实现函数模板的继承：
 
 ``` Handle<FunctionTemplate> biketemplate = FunctionTemplate::New();
  biketemplate->PrototypeTemplate().Set(
@@ -578,21 +623,29 @@ void Inherit(Handle<FunctionTemplate> parent);
 
 
 ### Isolate，Locker以及GC设置
-	多线程环境下，每个线程运行一个独立的v8虚拟机的话，就需要在线程初始化的时候创建Isolate::New()，在线程退出的时候调用Isolate::Dispose()。
-	如果每个线程都创建独立的Isolate运行独立的v8虚拟机的话，内存开销会很大，所以可以多线程共用Isolate，但这样的话就得加锁，使用Locker加锁。
-	v8的GC只有在托管内存超过一定阈值后才会触发垃圾回收，这对于嵌入到v8的对象来说，GC是无法知道对象的外部资源内存大小，有可能会造成内存紧张，所以需要手工触发GC。
+
+多线程环境下，每个线程运行一个独立的v8虚拟机的话，就需要在线程初始化的时候创建Isolate::New()，在线程退出的时候调用Isolate::Dispose()。
+
+如果每个线程都创建独立的Isolate运行独立的v8虚拟机的话，内存开销会很大，所以可以多线程共用Isolate，但这样的话就得加锁，使用Locker加锁。
+
+v8的GC只有在托管内存超过一定阈值后才会触发垃圾回收，这对于嵌入到v8的对象来说，GC是无法知道对象的外部资源内存大小，有可能会造成内存紧张，所以需要手工触发GC。
 AdjustAmountOfExternalAllocatedMemory(int change_in_bytes);使用这个API调整注册内存的真实数量，以让GC在合适的时机发起垃圾回收。
-	IdleNotification()当嵌入器空闲的时候进行资源清理；LowMemoryNotification()当内存过低时进行资源清理。
+
+IdleNotification()当嵌入器空闲的时候进行资源清理；LowMemoryNotification()当内存过低时进行资源清理。
 启动时设置内存相关参数SetFlagsFromCommandLine()和SetFlagsFromString()，
-SetFlagsFromCommandLine()/SetFlagsFromString()应该在任何v8的API调用前调用。
-SetResourceContraints()可以在v8 vm初始化前调用设置Isolate相关Heap的大小，一旦vm初始化后，就无法再进行调整了。 
+
+- SetFlagsFromCommandLine()/SetFlagsFromString()应该在任何v8的API调用前调用。
+- SetResourceContraints()可以在v8 vm初始化前调用设置Isolate相关Heap的大小，一旦vm初始化后，就无法再进行调整了。 
 
 
 ### v8的类型体系
- ![](https://github.com/fanfeilong/cefutil/blob/master/doc/images/image007.jpg)
-	v8的类型体系继承关系图如上，基类是v8::Data，v8::Data下有v8::Signature,v8::Template,v8::TypeSwitch,v8::Value几个子类。其中v8::Template下有两个子类， 分别是前几节介绍过的v8::FunctionTemplate和v8::ObjectTemplate。而v8::Value下面则有v8:External，v8::Object，v8::Primitive三个子类。v8::External我们在前面介绍v8::ObjectTemplate的内部成员持有外部对象的引用时有介绍过；而v8::Primitive是基本值类型，包括Boolean、Number、String；剩下的Arrray、BooleanObject、Date、Function、NumberObject、RegExp、StringObject都属于对象类型。
+
+![](https://github.com/fanfeilong/cefutil/blob/master/doc/images/image007.jpg)
+
+v8的类型体系继承关系图如上，基类是v8::Data，v8::Data下有v8::Signature,v8::Template,v8::TypeSwitch,v8::Value几个子类。其中v8::Template下有两个子类， 分别是前几节介绍过的v8::FunctionTemplate和v8::ObjectTemplate。而v8::Value下面则有v8:External，v8::Object，v8::Primitive三个子类。v8::External我们在前面介绍v8::ObjectTemplate的内部成员持有外部对象的引用时有介绍过；而v8::Primitive是基本值类型，包括Boolean、Number、String；剩下的Arrray、BooleanObject、Date、Function、NumberObject、RegExp、StringObject都属于对象类型。
 
 上图有点小，我们分开列出：
+
 ![](https://github.com/fanfeilong/cefutil/blob/master/doc/images/image008.jpg)
 ![](https://github.com/fanfeilong/cefutil/blob/master/doc/images/image009.jpg)
 ![](https://github.com/fanfeilong/cefutil/blob/master/doc/images/image010.jpg)
@@ -604,12 +657,14 @@ http://www.bespin.cz/~ondras/html/annotated.html
 
 
 # CEF的v8::Extension扩展机制
+
 CEF在content api基础上定制v8扩展，在上层封装了一套自己的类型和对象系统和对象生命周期管理，我们将逐一研究。
 
 ## CEF类型:CefV8Value
-	CEF定制了自己的类型系统，相关类：
-接口类：CefV8Value
-实现类：CefV8ValueImpl
+
+CEF定制了自己的类型系统，相关类：
+- 接口类：CefV8Value
+- 实现类：CefV8ValueImpl
 
 ```
 class CefV8ValueImpl : public CefV8Value {
@@ -693,9 +748,11 @@ protected:
 	
 
 ## CefValueImpl的存储
+
 CefV8ValueImpl内部用一个Union存储实际的C++基本内置类型，用内置的Handle类型存储对象、函数和数组，注意这个Handle对象并不是v8::Handle，而是在内部持有v8::Handle。这点跟Lua的TValue类似：
 
-```  union {
+```  
+  union {
     bool bool_value_;
     int32 int_value_;
     uint32 uint_value_;
@@ -710,7 +767,8 @@ CefV8ValueImpl内部用一个Union存储实际的C++基本内置类型，用内�
 	同时用一个枚举标识当前存储的C++类型：
 	
 
-```  enum {
+```  
+  enum {
     TYPE_INVALID = 0,
     TYPE_UNDEFINED,
     TYPE_NULL,
@@ -729,7 +787,8 @@ CefV8ValueImpl内部用一个Union存储实际的C++基本内置类型，用内�
 首先我们知道需要使用句柄持有CefV8ValueImpl对象，那么我们知道句柄有两种，一种是局部的，一种是持久的。CefV8ValueImpl内部使用封装了Handle内部类用来持有对象，Handle内部用一个持久句柄保存对象的引用，通过GetNewHandle返回局部句柄给外部使用，当然也可以通过GetPersistentHandle直接获取持久句柄。
 
 
-```  class Handle : public CefV8HandleBase {
+```  
+  class Handle : public CefV8HandleBase {
    public:
     typedef v8::Handle<v8::Value> handleType;
     typedef v8::Persistent<v8::Value> persistentType;
@@ -770,7 +829,8 @@ CefV8ValueImpl内部用一个Union存储实际的C++基本内置类型，用内�
 
 
 ```
-	从v8的概念我们知道局部句柄用v8::HandleScope管理生命周期，执行JavaScript脚本则需要在v8::Context里，而多线程环境下需要使用Isolate隔离不同的v8虚拟机。从Handle的构造函数我们看到Context被设置给了父类CefHandleBase的构造函数。我们看下该类：
+
+从v8的概念我们知道局部句柄用v8::HandleScope管理生命周期，执行JavaScript脚本则需要在v8::Context里，而多线程环境下需要使用Isolate隔离不同的v8虚拟机。从Handle的构造函数我们看到Context被设置给了父类CefHandleBase的构造函数。我们看下该类：
 
 ```
 // Base class for V8 Handle types.
@@ -819,13 +879,12 @@ task_runner_ = manager->task_runner();
 //将构造函数传入的Context封装成CefContextState
     context_state_ = manager->GetContextState(context);
 }
-
-
 ```
 
 
-## 基本内置类型**
-**对于值类型，CefV8ValueImpl提供了简单的初始化、判断、获取、设置等方法：
+## 基本内置类型
+
+对于值类型，CefV8ValueImpl提供了简单的初始化、判断、获取、设置等方法：
 
 ```
 void CefV8ValueImpl::InitDouble(double value) {
@@ -861,10 +920,9 @@ CefRefPtr<CefV8Value> CefV8Value::CreateDouble(double value) {
 }
 ```
 	
-
-
 ## Object和UserData
-	对于对象类型，CefV8ValueImpl则需要通过Handle存储。
+
+对于对象类型，CefV8ValueImpl则需要通过Handle存储。
 
 ```
 void CefV8ValueImpl::InitObject(v8::Handle<v8::Value> value, CefTrackNode* tracker) {
@@ -878,7 +936,7 @@ bool CefV8ValueImpl::IsObject() {
 }
 ```
 	
-	下面的方法允许将用户自定义类型（继承自CefBase）存储在TYPE_OBJECT类型的CefV8Value里。
+下面的方法允许将用户自定义类型（继承自CefBase）存储在TYPE_OBJECT类型的CefV8Value里。
 
 ```
 bool CefV8ValueImpl::SetUserData(CefRefPtr<CefBase> user_data) {
@@ -920,8 +978,6 @@ bool CefV8ValueImpl::IsUserCreated() {
   V8TrackObject* tracker = V8TrackObject::Unwrap(obj);
   return (tracker != NULL);
 }
-
-
 ```
 	
 CefV8Value类提供了静态方法用于创建TYPE_OBJECT类型的CefV8Value：
@@ -960,11 +1016,13 @@ v8::Local<v8::Context> context = v8::Context::GetCurrent();
   return impl.get();
 }
 ```
-	V8TrackObject我们在后面单独解析。目前只需知道在创建Object时，同时创建了一个V8TrackObject，用于保存obj的Accessor，然后将obj绑定到tracker，最后将obj和tracker同时组合到CefV8ValueImpl里面，在后续的Object相关的操作中，会用到tracker对象。比如获取obj的accessor。
+
+V8TrackObject我们在后面单独解析。目前只需知道在创建Object时，同时创建了一个V8TrackObject，用于保存obj的Accessor，然后将obj绑定到tracker，最后将obj和tracker同时组合到CefV8ValueImpl里面，在后续的Object相关的操作中，会用到tracker对象。比如获取obj的accessor。
 
 
 ## InitFromV8Value和GetV8Value
-	从而，CefV8ValueImpl内部将v8::Value转换成了内部的类型体系：
+
+从而，CefV8ValueImpl内部将v8::Value转换成了内部的类型体系：
 
 ```
 void CefV8ValueImpl::InitFromV8Value(v8::Handle<v8::Value> value) {
@@ -1021,7 +1079,7 @@ v8::Handle<v8::Value> CefV8ValueImpl::GetV8Value(bool should_persist) {
   }
 ```
 
-	同时，CefV8ValueImpl通过先比较类型，再比较具体的值的方式比较两个CefV8Value是否相等：
+同时，CefV8ValueImpl通过先比较类型，再比较具体的值的方式比较两个CefV8Value是否相等：
 
 ```
 bool CefV8ValueImpl::IsSame(CefRefPtr<CefV8Value> that) {
@@ -1063,6 +1121,7 @@ bool CefV8ValueImpl::IsSame(CefRefPtr<CefV8Value> that) {
 
 
 ## 函数
+
 Cef也将函数、字典、数组（下标为0-base连续整数的字典）存储在Object里，我们首先看下如果Object是一个v8::Function，如何获取函数名和函数体：
 	
 
@@ -1108,11 +1167,9 @@ V8TrackObject* tracker = V8TrackObject::Unwrap(obj);
 
   return NULL;
 }
-
-
 ```
 	
-	同样的，CefV8Value提供了静态方法用于创建函数：
+同样的，CefV8Value提供了静态方法用于创建函数：
 
 ```
 CefRefPtr<CefV8Value> CefV8Value::CreateFunction(
@@ -1173,7 +1230,7 @@ CefRefPtr<CefV8Value> CefV8Value::CreateFunction(
 }
 ```
 	
-	CreateFunction的代码里设置了函数回调,这个函数如下:
+CreateFunction的代码里设置了函数回调,这个函数如下:
 
 ```
 // V8 function callback.
@@ -1225,9 +1282,9 @@ CefString func_name;
 }
 ```
 	
-	后面我们会解析如何将CreateFunction注册个v8的JavaScript环境。此次我们只要理解JavaScript代码在调用我们注册给它的函数时，会调用此处的函数回调，从上面代码可知，FunctionCallbackImpl提供了一个标准的回调函数，在内部将函数名字，函数接收者、函数参数，返回值，异常等数据转发给CefV8Handle的Execute方法，所以我们只需在CefV8Hanlde的Execute方法里处理JavaScript的函数调用即可。
-	另一方方面，我们也希望在C++环境里调用JavaScript的代码。其基本思想还是将C++的函数参数类型（比如CefValue）转成v8的相应参数类型，然后通过v8的API来执行v8::Function，并返回结果。我们逐一分析这个过程，首先是参数类型转换过程：
+后面我们会解析如何将CreateFunction注册个v8的JavaScript环境。此次我们只要理解JavaScript代码在调用我们注册给它的函数时，会调用此处的函数回调，从上面代码可知，FunctionCallbackImpl提供了一个标准的回调函数，在内部将函数名字，函数接收者、函数参数，返回值，异常等数据转发给CefV8Handle的Execute方法，所以我们只需在CefV8Hanlde的Execute方法里处理JavaScript的函数调用即可。
 
+另一方方面，我们也希望在C++环境里调用JavaScript的代码。其基本思想还是将C++的函数参数类型（比如CefValue）转成v8的相应参数类型，然后通过v8的API来执行v8::Function，并返回结果。我们逐一分析这个过程，首先是参数类型转换过程：
 
 ```
 CefRefPtr<CefV8Value> CefV8ValueImpl::ExecuteFunction(
@@ -1332,7 +1389,7 @@ CefRefPtr<CefV8Value> CefV8ValueImpl::ExecuteFunctionWithContext(
 }
 ```
 
-	上面的代码创建了句柄范围，创建了上下文范围，然后将调用对象、参数列表转换成v8的类型系统，最后在v8的异常处理环境下调用函数。最后黄色标注的那一行将函数调用转发给CallV8Function，我们进一步看下这个函数做了什么。
+上面的代码创建了句柄范围，创建了上下文范围，然后将调用对象、参数列表转换成v8的类型系统，最后在v8的异常处理环境下调用函数。最后黄色标注的那一行将函数调用转发给CallV8Function，我们进一步看下这个函数做了什么。
 
 
 ```
@@ -1372,11 +1429,12 @@ v8::Local<v8::Value> CallV8Function(v8::Handle<v8::Context> context,
 }
 ```
 
-	至此，Cef完成了C++和JavaScript函数互相调用的机制。
+至此，Cef完成了C++和JavaScript函数互相调用的机制。
 
 ## 字典
-	CefV8Value的Object亦可以是字典，字典的下标可以是整数或字符串，所以可以用字典模拟数组。
-	首先看下是否包含某个键的判断：
+
+CefV8Value的Object亦可以是字典，字典的下标可以是整数或字符串，所以可以用字典模拟数组。
+首先看下是否包含某个键的判断：
 
 ```
 bool CefV8ValueImpl::HasValue(const CefString& key) {
@@ -1409,16 +1467,15 @@ bool CefV8ValueImpl::HasValue(int index) {
 
 
 ```
-	基本上就是将handle转换成v8::Object后，通过v8::Object::Has方法判断是否含有字符串键或者整形键。Has是v8::Object的成员方法：
+
+基本上就是将handle转换成v8::Object后，通过v8::Object::Has方法判断是否含有字符串键或者整形键。Has是v8::Object的成员方法：
 
 ```
-V8EXPORT bool -**Has** (uint32_t index)
-V8EXPORT bool -**Has** (**Handle**< **String** > key)
-
-
+V8EXPORT bool -**Has** (uint32_t index);
+V8EXPORT bool -**Has** (**Handle**< **String** > key);
 ```
 
-	下面是获取键值的代码：
+下面是获取键值的代码：
 
 ```
 CefRefPtr<CefV8Value> CefV8ValueImpl::GetValue(const CefString& key) {
@@ -1463,20 +1520,16 @@ CefRefPtr<CefV8Value> CefV8ValueImpl::GetValue(int index) {
     return new CefV8ValueImpl(ret_value);
   return NULL;
 }
-
-
 ```
-	转型成v8::Object后调用v8::Object::Get的方法：
+
+转型成v8::Object后调用v8::Object::Get的方法：
 
 ```
 V8EXPORT **Local**< **Value** > -**Get** (**Handle**< **Value** > key)
 V8EXPORT **Local**< **Value** > -**Get** (uint32_t index)
-
-
 ```
 
-
-	下面是设置指定键的值，与GetValue相比，：
+下面是设置指定键的值，与GetValue相比，：
 
 ```
 bool CefV8ValueImpl::SetValue(const CefString& key,
@@ -1500,7 +1553,6 @@ bool CefV8ValueImpl::SetValue(const CefString& key,
     return false;
   }
 }
-
 
 bool CefV8ValueImpl::SetValue(int index, CefRefPtr<CefV8Value> value) {
   CEF_V8_REQUIRE_OBJECT_RETURN(false);
@@ -1532,8 +1584,6 @@ bool CefV8ValueImpl::SetValue(int index, CefRefPtr<CefV8Value> value) {
 ```
 V8EXPORT bool -**Set** (uint32_t index, **Handle**< **Value** > value)
 V8EXPORT bool -**Set** (**Handle**< **Value** > key, **Handle**< **Value** > value, **PropertyAttribute** attribs=None)
-
-
 ```
 	
 其中，PropertyAttribute是一个枚举，配置value类型，一个有下面四种：
@@ -1541,8 +1591,6 @@ V8EXPORT bool -**Set** (**Handle**< **Value** > key, **Handle**< **Value** > val
 ```
 None、ReadOnly 、DontEnum、DontDelete
 ```
-	
-
 
 SetValue还有一个重载函数，提供了设置访问控制的能力：
 
@@ -1584,8 +1632,6 @@ bool CefV8ValueImpl::SetValue(const CefString& key, AccessControl settings,
                               static_cast<v8::PropertyAttribute>(attribute));
   return (!HasCaught(try_catch) && set);
 }
-
-
 ```
 
 其中，AccessControl是一个枚举，有下面四种值：
@@ -1594,7 +1640,7 @@ bool CefV8ValueImpl::SetValue(const CefString& key, AccessControl settings,
 DEFAULT、ALL_CAN_READ、ALL_CAN_WRITE、PROHIBITS_OVERWRITING
 ```
 	
-	上述代码里用到了AccessorGetterCallbackImpl和AccessorSetterCallbackImpl。与FunctionCallbackImpl类似，这是Cef提供的通用存取器Getter和Setter回调函数，内部必然需要将具体的操作做适当转发，我们实际探究下代码：
+上述代码里用到了AccessorGetterCallbackImpl和AccessorSetterCallbackImpl。与FunctionCallbackImpl类似，这是Cef提供的通用存取器Getter和Setter回调函数，内部必然需要将具体的操作做适当转发，我们实际探究下代码：
 
 ```
 // V8 Accessor callbacks
@@ -1671,7 +1717,6 @@ const v8::PropertyCallbackInfo<void>& info) {
   }
 }
 ```
-
 
 对于以字符串为键的字典来说，需要提供获取所有键的方法，以便于遍历字典：
 
@@ -1753,7 +1798,7 @@ int CefV8ValueImpl::GetArrayLength() {
 
 ```
 
-	当然，CefV8Value提供了静态方法用于创建数组，也就是这里的字典：
+当然，CefV8Value提供了静态方法用于创建数组，也就是这里的字典：
 
 ```
 CefRefPtr<CefV8Value> CefV8Value::CreateArray(int length) {
@@ -1804,8 +1849,7 @@ bool CefV8ValueImpl::HasCaught(v8::TryCatch& try_catch) {
 }
 ```
 	
-此处将v8的异常信息转换成了CefExceptionImpl，CefExceptionImpl继承自CefException接口，实现如下，只是一个数据封装类：
-	
+此处将v8的异常信息转换成了CefExceptionImpl，CefExceptionImpl继承自CefException接口，实现如下，只是一个数据封装类：	
 
 ```
 class CefV8ExceptionImpl : public CefV8Exception {
@@ -1857,6 +1901,7 @@ class CefV8ExceptionImpl : public CefV8Exception {
 
 
 ## 内存控制
+
 根据3.3.8节点内容，非v8托管内存需要手工通知v8的GC系统外部资源的内存变动，CefV8Value提供了下面两个方法：
 
 ```
@@ -1889,16 +1934,14 @@ int CefV8ValueImpl::AdjustExternallyAllocatedMemory(int change_in_bytes) {
 }
 ```
 
-	基本上，CefV8Value将Object对象的内存调整放到了与Object所伴随的Tracker对象，上述两个方法都只是简单转发。V8TrackeObject（这是一个Cef的类，但是奇怪的是没有加Cef前缀，也许Cef的作者认为这个类应该由V8提供？）与CefV8Value紧密相连，我们单独在4.10里解析。
+基本上，CefV8Value将Object对象的内存调整放到了与Object所伴随的Tracker对象，上述两个方法都只是简单转发。V8TrackeObject（这是一个Cef的类，但是奇怪的是没有加Cef前缀，也许Cef的作者认为这个类应该由V8提供？）与CefV8Value紧密相连，我们单独在4.10里解析。
 
 
 ## Cef的对象跟踪:V8TrackObject
+
 从4.2的代码里可以看到，当一个CefV8Value对象obj的类型标记为TYPE_OBJECT的时候，CefV8Value::CreateObject内部会为每个obj同时创建一个V8TrackObject对象tracker。tracker的作用是绑定obj对象，并保存obj的其他辅助信息，比如当obj是一个Function时，tracker可以保存obj的CefV8Handle对象；当obj是一个Array时，tracker保存obj的Accessor对象；当obj是一个UserData时，tracker保存obj的userData对象。并且无论哪种具体的obj，都可以通过tracker->AdjustExternallyAllocateMemory通知v8的GC系统调整外部资源的内存信息。
+
 V8TrackObject如此重要，在4.2剖析CefV8Value代码的过程中，我们已经了解了它的主要功能和用法，我们可以在V8TrackObject的源码里映照上述过程。我们在代码里直接注释关键代码的作用。
-
-
-
-
 
 ```
 class V8TrackObject : public CefTrackNode {
@@ -1995,8 +2038,8 @@ inline CefRefPtr<CefV8Accessor> GetAccessor() {
 };
 ```
 
-
 ## CefIsolateManager
+
 4.2里我们看到TYPE_OBJECT的CefV8Value使用Handle存储，而Handle继承CefHandleBase类，CefHandleBase负责管理Context、TaskRunner以及Isolate，再次看下其构造函数：
 
 ```
@@ -2010,7 +2053,7 @@ CefV8HandleBase::CefV8HandleBase(v8::Handle<v8::Context> context) {
 }
 ```
 	
-	本节我们重点关注CefV8IsolateManager，顾名思义这是一个管理v8::Isolate的类，根据v8的说明，独立的v8虚拟机需要各自的Isolate，我们看下代码：
+本节我们重点关注CefV8IsolateManager，顾名思义这是一个管理v8::Isolate的类，根据v8的说明，独立的v8虚拟机需要各自的Isolate，我们看下代码：
 
 ```
 // Manages memory and state information associated with a single Isolate.
@@ -2220,16 +2263,15 @@ if (context_safety_impl_ == IMPL_HASH) {
   int worker_id_;
   GURL worker_url_;
 };
-
-
 ```
 
-
 ### Isolate
-	首先CefIsolateManager持有一份Isolate，供所有需要的地方共用。
+
+首先CefIsolateManager持有一份Isolate，供所有需要的地方共用。
 
 ### CefContextState
- 其次CefIsolateManager拥有GetContextState和ReleaseContextState两个方法，根据conxt_safty_impl的枚举值，支持禁用、哈希映射以及全局共享的方式使用上下文。要理解这点我们需要进一步看下CefContextState这个类：
+
+其次CefIsolateManager拥有GetContextState和ReleaseContextState两个方法，根据conxt_safty_impl的枚举值，支持禁用、哈希映射以及全局共享的方式使用上下文。要理解这点我们需要进一步看下CefContextState这个类：
 
 ```
 // Used to detach handles when the associated context is released.
@@ -2295,9 +2337,8 @@ CefV8ValueImpl::Handle::~Handle() {
 ```
 void -**MakeWeak** (void *parameters, **WeakReferenceCallback** callback)
  -Make the reference to this object weak.
-
-
 ```
+
 用来将其设置为弱引用，这样在v8的GC回收时，如果这个对象没有在其他地方被引用，则可以回收对象内存，从而避免内存泄漏。这里可以传入一个额外的parameter指针，以及一个回调函数，额外的parameter指针是个void*，所以可以传入任意的用户数据，而回调函数显然是在v8的GC回收弱引用对象时调用。WeakReferenceCallback如下：
 **```typedef void(* v8::WeakReferenceCallback)(Persistent< Value > object, void *parameter)```**
 可见，回调函数里会将v8::Persistent<T>对象以及额外的用户数据parameter对象指针传入，将真正的内存释放动作交给用户处理。
@@ -2350,8 +2391,10 @@ class CefV8MakeWeakParam {
   CefTrackNode* object_;
 };
 ```
+
 这个CefV8MakeWeakParam类的构造函数里，tracker对象要么被CefIsolateManger::AddGlobalTrackObject管理，要么被CefContextState::AddTrackObject管理。而析构函数里被删除，由于这个对象会被v8管理，所以也需要在构造函数和析构函数里调整v8外部内存的大小。
 TrackDestructor则用来在v8的垃圾回收时真正释放对象的内存：
+
 
 ```
 // Callback for weak persistent reference destruction.
@@ -2365,13 +2408,16 @@ void TrackDestructor(v8::Isolate* isolate,
   object->Clear();
 }
 ```
+
 可以看到，在弱引用回调函数里，先析构CefV8MakeWeakParam对象，再将handle本身重置并清空。从而正确的释放内存。
 
 经过这一轮分析，可知CefV8ValueImpl::Hanlde，CefV8HanldeBase，CefIsolateManager，CefContextState，CefMakeWeakParam，TrackDestructor他们精密配合，完成了对CefV8Value类型为TYPE_OBJECT时的句柄管理和对象生命周期管理。
+
 可见,一切的复杂性都是由于v8的句柄管理之麻烦所导致的。v8::Object可以是Array、Function，UserData，而Array需要Accessor（进而需要AccessorGetterCallbackImpl，AccessorSetterCallbackImpl），Function需要函数模板及其相关的回调（进而需要FunctionTemplateCallbackImpl），UserData需要存取用户定义数据。这些数据只能以v8::Object的隐藏外部数据形式存储，在CEF里统一通过v8TrackObject存取这几种数据。又由于v8的句柄有局部句柄和持久句柄，同时需要Context和Isoalte等信息，所以一个TYPE_OBJECT的CefVa8Value需要在内部用CefV8ValueImpl::Hanlde将object,tracker,context都装进去。CefV8ValueImpl::Hanlde内部默认以v8::Persistent<T>持有object，在外部使用则需要通过GetNewV8Hanlde(bool should_persist)返回v8::Hanlde局部句柄。 外部使用时可以指定一个额外的参数should_persist，如果用户指定了shold_persist为true，则在CefV8ValueImpl析构函数被调用时，并不直接释放内存，而是调用v8::Persist<T>的成员函数MakeWeak将handle转成弱引用，同时将保存object辅助数据的tracker以CefV8MakeWeakParam封装，并传给MakeWeak。从而，当外部代码不再持有handle时，v8的GC将调用MakeWeak设置的回调函数释放内存，这个回调函数在CEF里是TrackObjectDestructor这个函数，在这里将之前封装的CefV8MakeWeakParam释放，同时真正释放handle。
 
 
 ### SetUncaughtExceptionStackSize
+
 CefIsolateManager通过SetUncaughtExceptionStackSize方法设置v8未捕获异常的监听回调函数，这个回调函数是MessageListenerCallbackImpl：
 
 ```
@@ -2409,7 +2455,7 @@ void MessageListenerCallbackImpl(v8::Handle<v8::Message> message,
 }
 ```
 	
-	从而，我们接触到一个新类：CefStackTrace，和CefException类一样，这也是一个数据封装类：
+从而，我们接触到一个新类：CefStackTrace，和CefException类一样，这也是一个数据封装类：
 
 ```
 class CefV8StackFrameImpl : public CefV8StackFrame {
@@ -2442,6 +2488,7 @@ class CefV8StackFrameImpl : public CefV8StackFrame {
 
 
 ## CefV8Context
+
 在4.6里剖析函数的代码里，ExecuteFunction转调用ExecuteFunctionWithContext，而后者代码里用到了CefV8Context类，这个类在ExecuteFunctionWithContext里貌似没什么作用，但实际上根据v8的规范，执行JavaScript函数必须在Context之内，所以调用ExecuteFunction的前我们必须进入Context，执行完毕后必须退出Context。
 这个功能是由CefV8Context提供的，最重要的成员有Enter、Exist、Eval等。我们将只关注这三个方法。
 
@@ -2480,7 +2527,7 @@ scoped_refptr<Handle> handle_;
 };
 ```
 
-	首先是构造函数，将v8::Context使用Handle类管理，这个Handle是一个typedef，真正的类型是CefV8Handle<T>，CefV8Handle<T>与CefV8Value::Handle的实现一样，内部用持久句柄引用对象，提供获取局部句柄和持久句柄的接口。
+首先是构造函数，将v8::Context使用Handle类管理，这个Handle是一个typedef，真正的类型是CefV8Handle<T>，CefV8Handle<T>与CefV8Value::Handle的实现一样，内部用持久句柄引用对象，提供获取局部句柄和持久句柄的接口。
 
 ```
 CefV8ContextImpl::CefV8ContextImpl(v8::Handle<v8::Context> context)
@@ -2491,10 +2538,8 @@ CefV8ContextImpl::CefV8ContextImpl(v8::Handle<v8::Context> context)
 {  // NOLINT(whitespace/braces)
 }
 ```
-	其次，Enter和Exit方法，封装了执行JavaScript代码所需的进入和退出上下文的代码，这也是遵守v8执行JavaScript代码的规范。
 
-
-
+其次，Enter和Exit方法，封装了执行JavaScript代码所需的进入和退出上下文的代码，这也是遵守v8执行JavaScript代码的规范。
 
 ```
 bool CefV8ContextImpl::Enter() {
@@ -2534,15 +2579,15 @@ bool CefV8ContextImpl::Exit() {
 }
 ```
 
-	在Enter和Exit之间，我们可以调用CefV8Value::ExecuteFunction或者调用CefV8Context::Eval方法解析JavaScript代码。我们进入Eval方法一窥奥妙，不过在此之前我们介绍下另一个方法：GetV8Context:
+在Enter和Exit之间，我们可以调用CefV8Value::ExecuteFunction或者调用CefV8Context::Eval方法解析JavaScript代码。我们进入Eval方法一窥奥妙，不过在此之前我们介绍下另一个方法：GetV8Context:
 
 ```
 v8::Handle<v8::Context> CefV8ContextImpl::GetV8Context() {
   return handle_->GetNewV8Handle();
 }
 ```
-	GetV8Context只是对handle_->GetNewV8Handle()的封装。
 
+GetV8Context只是对handle_->GetNewV8Handle()的封装。
 
 ```
 bool CefV8ContextImpl::Eval(const CefString& code,
@@ -2597,8 +2642,8 @@ bool CefV8ContextImpl::Eval(const CefString& code,
 }
 ```
 
-
 ## CefV8Handle
+
 上一节提到过CefV8Context内部使用了CefV8Handle类与CefV8Value::Handle功能一样，但实际上为什么需要两个不同的类呢？很简单，CefV8Value::Handle是一个只针对v8::Value的Handle类，而CefV8Context是一个模板类，仅此而已。
 
 
@@ -2636,8 +2681,8 @@ class CefV8Handle : public CefV8HandleBase {
 };
 ```
 
-
 ## CefV8Hanlder
+
 有了前面的一系列介绍，我们终于可以引入CefV8Handler这个类的介绍了。首先，这个是CefV8Hanlder，不是CefV8Handle，少一个r都不行！
 CefV8Handler是一个纯接口类，只有一个方法，你可以继承它，并提供相应的实现，在随后介绍的注册v8扩展方法时会使用到它。
 
@@ -2668,10 +2713,8 @@ class CefV8Handler : public virtual CefBase {
 
 
 ## ExtensionWrapper
+
 好了，在介绍完CefV8Hanlder类之后，我们将焦点集中在ExtensionWrappper类，这是CEF完成注册v8扩展的最后一环。按我们之前的习惯，我们先将这个类的源码过一遍。
-
-
-
 
 ```
 //继承自v8::Extension,注册v8扩展当然得遵守v8的规矩，不是么？
@@ -2718,8 +2761,7 @@ v8::Handle<v8::String> name) {
 };
 ```
 
-
-	传入的javascript_code被设置给父类v8::Extension，我们在第2章看到过这个类，我们回顾下：
+传入的javascript_code被设置给父类v8::Extension，我们在第2章看到过这个类，我们回顾下：
 
 ```
 class V8EXPORT Extension {  // NOLINT
@@ -2760,13 +2802,10 @@ class V8EXPORT Extension {  // NOLINT
 };
 ```
 	
-	可见，父类只是简单讲代码保存了起来。我们查看
-
-
-
-
+可见，父类只是简单讲代码保存了起来。我们查看
 
 ## 注册v8扩展
+
 注册v8扩展的代码很简单：
 
 ```
@@ -2798,8 +2837,7 @@ bool CefRegisterExtension(const CefString& extension_name,
 
 ```
 
-
-	CEF在这个方法接口的注释里有详细描述了注册扩展的JavaScript代码的作用以及示例，通过这个注释可以大致了解javascript_code的作用和去处。
+CEF在这个方法接口的注释里有详细描述了注册扩展的JavaScript代码的作用以及示例，通过这个注释可以大致了解javascript_code的作用和去处。
 
 ```
 ///
@@ -2865,10 +2903,7 @@ bool CefRegisterExtension(const CefString& extension_name,
 bool CefRegisterExtension(const CefString& extension_name,
                           const CefString& javascript_code,
                           CefRefPtr<CefV8Handler> handler);
-
-
 ```
-
 
 如果想要进一步了解v8::RegisterExtension背后的故事，则需要深入v8引擎，这将是另外一个故事，我们有时间再探究。
 
