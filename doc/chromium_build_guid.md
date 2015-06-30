@@ -31,21 +31,21 @@ Windows7 64位系统编译Chromium指南
 8. 在cmd命令行下执行命令： gclient 
    该命令会优先下载git、svn、python并解压到depot_tools目录下，并设置环境变量。
 9. 下载chromium源码，可以直接下载chromium的源码压缩包也可以通过gclient直接下载。
-	- 下载源码包。
-	下载最新的chromium源码压缩包，并且最好用7z解压：
-	```
-	http://chromium-browser-source.commondatastorage.googleapis.com/chromium_tarball.html
-	```
-	下载指定版本的chromium源码压缩包：
-	```
-	http://chromium-browser-source.commondatastorage.googleapis.com/chromium.rXXXXX.tgz
-	```
-	其中rXXXXX表示版本号，比如r197479表示Revision197479。所有可用的压缩包版本号列表页面是：
-	```
-	http://chromium-browser-source.commondatastorage.googleapis.com/
-	```
-	- 通过gclient下载源码。
-	创建存放chromium源码的路径，路径不要带空格，比如d:\dev\chromium。
-	打开cmd命令行，cd到chromium源码路径。
-	执行gclient config --git-deps https://chromium.googlesource.com/chromium/src.git
-	执行gclient sync 下载chromium源码。
+- 下载最新的chromium源码压缩包，并且最好用7z解压：
+```
+http://chromium-browser-source.commondatastorage.googleapis.com/chromium_tarball.html
+```
+- 下载指定版本的chromium源码压缩包：
+```
+http://chromium-browser-source.commondatastorage.googleapis.com/chromium.rXXXXX.tgz
+其中rXXXXX表示版本号，比如r197479表示Revision197479。
+```
+- 所有可用的压缩包版本号列表页面是：
+```
+http://chromium-browser-source.commondatastorage.googleapis.com/
+```
+- 通过gclient下载源码。
+创建存放chromium源码的路径，路径不要带空格，比如d:\dev\chromium。
+打开cmd命令行，cd到chromium源码路径。
+执行gclient config --git-deps https://chromium.googlesource.com/chromium/src.git
+执行gclient sync 下载chromium源码。
