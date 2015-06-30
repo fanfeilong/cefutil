@@ -15,7 +15,7 @@ Chromium Documentations
 -----------------
 - [Chromium Build Guid](https://github.com/fanfeilong/cefutil/blob/master/doc/chromium_build_guid.md)
 - [Chromium Generation Your Project](https://github.com/fanfeilong/cefutil/blob/master/doc/gyp.md)
-- [Chromium Resoures](https://github.com/fanfeilong/cefutil/blob/master/doc/chromium_resoures.md)
+- [Chromium Resoures](https://github.com/fanfeilong/cefutil/blob/master/doc/chromium_resources.md)
 - [Chromium Content Register V8 Extension](https://github.com/fanfeilong/cefutil/blob/master/doc/content_register_v8_extension.md)
 
 CEF FAQ
