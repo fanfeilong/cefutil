@@ -140,6 +140,7 @@ private:
     - WrapperStruct则持有了CEF C++对象BaseName* object_
 	- WrapperStruct则持有了CEF C对象StructName struct_
 3. CppToC在构造函数里初始化C结构体变量wrapper_struct_.struct_，把该C对象的函数指针都赋值好
+
     ```
 	cef_base_t* base = reinterpret_cast<cef_base_t*>(GetStruct());
 	base->size = sizeof(StructName);
