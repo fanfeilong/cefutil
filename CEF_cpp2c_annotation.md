@@ -2,6 +2,7 @@ CEF Cpp2c Anotation
 ===================
 
 CEF 使用工具生成的Cpp和C接口互相转换，基本流程是这样的
+
 1. Cef源码使用C++开发
 2. 通过libcef_dll/cpptoc导出C接口
 3. 通过libcef_dll/ctocpp对导出的C接口反向做一层C++封装，让C++用户直接使用C++接口
@@ -10,6 +11,7 @@ CEF cpptoc
 ----------
 使用cpptoc导出c接口，该部分位于libcef_dll/cpptoc子目录下
 首先看下基类，涉及到两个文件
+
 1. libcef_dll/cpptoc/cpptoc.h
 2. libcef_dll/cpptoc/base_cpptoc.h
 
@@ -132,6 +134,7 @@ private:
 	static CefWrapperType kWrapperType;
 }
 ```
+
 1. 可以看到，CppToC通过模板参数指定要封装的类及其父类的名字ClassName、BaseName，最后一个模板参数是要转换的C结构体的名字
 2. CppToC内部持有一个WrapperStruct结构体成员变量wrapper_struct_,该结构体包含了双向转化所需的信息： 
     - WrapperStruct则持有了CEF C++对象BaseName* object_
@@ -150,6 +153,7 @@ private:
 CppToC的子类去设置
 
 所以CppToC的原理就三条
+
 1. 每个CEF类有一个对应的C结构体，C结构体里为C++类的public方法定义一堆对应的函数指针
 2. 每个CEF类都有一个对应的CppToC的子类，而CppToC内部会创建一个WrapperStruct，同时持有了C++类和C结构体,通过GetStruct()方法获取C对象wrapper_struct_.struct_，通过GetWrappperStruct(StructName*)从C对象获取WrappperStruct，进而获取C++对象wrapper_struct_.object_
 3. CppToC的构造函数以及子类的构造函数负责将wrapper_struct_.struct_的函数指针赋值为内部的静态成员函数，这些静态成员函数内部通过GetWrapperStruct得到wrapper_struct_,进而得到C++对象wrapper_struct_.object_，从而调用C++的接口
