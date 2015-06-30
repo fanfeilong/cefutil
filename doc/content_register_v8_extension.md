@@ -253,11 +253,11 @@ function Point(x, y) {
 }
 ```
 第一步：当执行new Point(x,y)时，一个新的Point对象被创建，当v8首次创建一个Point对象时，会同时创建一个Point的隐藏类C0，结构图如下：
-![](https://github.com/fanfeilong/cefutil/tree/master/blob/master/doc/images/image001.jpg)
+![](https://github.com/fanfeilong/cefutil/blob/master/doc/images/image001.jpg)
 第二步：执行函数里的第一行代码this.x=x;此时，v8会以隐藏类C0为原型创建新的隐藏类C1，C1拥有属性x，偏移位置为0。然后通过类型转移将之前的Point对象指向的C0隐藏类改为指向C1隐藏类。此时Point的隐藏类是C1。
-![](https://github.com/fanfeilong/cefutil/tree/master/blob/master/doc/images/image002.jpg) 
+![](https://github.com/fanfeilong/cefutil/blob/master/doc/images/image002.jpg) 
 第三步：执行函数里的第二行代码this.y=y;此时，v8会以隐藏类C1为原型创建新的隐藏类C2，C2拥有属性x，y，x的偏移位置依然是0，y的偏移位置为1。然后通过类型转移将之前的Point对象指向的C1隐藏类改为指向C2隐藏类。此时Point的隐藏类是C2。
- ![](https://github.com/fanfeilong/cefutil/tree/master/blob/master/doc/images/image003.jpg)
+ ![](https://github.com/fanfeilong/cefutil/blob/master/doc/images/image003.jpg)
 这个过程本身并不高效，但v8引擎通过缓存这些隐藏类，在下一次创建Point对象时复用这些隐藏类从而达到高效创建隐藏类。下一次创建Point对象时的过程如下：
 第一步，初始化Point对象，指向隐藏类C0.
 第二步，添加x属性，Point指向隐藏类C1.
@@ -362,7 +362,7 @@ https://developers.google.com/v8/embed?csw=1#interceptors
 	一个句柄对象(v8::Handle<T>)引用了JavaScript对象在堆上的位置。v8垃圾回收会将没有被引用的对象的内存回收掉。在垃圾回收的过程中，堆上的JavaScript对象会被移动，垃圾回收器会自动更新所有引用了被移动对象的句柄。
 	如果一个对象不能在JavaScript里访问，也没有句柄指向它，则被认为是垃圾对象。垃圾回收器在每次垃圾回收时移除垃圾对象。v8的垃圾回收机制是v8引擎高效的关键因素。
 	v8一共有两种句柄，局部句柄和持久化句柄。
-![](https://github.com/fanfeilong/cefutil/tree/master/blob/master/doc/images/image004.jpg)
+![](https://github.com/fanfeilong/cefutil/blob/master/doc/images/image004.jpg)
 
 #### 局部句柄(v8::Local<T>)
 	局部句柄(v8::Local<T>)在栈上，在析构函数调用时失效。局部句柄的生命周期由v8::HandleScope确定。一般在函数的开头创建v8::HandleScope，则当v8::HandleScope被删除时，垃圾回收器就可以释放在v8::HandleScope管理下的局部句柄对象，从而这些对象不可以在JavaScript代码里访问或者被其他句柄持有。
@@ -377,7 +377,7 @@ https://developers.google.com/v8/embed?csw=1#interceptors
 #### 句柄范围(v8::HandleScope)
 	每次创建一个对象就创建一个句柄会产生大量的句柄对象，因此v8引入了句柄范围这个概念(v8::HandleScope)，句柄范围可以看做是局部句柄(v8::Local<T>)的容器，在句柄范围的析构函数被调用后，所有在容器内的句柄都被从栈上移除，从而可以被垃圾回收。
 	以3.2的例子，下图给出了对象在内存中的示例图：
-![](https://github.com/fanfeilong/cefutil/tree/master/blob/master/doc/images/image005.jpg) 
+![](https://github.com/fanfeilong/cefutil/blob/master/doc/images/image005.jpg) 
 	当函数退出时，HandleScope::~HandleScope被调用，则句柄容器管理的所有局部句柄都被删除，从而垃圾回收器将从堆上移除source_obj和script_obj，因为它们既没有句柄指向他们，也无法从JavaScript里访问。而persistent是一个持久句柄，必须手工调用Dispose方法释放之。函数里面声明的局部句柄不能直接返回给函数调用者，如果需要返回，需要调用Handle::Scope::Close(handle)。下面是一个例子：
 
 ```
@@ -406,7 +406,7 @@ Handle<Array> NewPointArray(int x, int y, int z) {
 为什么必须指定上下文呢？这是因为JavaScript提供了一系列内置辅助函数和全局对象，它们可以被JavaScript代码调用和修改。如果两段不相关的JavaScript代码同时修改全局对象，可能会导致用户不希望看到的结果。
 	从节省CPU和内存的角度考虑，重复的创建内置函数和全局对象的开销并不低。然而，得益于v8可扩展的缓存机制，只会在首次创建上下文时产生大的开销，后续的子上下文创建的开销低的多。这是由于首次创建上下文时，v8需要创建内置对象，同时转换内置JavaScript代码，而后续的上下文创建则只需创建内置对象即可。进一步，得益于v8的快照特性，首次创建上下文也很高效。这是由于快照包含了已序列化的堆数据，里面有已经编译好的内置JavaScript代码。
 v8的上下文通过Enter和Exist进入和退出，并且v8的上下文可以嵌套使用，比如在进入上下文A后接着进入上下文B，然后退出上下文B回到上下文A，最后退出上下文A。面的图示例来这个过程。
-![](https://github.com/fanfeilong/cefutil/tree/master/blob/master/doc/images/image006.jpg)
+![](https://github.com/fanfeilong/cefutil/blob/master/doc/images/image006.jpg)
 	 
 
 
@@ -589,14 +589,14 @@ SetResourceContraints()可以在v8 vm初始化前调用设置Isolate相关Heap�
 
 
 ### v8的类型体系
- ![](https://github.com/fanfeilong/cefutil/tree/master/blob/master/doc/images/image007.jpg)
+ ![](https://github.com/fanfeilong/cefutil/blob/master/doc/images/image007.jpg)
 	v8的类型体系继承关系图如上，基类是v8::Data，v8::Data下有v8::Signature,v8::Template,v8::TypeSwitch,v8::Value几个子类。其中v8::Template下有两个子类， 分别是前几节介绍过的v8::FunctionTemplate和v8::ObjectTemplate。而v8::Value下面则有v8:External，v8::Object，v8::Primitive三个子类。v8::External我们在前面介绍v8::ObjectTemplate的内部成员持有外部对象的引用时有介绍过；而v8::Primitive是基本值类型，包括Boolean、Number、String；剩下的Arrray、BooleanObject、Date、Function、NumberObject、RegExp、StringObject都属于对象类型。
 
 上图有点小，我们分开列出：
-![](https://github.com/fanfeilong/cefutil/tree/master/blob/master/doc/images/image008.jpg)
-![](https://github.com/fanfeilong/cefutil/tree/master/blob/master/doc/images/image009.jpg)
-![](https://github.com/fanfeilong/cefutil/tree/master/blob/master/doc/images/image010.jpg)
-![](https://github.com/fanfeilong/cefutil/tree/master/blob/master/doc/images/image011.jpg)
+![](https://github.com/fanfeilong/cefutil/blob/master/doc/images/image008.jpg)
+![](https://github.com/fanfeilong/cefutil/blob/master/doc/images/image009.jpg)
+![](https://github.com/fanfeilong/cefutil/blob/master/doc/images/image010.jpg)
+![](https://github.com/fanfeilong/cefutil/blob/master/doc/images/image011.jpg)
  
 
 ## v8 API手册
