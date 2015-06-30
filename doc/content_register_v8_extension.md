@@ -229,11 +229,15 @@ class V8EXPORT FunctionTemplate : public Template {
       Handle<Signature> signature = Handle<Signature>(),
       int length = 0);
 }
+
 ```
 	
-	V8::Hanlde<FunctionTemplate>::New静态方法是用来将Native方法转换成v8引擎内部使用的方法模板上。从参数列表里可知用户的本地函数只需声明为InvocationCallback所示的函数原型就可以。参数列表为v8::Hanle<Arguments>，返回值是v8::Hanlde<v8::Value>。
-	这里有个老版本的示例：
-	http://code.google.com/p/v8/source/browse/trunk/src/extensions/?r=8431
+`V8::Hanlde<FunctionTemplate>::New`静态方法是用来将Native方法转换成v8引擎内部使用的方法模板上。
+从参数列表里可知用户的本地函数只需声明为`InvocationCallback`所示的函数原型就可以。
+参数列表为`v8::Hanle<Arguments>`，返回值是`v8::Hanlde<v8::Value>`。
+
+这里有个老版本的示例：
+http://code.google.com/p/v8/source/browse/trunk/src/extensions/?r=8431
 
 # 理解v8的设计理念和重要概念
 
