@@ -11,6 +11,13 @@ CEF 文档中文翻译任务
 - [x] [CEF General Usage Task List](https://github.com/fanfeilong/cefutil/blob/master/CEF%20General%20Usage%20Task%20List.md)
 - [x] [CEF General Usage中文版，欢迎查阅](https://github.com/fanfeilong/cefutil/blob/master/CEF%20General%20Usage-zh-cn.md)
 
+Chromium Documentations
+-----------------
+- [Chromium Build Guid](https://github.com/fanfeilong/cefutil/doc/chromium_build_guid.md)
+- [Chromium Generation Your Project](https://github.com/fanfeilong/cefutil/doc/gyp.md)
+- [Chromium Resoures](https://github.com/fanfeilong/cefutil/doc/chromium_resoures.md)
+- [Chromium Content Register V8 Extension](https://github.com/fanfeilong/cefutil/doc/content_register_v8_extension.md)
+
 CEF FAQ
 -------
 
