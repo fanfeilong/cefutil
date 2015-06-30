@@ -54,18 +54,14 @@ GYP(Generate Your Projects)
 本文档翻译GYP的相关文档，并做合并编辑工作。文档原始出处如下：
 
 
--	GYPUserDocumentation
-
-https://code.google.com/p/gyp/wiki/GypUserDocumentation
+-	[GYPUserDocumentation](https://code.google.com/p/gyp/wiki/GypUserDocumentation)
 
 GYP (Generate Your Projects) 
 Status: Draft (as of 2009-05-19)
 
 Mark Mentovai <mark@chromium.org>, Steven Knight <sgk@chromium.org> _et al._ 
 Modified: 2009-05-19
--	GYPLanguageSpecification
-
-https://code.google.com/p/gyp/wiki/GypLanguageSpecification
+-	[GYPLanguageSpecification](https://code.google.com/p/gyp/wiki/GypLanguageSpecification)
 
 GYP (Generate Your Projects) 
 Status: Draft (as of 2009-01-30)
@@ -78,9 +74,8 @@ GYP是Google开发的跨平台项目工程生成系统。本文文档第2-4章�
 
 
 
-GYP项目同Google的其他开源项目一样，托管在Google Code上：
+GYP项目同Google的其他开源项目一样，托管在[Google Code](https://code.google.com/p/gyp/)
 
-https://code.google.com/p/gyp/
 ## 示例骨架（Skeleton）
 
 本节介绍.gyp文件的基本骨架。
