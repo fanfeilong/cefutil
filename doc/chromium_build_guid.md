@@ -16,10 +16,12 @@ Windows7 64位系统编译Chromium指南
 4. 安装VisualStudio2010 SP1。
 5. 安装windows 8.0 sdk（不要安装8.1），并修改Windows Kits\8.0\Include\WinRT\asyncinfo.h
    注释第66行的class关键字：
+
    ```
    65 namespace ABI (namespace Windows { namespace Foundation { 
    66 enum /*class*/ AsyncStatus {                
-	```
+   ```
+   
 6. 安装June 2010 DirectX SDK。如果有遇到”Error Code:S1023”，则通过控制面板将
    Microsoft Visual C++ 2010 x86 Redistributable
    Microsoft Visual C++ 2010 x64 Redistributable
@@ -29,16 +31,16 @@ Windows7 64位系统编译Chromium指南
 8. 在cmd命令行下执行命令： gclient 
    该命令会优先下载git、svn、python并解压到depot_tools目录下，并设置环境变量。
 9. 下载chromium源码，可以直接下载chromium的源码压缩包也可以通过gclient直接下载。
-	- 下载源码包。
-	下载最新的chromium源码压缩包，并且最好用7z解压：
+	- 下载最新的chromium源码压缩包，并且最好用7z解压：
 	```
 	http://chromium-browser-source.commondatastorage.googleapis.com/chromium_tarball.html
 	```
-	下载指定版本的chromium源码压缩包：
+	- 下载指定版本的chromium源码压缩包：
 	```
 	http://chromium-browser-source.commondatastorage.googleapis.com/chromium.rXXXXX.tgz
+	其中rXXXXX表示版本号，比如r197479表示Revision197479。
 	```
-	其中rXXXXX表示版本号，比如r197479表示Revision197479。所有可用的压缩包版本号列表页面是：
+	- 所有可用的压缩包版本号列表页面是：
 	```
 	http://chromium-browser-source.commondatastorage.googleapis.com/
 	```
