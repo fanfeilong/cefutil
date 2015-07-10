@@ -179,6 +179,7 @@
 	}
 	```
 8. 在CefRenderProcessHandlerImpl::OnContextReleased()里释放JavaScript注册的回调函数以及其他V8资源。
+
 	```
 	void CefRenderProcessHandlerImpl::OnContextReleased(CefRefPtr<CefBrowser> browser,
 									  CefRefPtr<CefFrame> frame,
