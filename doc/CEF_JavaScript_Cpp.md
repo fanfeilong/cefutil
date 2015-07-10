@@ -8,8 +8,8 @@
 - Browser进程处理后，回发消息给Render进程
 - Render进程调用之前保存的JavaScript函数
 
+#### 步骤
 1. 首先在CefRenderProcessHandler的子类里覆写虚方法OnWebKitInitialized，并在该方法的实现里注册一个C++方法给JavaScript
-
 ```
 //假设CefRenderProcessHandler的子类为CefRenderProcessHandlerImpl
 void CefRenderProcessHandlerImpl::OnWebKitInitialized(){
@@ -145,7 +145,6 @@ app.setMessageCallback('binding_test', function(name, args) {
 6. Browser进程处理完毕后，发送一个异步进程间消息给Render进程，返回结果。
 
 7. Render进程接收到进程间消息，则调用最开始保存的JavaScript注册的回调函数处理之。
-
 ```
 // Execute the registered JavaScript callback if any.
 if (!callback_map_.empty()) {
@@ -187,7 +186,6 @@ if (!callback_map_.empty()) {
 ```
 
 8. 在CefRenderProcessHandlerImpl::OnContextReleased()里释放JavaScript注册的回调函数以及其他V8资源。
-
 ```
 void CefRenderProcessHandlerImpl::OnContextReleased(CefRefPtr<CefBrowser> browser,
                                   CefRefPtr<CefFrame> frame,
