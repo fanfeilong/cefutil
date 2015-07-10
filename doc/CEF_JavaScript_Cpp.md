@@ -45,7 +45,6 @@ void CefRenderProcessHandlerImpl::OnWebKitInitialized(){
 	CefRegisterExtension("v8/app", app_code,m_v8Handler);
 }
 ```
-
 2. 在CefV8Handler的子类的Execute方法里实现sendMessage和registerJavascriptFunction
 ```
 // in CefV8HandlerImpl.h
@@ -71,7 +70,6 @@ typedef std::map<std::pair<std::string, int>,
 CallbackMap callback_map_;
 }
 ```
-
 ```
 CefV8HandlerImpl::CefV8HandlerImpl()
 {
@@ -129,7 +127,6 @@ bool CefV8HandlerImpl::Execute(const CefString& name  //JavaScript调用的C++�
 	return true;
 }
 ```
-
 3. 在HTML的JavaScript里，通过上面注册的方法向Render进程注册一个回调函数。
 ```
 // In JavaScript register the callback function.
@@ -137,13 +134,9 @@ app.setMessageCallback('binding_test', function(name, args) {
   document.getElementById('result').value = "Response: "+args[0];
 });
 ```
-
 4. Render进程发送异步进程间通信到Browser进程。
-
 5. Browser进程接收到进程间消息，并处理。
-
 6. Browser进程处理完毕后，发送一个异步进程间消息给Render进程，返回结果。
-
 7. Render进程接收到进程间消息，则调用最开始保存的JavaScript注册的回调函数处理之。
 ```
 // Execute the registered JavaScript callback if any.
@@ -184,7 +177,6 @@ if (!callback_map_.empty()) {
   }
 }
 ```
-
 8. 在CefRenderProcessHandlerImpl::OnContextReleased()里释放JavaScript注册的回调函数以及其他V8资源。
 ```
 void CefRenderProcessHandlerImpl::OnContextReleased(CefRefPtr<CefBrowser> browser,
