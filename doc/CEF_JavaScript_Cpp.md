@@ -128,6 +128,7 @@
 	}
 	```
 3. 在HTML的JavaScript里，通过上面注册的方法向Render进程注册一个回调函数。
+	
 	```
 	// In JavaScript register the callback function.
 	app.setMessageCallback('binding_test', function(name, args) {
