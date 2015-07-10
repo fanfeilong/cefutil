@@ -17,6 +17,7 @@ Chromium Documentations
 - [Chromium Generation Your Project](https://github.com/fanfeilong/cefutil/blob/master/doc/gyp.md)
 - [Chromium Resoures](https://github.com/fanfeilong/cefutil/blob/master/doc/chromium_resources.md)
 - [Chromium Content Register V8 Extension](https://github.com/fanfeilong/cefutil/blob/master/doc/content_register_v8_extension.md)
+- [CEF Interaction Between JavaScript and C++](https://github.com/fanfeilong/cefutil/blob/master/doc/CEF_JavaScript_Cpp.md)
 
 CEF FAQ
 -------
