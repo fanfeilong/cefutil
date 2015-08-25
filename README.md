@@ -1,7 +1,8 @@
 CEF全称是Chromium Embedded Framework，它是Chromium的Content API的封装库。
-CEF官网地址：https://bitbucket.org/chromiumembedded/cef
-CEF官方论坛：http://www.magpcss.org/ceforum
-CEFSharp：https://github.com/cefsharp/CefSharp
+
+- CEF官网地址：https://bitbucket.org/chromiumembedded/cef
+- CEF官方论坛：http://www.magpcss.org/ceforum
+- CEFSharp：https://github.com/cefsharp/CefSharp
 
 CEF 文档中文翻译任务
 --------------------
