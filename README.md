@@ -17,3 +17,7 @@ Chromium Documentations
 - [Chromium Resoures](https://github.com/fanfeilong/cefutil/blob/master/doc/chromium_resources.md)
 - [Chromium Content Register V8 Extension](https://github.com/fanfeilong/cefutil/blob/master/doc/content_register_v8_extension.md)
 - [CEF Interaction Between JavaScript and C++](https://github.com/fanfeilong/cefutil/blob/master/doc/CEF_JavaScript_Cpp.md)
+
+相关链接
+---------
+- [servo, the embeddable browser engine](http://blogs.s-osg.org/servo-the-embeddable-browser-engine/)
