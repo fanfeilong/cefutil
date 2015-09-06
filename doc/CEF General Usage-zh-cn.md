@@ -607,10 +607,10 @@ class MyApp : public CefApp,
 
 #### <a name="cefclient"></a>CefClient
 
-CefClient提供访问browser-instance-specific的回调接口。单实例CefClient可以共数任意数量的浏览器进程。以下为几个重要的回调：
+CefClient提供访问Browser实例的回调接口。一个CefClient实现可以在任意数量的Browser进程中共享。以下为几个重要的回调：
 
 - 比如处理Browser的生命周期，右键菜单，对话框，通知显示， 拖曳事件，焦点事件，键盘事件等等。如果没有对某个特定的处理接口进行实现会造成什么影响，请查看cef_client.h文件中相关说明。
-- **OnProcessMessageReceived**在Render进程收到进程间消息时被调用。更多细节，请参考[Inter-Process Communication](inter-process-communication)一节。
+- **OnProcessMessageReceived**在Browser收到Render进程的消息时被调用。更多细节，请参考[Inter-Process Communication](inter-process-communication)一节。
 
 CefClient子类的例子：
 
@@ -1139,7 +1139,6 @@ var request_id = window.cefQuery({
 window.cefQueryCancel(request_id);
 ```
 
-The C++ handler looks like this:
 对应的C++ Handler代码如下：
 
 ```
@@ -1388,7 +1387,6 @@ class MyRequestClient : public CefURLRequestClient {
 };
 ```
 
-To send the request:
 下面的代码发送一个请求:
 
 ```
