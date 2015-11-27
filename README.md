@@ -15,7 +15,7 @@ CEF FAQ
 -------
 - [CEF 的关闭流程](https://github.com/xnightsky/cefutil/blob/master/doc/CEF_Close.md)
 - [CEF 的C和C++封装](https://github.com/xnightsky/cefutil/blob/master/doc/CEF_cpp2c_annotation.md)
-- [CEF 的JavaScript和C++跨语言交互(https://github.com/xnightsky/cefutil/blob/master/doc/CEF_JavaScript_Cpp.md)
+- [CEF 的JavaScript和C++跨语言交互](https://github.com/xnightsky/cefutil/blob/master/doc/CEF_JavaScript_Cpp.md)
 
 Chromium Documentations
 -----------------
