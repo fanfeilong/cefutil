@@ -1,6 +1,7 @@
 我来说windows下CEF3.2171的关闭流程，里面会引用一部分官方库的文档和个人的伪代码，为了辅助理解——
 以下是截取自cef_life_span_handler.h的头文件文档，所以一部分文档他还是写在头文件里的，根据他的流程，能很快的去梳理相关逻辑
-// The CefLifeSpanHandler::OnBeforeClose() method will be called immediately
+
+  >// The CefLifeSpanHandler::OnBeforeClose() method will be called immediately
   // before the browser object is destroyed. The application should only exit
   // after OnBeforeClose() has been called for all existing browsers.
   //
