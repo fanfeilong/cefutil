@@ -1,6 +1,8 @@
 我来说windows下CEF3.2171的关闭流程，里面会引用一部分官方库的文档和个人的伪代码，为了辅助理解——
 以下是截取自cef_life_span_handler.h的头文件文档，所以一部分文档他还是写在头文件里的，根据他的流程，能很快的去梳理相关逻辑
-// The CefLifeSpanHandler::OnBeforeClose() method will be called immediately
+
+```
+  // The CefLifeSpanHandler::OnBeforeClose() method will be called immediately
   // before the browser object is destroyed. The application should only exit
   // after OnBeforeClose() has been called for all existing browsers.
   //
@@ -32,6 +34,7 @@
   //     the browser object is destroyed.
   // 11. Application exits by calling CefQuitMessageLoop() if no other browsers
   //     exist.
+```
 
 pre1. 如果你要管理CefBrowser的生命周期，意味者你必须实现相关 CefLifeSpanHandler接口，在OnAfterCreated里管理和获取CefBrowser的每一个browser，在DoClose和OnBeforeClose里管理关闭
 pre2. 这里要注意整个流程对应开发者来说不是线性代码，都是基于消息、事件投递、接口切面的一种编程习惯，大家要对异步接口的开发有心理准备，你实现的一个接口都是等待框架或者别人调用。
