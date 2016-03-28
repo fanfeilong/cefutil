@@ -30,6 +30,9 @@ CEF全称是Chromium Embedded Framework，它是Chromium的Content API的封装�
 - [Chromium Build Guid](https://github.com/fanfeilong/cefutil/blob/master/doc/chromium_build_guid.md)
 - [Chromium for developer](http://www.chromium.org/developers)
 - [windows build instructions](https://chromium.googlesource.com/chromium/src/+/master/docs/windows_build_instructions.md)
+  - depot_tool的官方地址被墙(一种深深的怨恨)，可以在github 里搜索depot tool 关键字搜索相关的克隆项目，例如：
+    - [depot tool](https://github.com/cybertk/depot_tools)
+  - google 官方开发的vs插件，专门为chromium源码提供的。[vs-chromium](https://github.com/chromium/vs-chromium)
 
 相关链接
 ---------
