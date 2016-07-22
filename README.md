@@ -16,6 +16,7 @@ CEF全称是Chromium Embedded Framework，它是Chromium的Content API的封装�
 - [CEF 的关闭流程](https://github.com/fanfeilong/cefutil/blob/master/doc/CEF_Close.md)
 - [CEF 的C和C++封装](https://github.com/fanfeilong/cefutil/blob/master/doc/CEF_cpp2c_annotation.md)
 - [CEF 的JavaScript和C++跨语言交互](https://github.com/fanfeilong/cefutil/blob/master/doc/CEF_JavaScript_Cpp.md)
+- [Cef经典N大问题 by 扫地僧](http://blog.csdn.net/weolar/article/details/51994895)
 
 ## Chromium Documentations
 -----------------
