@@ -28,10 +28,17 @@ CEF全称是Chromium Embedded Framework，它是Chromium的Content API的封装�
 
 ## Chromium Documentations
 -----------------
-- [Chromium Generation Your Project](https://github.com/fanfeilong/cefutil/blob/master/doc/gyp.md)
 - [Chromium Resoures](https://github.com/fanfeilong/cefutil/blob/master/doc/chromium_resources.md)
 - [Chromium Content Register V8 Extension](https://github.com/fanfeilong/cefutil/blob/master/doc/content_register_v8_extension.md)
-- [Chromium GYP 中文翻译](https://github.com/fanfeilong/cefutil/blob/master/doc/gyp.pdf)
+
+### 构建系统文档（已过时）
+**⚠️ 注意：以下 GYP 构建系统文档已过时，Chromium 已迁移到 GN 构建系统**
+- [Chromium Generation Your Project (GYP)](https://github.com/fanfeilong/cefutil/blob/master/doc/gyp.md) - 仅供历史参考
+- [Chromium GYP 中文翻译](https://github.com/fanfeilong/cefutil/blob/master/doc/gyp.pdf) - 仅供历史参考
+
+**推荐使用最新的 GN 构建系统：**
+- [GN 官方文档](https://gn.googlesource.com/gn/)
+- [Chromium GN 快速开始](https://chromium.googlesource.com/chromium/src/+/main/tools/gn/docs/quick_start.md)
 
 ## CEF Build
 -----------------

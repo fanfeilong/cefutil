@@ -1,6 +1,32 @@
 
-GYP(Generate Your Projects)
-===========================
+**🚨 重要：GYP 已被 GN 替代**
+
+**GYP 构建系统已过时，Chromium 和 CEF 项目已全面迁移到 GN (Generate Ninja) 构建系统。**
+
+## GN 迁移信息
+
+**当前状态（2025年）：**
+- Chromium 在 2016 年开始迁移到 GN
+- CEF 项目跟随 Chromium 完成了 GN 迁移
+- 新的 CEF 项目应使用 GN 而非 GYP
+
+**学习 GN 构建系统：**
+- [GN 官方文档](https://gn.googlesource.com/gn/)
+- [Chromium GN 使用指南](https://chromium.googlesource.com/chromium/src/+/main/tools/gn/docs/)
+- [CEF 构建说明](https://bitbucket.org/chromiumembedded/cef/wiki/BranchesAndBuilding)
+
+**GYP 到 GN 主要变化：**
+- 构建文件从 `.gyp` 改为 `BUILD.gn`
+- 语法更简洁，性能更好
+- 原生支持 Ninja 构建器
+- 更好的依赖追踪
+
+**⚠️ 以下 GYP 文档仅供历史参考，不建议用于新项目**
+
+---
+
+GYP(Generate Your Projects) - 已过时
+====================================
 
 目录
 
