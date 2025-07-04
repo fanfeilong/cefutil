@@ -46,8 +46,11 @@ CEF全称是Chromium Embedded Framework，它是Chromium的Content API的封装�
 - [Chromium Build Guid](https://github.com/fanfeilong/cefutil/blob/master/doc/chromium_build_guid.md)
 - [Chromium for developer](http://www.chromium.org/developers)
 - [windows build instructions](https://chromium.googlesource.com/chromium/src/+/master/docs/windows_build_instructions.md)
-  - depot_tool的官方地址被墙(一种深深的怨恨)，可以在github 里搜索depot tool 关键字搜索相关的克隆项目，例如：
-    - [depot tool](https://github.com/cybertk/depot_tools)
+  - **官方 depot_tools 仓库**: https://chromium.googlesource.com/chromium/tools/depot_tools.git
+  - **系统要求**: Python 3.8+ (depot_tools 会自动管理 Python 环境)
+  - **自动更新**: 运行 `gclient` 时会自动更新 depot_tools
+  - **包含工具**: GN、autoninja、siso、ninja 等最新构建工具
+  - 如遇网络问题，可搜索 GitHub 上的镜像仓库：[depot_tools mirrors](https://github.com/search?q=depot_tools)
   - google 官方开发的vs插件，专门为chromium源码提供的。[vs-chromium](https://github.com/chromium/vs-chromium)
   - 同样的原因，depot_tool里内置的chromium的源码下载地址放在googleapi.com上，也是被墙的。下面这个地址里有chromium的所有项目的git地址：
     - https://chromium.googlesource.com/?format=JSON
