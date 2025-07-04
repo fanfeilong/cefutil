@@ -1,3 +1,28 @@
+**⚠️ 文档时效性声明**
+
+本文档基于较早版本的 CEF 编写，部分内容可能已过时。当前 CEF 最新版本为 138.x（基于 Chromium 138）。
+
+**🔥 强烈推荐优先参考 2025年现代化指南：**
+- 🚀 [现代开发指南 (2025)](modern_development_guide_2025.md) - 最新工具链和环境配置
+- ✨ [CEF 最新特性指南 (2025)](cef_features_2025.md) - CEF 137.x/138.x 核心特性
+- ⚡ [性能优化最佳实践 (2025)](performance_optimization_2025.md) - WebGPU、WebAssembly 等
+- 🔒 [安全开发指南 (2025)](security_best_practices_2025.md) - 现代安全威胁防护
+- 🌐 [多平台支持指南 (2025)](multi_platform_guide_2025.md) - 跨平台开发完整指南
+
+**官方资源：**
+- [CEF 官方文档](https://bitbucket.org/chromiumembedded/cef)
+- [CEF 官方论坛](https://magpcss.org/ceforum)
+- [最新构建指南](https://bitbucket.org/chromiumembedded/cef/wiki/BranchesAndBuilding)
+
+**适用版本范围：** CEF3 早期版本（可能不适用于 CEF 100+ 版本）
+**最后验证时间：** 2025年7月4日
+
+---
+
+**📖 关于本文档**
+
+此文档作为历史参考保留，介绍了 CEF3 的基础概念。对于现代 CEF 开发，建议使用上述 2025年现代化指南。
+
 **这是一个翻译文档，持续更新中**
 
 CEF General Usage(CEF3预览)

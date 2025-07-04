@@ -42,10 +42,11 @@
 ### 中优先级任务
 
 #### 技术文档更新
-- [ ] 更新 CEF General Usage 文档
-- [ ] 修订 Chromium 编译指南
-- [ ] 更新 API 使用示例
-- [ ] 检查 JavaScript 与 C++ 交互文档
+- [x] 更新 CEF General Usage 文档
+- [x] 修订 Chromium 编译指南
+- [x] 更新 API 使用示例
+- [x] 检查 JavaScript 与 C++ 交互文档
+- [x] 更新其他核心技术文档
 
 #### 构建系统现代化
 - [x] 更新 GYP 到 GN 的迁移说明
@@ -67,7 +68,17 @@
 - [x] 更新性能优化建议（WebGPU、WebAssembly、现代渲染技术）
 - [x] 补充安全最佳实践（进程隔离、CSP、网络安全等）
 - [x] 添加多平台支持说明（Windows、macOS、Linux、Android、iOS）
-- [x] 文档时效性声明（3个核心技术文档已添加时效性警告）
+- [x] 文档时效性声明（已完成7个核心技术文档的时效性警告更新）
+- [x] 技术文档现代化链接（所有经典文档都已添加现代化指南链接）
+
+**已处理的核心技术文档：**
+- ✅ CEF General Usage.md（英文版）
+- ✅ CEF General Usage-zh-cn.md（中文版）
+- ✅ CEF_JavaScript_Cpp.md
+- ✅ CEF_Close.md
+- ✅ CEF_cpp2c_annotation.md
+- ✅ chromium_resources.md
+- ✅ chromium_build_guid.md（之前已完成）
 
 **🎉 Phase 2 完成：100% 完成！**
 
@@ -135,9 +146,17 @@
 
 - **2025-07-04**: 
   - 创建初始状态报告和跟踪文件
-  - 完成 Phase 1 全部高优先级任务
-  - 完成 Phase 2 全部中优先级任务
-  - 创建5个现代化技术文档
-  - README.md 彻底重构（1300行→72行）
-  - 完成 Phase 3 文档重构核心任务
+  - **Phase 1 完成**：紧急更新全部完成
+    - README.md 过期声明和版本更新
+    - 外部链接验证和修复
+    - 核心文档时效性警告
+  - **Phase 2 完成**：内容更新全部完成
+    - 构建系统现代化（GYP → GN）
+    - 创建5个现代化技术文档
+    - 更新7个经典技术文档时效性警告
+    - 添加现代化指南链接
+  - **Phase 3 完成**：文档重构核心任务完成
+    - README.md 彻底重构（1300行→72行）
+    - 文档结构重新组织
+    - 统一文档格式和风格
 - **待更新**: 后续更新将在此记录 

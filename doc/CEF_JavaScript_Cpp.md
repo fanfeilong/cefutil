@@ -2,13 +2,19 @@
 
 本文档展示的 JavaScript 与 C++ 交互方法基于较早版本的 CEF API。随着 CEF 版本演进（特别是 CEF 100+ 版本），部分 API 可能已发生变化。
 
-**建议在使用前检查：**
+**🔥 推荐优先参考现代化指南：**
+- 🚀 [现代开发指南 (2025)](modern_development_guide_2025.md) - 最新 API 使用方法
+- ✨ [CEF 最新特性指南 (2025)](cef_features_2025.md) - 现代 JavaScript 绑定特性
+- ⚡ [性能优化最佳实践 (2025)](performance_optimization_2025.md) - JavaScript 性能优化
+- 🔒 [安全开发指南 (2025)](security_best_practices_2025.md) - JavaScript 安全最佳实践
+
+**官方资源：**
 - [最新 CEF API 文档](https://bitbucket.org/chromiumembedded/cef)
 - [官方 JavaScript 绑定指南](https://bitbucket.org/chromiumembedded/cef/wiki/JavaScriptIntegration)
 - [CEF 论坛相关讨论](https://magpcss.org/ceforum/viewforum.php?f=6)
 
 **适用版本：** CEF3 早期到中期版本
-**验证日期：** 2025年7月4日（API 可能需要更新）
+**验证日期：** 2025年7月4日（建议使用现代化 API）
 
 ---
 

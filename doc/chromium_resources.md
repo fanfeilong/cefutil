@@ -1,3 +1,21 @@
+**⚠️ Chromium 构建系统时效性声明**
+
+本文档描述的 Chromium 资源系统（GRD、XTB、GRIT、PAK）基于较早版本的 Chromium。随着 Chromium 构建系统的演进，特别是从 GYP 到 GN 的迁移，部分内容可能已过时。当前 CEF 基于 Chromium 138。
+
+**🔥 推荐优先参考现代化指南：**
+- 🚀 [现代开发指南 (2025)](modern_development_guide_2025.md) - 最新构建系统和工具链
+- ✨ [CEF 最新特性指南 (2025)](cef_features_2025.md) - 现代资源管理方法
+- 🌐 [多平台支持指南 (2025)](multi_platform_guide_2025.md) - 跨平台资源处理
+
+**官方资源：**
+- [Chromium 构建文档](https://chromium.googlesource.com/chromium/src/+/main/docs/)
+- [GN 构建系统文档](https://gn.googlesource.com/gn/)
+
+**重要提示：** 资源构建系统在不同版本中可能有显著变化，建议参考最新官方文档
+**最后验证时间：** 2025年7月4日
+
+---
+
 Chromium Resource
 
 目录
