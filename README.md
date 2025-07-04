@@ -1,9 +1,17 @@
+⚠️ **重要提示**: 本仓库的部分内容可能已过时。CEF 项目仍在活跃开发中，请访问 [CEF 官方网站](https://bitbucket.org/chromiumembedded/cef) 获取最新信息。
+
+**最后更新**: 2025年7月4日  
+**CEF 当前版本**: 138.x  
+**状态**: 部分文档需要更新 - 查看 [更新计划](update/README.md)
+
+---
+
 CEF全称是Chromium Embedded Framework，它是Chromium的Content API的封装库。
 
 - CEF官网地址：https://bitbucket.org/chromiumembedded/cef
 - CEF官方论坛：http://www.magpcss.org/ceforum
 - CEFSharp：https://github.com/cefsharp/CefSharp
-- ChromiumFX,.NET bindings for the Chromium Embedded Framework.: https://bitbucket.org/chromiumfx/chromiumfx
+- ⚠️ ChromiumFX（已不活跃）: https://bitbucket.org/chromiumfx/chromiumfx
 
 ## CEF 文档中文翻译任务
 --------------------
