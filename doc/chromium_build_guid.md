@@ -1,5 +1,24 @@
-Windows7 64位系统编译Chromium指南
-=================================
+**⚠️ 重要提示：本文档已严重过时**
+
+本文档基于 Windows 7 和 Visual Studio 2010 编写，已不适用于当前的 Chromium/CEF 开发环境。
+
+**当前推荐环境（2025年）：**
+- **操作系统**: Windows 10/11 64位
+- **IDE**: Visual Studio 2022 Community 或 Professional
+- **构建系统**: GN (已从 GYP 迁移)
+- **工具链**: 最新版 depot_tools
+
+**请优先参考官方最新文档：**
+- [官方构建指南](https://bitbucket.org/chromiumembedded/cef/wiki/BranchesAndBuilding)
+- [Chromium 开发者文档](https://chromium.googlesource.com/chromium/src/+/main/docs/)
+- [CEF 论坛构建讨论](https://magpcss.org/ceforum/viewforum.php?f=6)
+
+**⚠️ 以下内容仅供历史参考，请勿按此执行**
+
+---
+
+Windows7 64位系统编译Chromium指南（已过时）
+=========================================
 
 1. 代理相关问题，以ssh隧道代理为例：
 	- 配置bitvise，设置socket5代理。指定socket代理端口号127.0.0.1:xxxx;

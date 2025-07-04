@@ -1,3 +1,17 @@
+**⚠️ API 时效性警告**
+
+本文档展示的 JavaScript 与 C++ 交互方法基于较早版本的 CEF API。随着 CEF 版本演进（特别是 CEF 100+ 版本），部分 API 可能已发生变化。
+
+**建议在使用前检查：**
+- [最新 CEF API 文档](https://bitbucket.org/chromiumembedded/cef)
+- [官方 JavaScript 绑定指南](https://bitbucket.org/chromiumembedded/cef/wiki/JavaScriptIntegration)
+- [CEF 论坛相关讨论](https://magpcss.org/ceforum/viewforum.php?f=6)
+
+**适用版本：** CEF3 早期到中期版本
+**验证日期：** 2025年7月4日（API 可能需要更新）
+
+---
+
 ##### <a name="javascirpt-custome-handler"></a>JavaScript和Cpp交互示例(Custom Implementation)
 
 一个CEF应用程序也可以提供自己的异步JavaScript绑定。

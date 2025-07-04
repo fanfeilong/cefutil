@@ -1,3 +1,17 @@
+**⚠️ 文档时效性声明**
+
+本文档基于较早版本的 CEF 编写，部分内容可能已过时。当前 CEF 最新版本为 138.x（基于 Chromium 138）。
+
+**建议优先参考：**
+- [CEF 官方文档](https://bitbucket.org/chromiumembedded/cef)
+- [CEF 官方论坛](https://magpcss.org/ceforum)
+- [最新构建指南](https://bitbucket.org/chromiumembedded/cef/wiki/BranchesAndBuilding)
+
+**适用版本范围：** CEF3 早期版本（可能不适用于 CEF 100+ 版本）
+**最后验证时间：** 2025年7月4日
+
+---
+
 **这是一个翻译文档，持续更新中**
 
 CEF General Usage(CEF3预览)
