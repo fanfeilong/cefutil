@@ -21,3 +21,4 @@
 *.app
 /doc/~$romium_resoures.docx
 build/
+dist/
