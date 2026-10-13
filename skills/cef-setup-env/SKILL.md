@@ -14,8 +14,8 @@ description: Install the toolchain required to configure and compile a CEF binar
 共同要求：
 
 - CMake 3.21 或更新。用 `cmake --version` 确认。
-- Python 3.9、3.10 或 3.11。cef-project 的 CMake 会调用 Python 下载 clang-format。3.12 及以上先不要假设能过；配置报 Python 错误时改用 3.11，并用 `PYTHON_EXECUTABLE` 指到那个解释器。
-- Git，用来克隆 https://github.com/chromiumembedded/cef-project 。
+- 只编译官方二进制包时，系统自带的 Python 即可。要走 cef-project 时，它的 CMake 会用 Python 下载 clang-format，README 要求 3.9、3.10 或 3.11。3.12 配置失败时，把 `PYTHON_EXECUTABLE` 指到 3.11；本机没有 3.11 时改用 `cef-create-project` 里对着已解压目录建工程的做法，不要为了 clang-format 更换系统 Python。
+- Git，用来克隆 https://github.com/chromiumembedded/cef-project 。只有走 cef-project 时才需要。
 
 Windows：
 
@@ -32,9 +32,10 @@ macOS：
 Linux：
 
 - 发行版至少能满足官方分支页上的 Ubuntu 20.04 或 Debian 10 要求。cef-project 推荐 Ubuntu 22.04 和 GCC 11 及以上。
-- 安装 `build-essential`、`libgtk-3-dev`、cmake 和所选 Python。
+- 安装 `build-essential`、`cmake`、`libgtk-3-dev`。运行窗口还需要 `libnss3`、`libasound2t64`（旧发行版是 `libasound2`）、`libgbm1`、`libxcomposite1`、`libxdamage1`、`libxrandr2`、`libxss1`、`libxkbcommon0`、`libatk1.0-0`、`libatk-bridge2.0-0`、`libcups2`、`libpango-1.0-0`、`libdrm2`。
 - 生成器可用 `"Unix Makefiles"` 或 `Ninja`，并设置 `-DCMAKE_BUILD_TYPE=Release`。
+- 显式指定编译器：`-DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++`。`/usr/bin/c++` 若是 clang，而 clang 选中的 GCC 版本没有 `libstdc++.so`，链接会报 `cannot find -lstdc++`。Ubuntu 24.04 上曾出现 clang 18 选择 GCC 14、库却装在 GCC 13 的情况，改用 g++ 13 后通过。
 
 ## 做完怎么判断
 
-`cmake --version` 不低于 3.21，`python3 --version` 落在 3.9–3.11，本机编译器能被 CMake 找到（Windows 上是 cl，macOS 上是 Xcode，Linux 上是 g++ 或 clang++）。然后运行 `cef-download` 和 `cef-build`。
+`cmake --version` 不低于 3.21，本机编译器能被 CMake 找到（Windows 上是 cl，macOS 上是 Xcode，Linux 上是 g++）。走 cef-project 时再确认 `python3 --version` 落在 3.9–3.11。然后运行 `cef-download` 和 `cef-build`。

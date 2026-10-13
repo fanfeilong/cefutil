@@ -1,24 +1,45 @@
-# Compiled Object files
+# Compiled objects
 *.slo
 *.lo
 *.o
 *.obj
 
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-
-# Compiled Static libraries
+# Libraries
 *.lai
 *.la
 *.a
 *.lib
+*.so
+*.dylib
+*.dll
 
 # Executables
 *.exe
 *.out
 *.app
-/doc/~$romium_resoures.docx
+
+# Downloaded CEF binaries and every build tree
+/third_party/
 build/
 dist/
+
+# CMake leftovers from an in-source configure
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+CTestTestfile.cmake
+Testing/
+
+# CEF runtime data written beside a binary
+debug.log
+chrome_debug.log
+root_cache/
+
+# A distribution tarball left at the repository root
+/cef_binary_*.tar.bz2
+/cef_binary_*.tar.bz2.sha1
+
+# Editor
+/doc/~$romium_resoures.docx
+*~
+.DS_Store

@@ -37,6 +37,21 @@ Linux 的单配置生成器去掉 `--config Release`。
 
 Bazel 路径是实验性质。用户没有指定 Bazel 时用 CMake。
 
+## 不能使用 cef-project 时
+
+本机没有 Python 3.9–3.11 时，对着 `cef-download` 已经解压并校验过的目录建独立工程。本仓库的 `src/` 就是这样编过的：顶层把 `-DCEF_ROOT` 指到 `cef_binary_*`，`find_package(CEF REQUIRED)`，再加入 `libcef_dll_wrapper` 和自己的目标。
+
+目标链接 `libcef_lib`、`libcef_dll_wrapper` 和 `${CEF_STANDARD_LIBS}`。Linux 把 `INSTALL_RPATH` 设为 `$ORIGIN`，并用包内的 `COPY_FILES` 把 `CEF_BINARY_FILES`、`CEF_RESOURCE_FILES` 拷到输出目录。入口顺序保持 `CefExecuteProcess`、`CefInitialize`、`CefRunMessageLoop`、`CefShutdown`。未定义 `CEF_USE_SANDBOX` 时设置 `settings.no_sandbox = true`，并把 `CefSettings.root_cache_path` 设成可写绝对路径。
+
+配置与 `cef-build` 使用同一组生成器、编译器和 `-DUSE_SANDBOX=OFF`：
+
+```bash
+cmake -S src -B src/build -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release \
+  -DUSE_SANDBOX=OFF -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ \
+  -DCEF_ROOT="$CEF_ROOT"
+cmake --build src/build --target cefdemo
+```
+
 ## 做完怎么判断
 
-新目标单独编过，不依赖改 `tests/cefsimple` 的源文件。运行时资源在输出目录或 app bundle 里。顶层 CMake 仍从 Spotify 拉取与 `CEF_VERSION` 相同的包。
+新目标单独编过，不依赖改 `tests/cefsimple` 的源文件。运行时资源在输出目录或 app bundle 里。cef-project 的顶层 CMake 仍从 Spotify 拉取与 `CEF_VERSION` 相同的包；独立工程则把 `CEF_ROOT` 指到已经校验过的解压目录。窗口出现页面，关掉后进程退出。

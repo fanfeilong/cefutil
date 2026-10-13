@@ -13,7 +13,7 @@ description: Integrate an already downloaded CEF binary into an existing native 
 2. 把 `libcef_dll` 作为子目录加入现有工程，或链接 `cef-build` 已经产出的 `libcef_dll_wrapper`。包装层和宿主使用同一个编译器、同一个 `CEF_API_VERSION`（若要钉稳定 ABI）。宏的含义见 `docs/03-binary-boundary.md`。
 3. 链接 `libcef`。按二进制包 README.txt 把 `libcef`、`icudtl.dat`、pak、snapshot 和 `locales/` 拷到可执行文件旁边。macOS 保持 Framework 与 Helper 的 bundle 相对位置。Linux 设置 rpath 为 `$ORIGIN`。
 4. 在现有入口里、创建业务窗口之前调用 `CefExecuteProcess`。这行必须出现在主进程和子进程都会执行到的路径上。返回值大于等于 0 时立刻退出。
-5. 填 `CefSettings` 的可写 `cache_path` 和 `log_file`，再 `CefInitialize`。
+5. 在 `CefInitialize` 之前把 `CefSettings.root_cache_path` 设成该程序专用的绝对路径，再按需要设置它的子目录 `cache_path` 和 `log_file`。M120 起，空的 `root_cache_path` 会落到平台默认目录，并和其他 CEF 程序抢同一把进程锁。
 6. 已有 GUI 循环时不要调用 `CefRunMessageLoop`。保持 `multi_threaded_message_loop` 为 false，在主线程周期调用 `CefDoMessageLoopWork`。需要 CEF 独占 UI 时才用 `CefRunMessageLoop`。两种循环不能一起跑。
 7. 在 `OnContextInitialized` 里 `CreateBrowser`。`CefLifeSpanHandler` 按 `docs/05-lifecycle.md` 计数；父窗口第一次系统关闭只调用 `CloseBrowser(false)` 并取消关闭。最后一个 `OnBeforeClose` 之后停止泵，再 `CefShutdown`。
 8. 页面要调用原生代码时用 `include/wrapper/cef_message_router.h`，接线要求见 `docs/07-javascript.md`。不要新增 `CefRegisterExtension` 或 `native function`。
