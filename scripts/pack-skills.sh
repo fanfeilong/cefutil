@@ -11,7 +11,7 @@ trap 'rm -rf "$stage"' EXIT
 
 mkdir -p "$out_dir" "$stage/skills"
 cp skills/README.md skills/VERSION "$stage/skills/"
-for name in cef-integrate cef-lifecycle cef-js-bridge cef-host-surface cef-upgrade; do
+for name in cef-setup-env cef-download cef-build cef-create-project cef-integrate; do
   mkdir -p "$stage/skills/$name"
   cp "skills/$name/SKILL.md" "$stage/skills/$name/SKILL.md"
 done

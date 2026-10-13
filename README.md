@@ -1,38 +1,42 @@
-# CEF 架构与集成
+# CEF 文档与技能
 
-这个仓库说明 Chromium Embedded Framework 怎么嵌进已有的原生程序：进程和线程怎么分，窗口怎么创建和关闭，JavaScript 怎么跨进程调用宿主，二进制包怎么升级。
+官方接口说明在 <https://chromiumembedded.github.io/cef/>。源码在 <https://github.com/chromiumembedded/cef>。预编译包在 <https://cef-builds.spotifycdn.com/index.html>。二次开发的起点是 <https://github.com/chromiumembedded/cef-project>。
 
-官方接口说明在 <https://chromiumembedded.github.io/cef/>。源码在 <https://github.com/chromiumembedded/cef>。预编译包在 <https://cef-builds.spotifycdn.com/index.html>。
+文档和技能的核对日期是 **2026-10-13**。支持中的分支以 [Branches and Building](https://chromiumembedded.github.io/cef/branches_and_building.html) 为准。
 
-本文核对日期是 **2026-10-13**。当天仍受支持的发布分支以官方 [Branches and Building](https://chromiumembedded.github.io/cef/branches_and_building.html) 为准（当时为 Beta 156、Extended 152、LTC 150）。不要把旧笔记里的 CEF 138 或 GYP 构建步骤当成现行步骤。
+## 有用的文档
 
-## 怎么读
+`docs/` 说明现行 CEF 的结构，供人阅读，也供技能在动手前查阅。从 [文档地图](docs/README.md) 进入。
 
-从 [文档地图](docs/README.md) 按顺序读。已经决定要用 CEF、准备动手时，直接看 [嵌进已有程序](docs/09-integrate.md)。
+| 文档 | 内容 |
+| --- | --- |
+| [位置](docs/01-place.md) | 什么产品该用 CEF |
+| [架构](docs/02-architecture.md) | Chrome bootstrap、Chrome style、Alloy style |
+| [二进制边界](docs/03-binary-boundary.md) | C API、wrapper、`CEF_API_VERSION` |
+| [进程和线程](docs/04-processes-and-threads.md) | 代码写在哪个进程 |
+| [启动与关闭](docs/05-lifecycle.md) | 入口、消息循环、两段式关闭 |
+| [应用怎么拆](docs/06-application-shape.md) | `CefApp`、`CefClient`、`CefBrowser` |
+| [JavaScript](docs/07-javascript.md) | 消息路由 |
+| [页面放在哪里](docs/08-hosting.md) | Views、原生父窗口、离屏渲染 |
+| [集成顺序](docs/09-integrate.md) | 嵌进已有程序的检查表 |
+| [发布与升级](docs/10-ship-and-upgrade.md) | 分支、沙箱、换包 |
 
-1. [CEF 在产品里的位置](docs/01-place.md)
-2. [架构](docs/02-architecture.md)
-3. [二进制边界](docs/03-binary-boundary.md)
-4. [进程和线程](docs/04-processes-and-threads.md)
-5. [启动、消息循环、关闭](docs/05-lifecycle.md)
-6. [应用怎么拆](docs/06-application-shape.md)
-7. [JavaScript 和原生代码](docs/07-javascript.md)
-8. [页面放在哪里](docs/08-hosting.md)
-9. [嵌进已有程序](docs/09-integrate.md)
-10. [发布与升级](docs/10-ship-and-upgrade.md)
+## 技能
 
-## 给编程代理的 skill
+`skills/` 是给 coding agent 的操作技能。代理按这个顺序执行，不从归档文档里推断命令。
 
-[`skills/`](skills/README.md) 是一组给 coding agent 用的技能，用来在用户自己的程序里集成或修改 CEF。五个技能分别覆盖首次集成、生命周期、JavaScript 桥、窗口与离屏渲染、升级和沙箱。
+| 顺序 | 技能 | 作用 |
+| --- | --- | --- |
+| 1 | [cef-setup-env](skills/cef-setup-env/SKILL.md) | 配置 CMake、Python 和编译器 |
+| 2 | [cef-download](skills/cef-download/SKILL.md) | 下载并校验当前分支的二进制包 |
+| 3 | [cef-build](skills/cef-build/SKILL.md) | 编译并运行 `cefsimple` |
+| 4 | [cef-create-project](skills/cef-create-project/SKILL.md) | 从 cefsimple 创建二次开发工程 |
+| 5 | [cef-integrate](skills/cef-integrate/SKILL.md) | 集成到已经存在的程序 |
 
-安装时把子目录复制到程序仓库的 `.cursor/skills/`。发布包用下面的命令生成，作为本仓库 release 的附件：
+安装和打包见 [skills/README.md](skills/README.md)。`scripts/pack-skills.sh` 生成 `dist/cef-agent-skills-<version>.zip`。
 
-```bash
-scripts/pack-skills.sh
-```
+全新程序走到第 4 步。已有程序在第 3 步确认能编过之后，使用第 5 步。
 
-产物是 `dist/cef-agent-skills-<version>.zip`。
+## 归档
 
-## 官方样本
-
-集成时以二进制包里的 `cefsimple` 为最小结构，以 `cefclient` 为功能对照。离屏渲染、自定义 scheme、请求拦截都先在 `cefclient` 里看到可运行的做法，再摘进自己的进程。
+[archive/](archive/README.md) 只保存旧的 PDF 和 Word。那些文件记录的是早期 GYP 和旧译文，不能用于现在的下载、编译或集成。

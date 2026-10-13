@@ -15,6 +15,6 @@
 | 9 | [嵌进已有程序](09-integrate.md) | 从下载二进制包到第一次关掉窗口 |
 | 10 | [发布与升级](10-ship-and-upgrade.md) | 分支、沙箱、换包时要重编什么 |
 
-给编程代理用的操作步骤在仓库的 [`skills/`](../skills/README.md)。代理动手前应先读第 2、5、9 篇；要做 JS 桥再读第 7 篇；要离屏再读第 8 篇。
+编程代理的操作技能在 [`skills/`](../skills/README.md)，顺序是 `cef-setup-env`、`cef-download`、`cef-build`、`cef-create-project`、`cef-integrate`。动手前读第 2、5、9 篇；做 JavaScript 桥再读第 7 篇；做离屏渲染再读第 8 篇。
 
 官方说明书仍是接口细节的来源：<https://chromiumembedded.github.io/cef/>。本文不复制那套页面，只保留集成时会反复用到的结构。
