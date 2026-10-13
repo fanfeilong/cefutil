@@ -27,7 +27,7 @@
 
 | 顺序 | 技能 | 作用 |
 | --- | --- | --- |
-| 1 | [cef-setup-env](skills/cef-setup-env/SKILL.md) | 配置 CMake、Python 和编译器 |
+| 1 | [cef-setup-env](skills/cef-setup-env/SKILL.md) | 配置 CMake 和编译器 |
 | 2 | [cef-download](skills/cef-download/SKILL.md) | 下载并校验当前分支的二进制包 |
 | 3 | [cef-build](skills/cef-build/SKILL.md) | 编译并运行 `cefsimple` |
 | 4 | [cef-create-project](skills/cef-create-project/SKILL.md) | 从 cefsimple 创建二次开发工程 |
@@ -36,6 +36,93 @@
 安装、本地打包和自动发布见 [skills/README.md](skills/README.md)。`master` 上 `skills/VERSION` 变化后，[Skills release](.github/workflows/skills-release.yml) 会发布 `skills-v<version>`，附件是 `cef-agent-skills-<version>.zip`。
 
 全新程序走到第 4 步。已有程序在第 3 步确认能编过之后，使用第 5 步。
+
+## 用这组技能构建 src
+
+下面是 2026-10-13 在 Ubuntu 24.04 上按技能顺序走完的记录。主机是 gcc/g++ 13.3.0、CMake 3.28.3、Python 3.12.3。`/usr/bin/c++` 实际是 clang 18.1.3。选中的包是 Extended 分支上的标准 linux64 包：
+
+```text
+CEF_VERSION=152.0.13+g841e03d+chromium-152.0.7977.158
+platform=linux64
+SHA1=5dfbd18933fb4bc58eef4058586c03d1a3fa0e6d
+```
+
+下载地址是 `https://cef-builds.spotifycdn.com/cef_binary_152.0.13%2Bg841e03d%2Bchromium-152.0.7977.158_linux64.tar.bz2`。解压目录和编译输出在 `third_party/`、`src/build/`，由 `.gitignore` 排除，不进仓库。
+
+### 1. cef-setup-env
+
+编译和开窗口用到：
+
+```bash
+sudo apt-get install -y libgtk-3-dev libnss3 libxss1 libasound2t64 libgbm1 \
+  libxcomposite1 libxdamage1 libxrandr2 libpango-1.0-0 libcups2 libatk1.0-0 \
+  libatk-bridge2.0-0 libxkbcommon0 libdrm2
+```
+
+`build-essential` 和 CMake 3.28 已经在这台机器上。默认仓库没有 `python3.11`，cef-project 要求用 3.9–3.11 下载 clang-format，所以这次没有克隆 cef-project。二进制包本身的 CMake 不需要那个 Python。
+
+第一次用默认的 `/usr/bin/c++` 配置时，链接失败：`/usr/bin/ld: cannot find -lstdc++`。clang 18 选了 GCC 14，而 `libstdc++.so` 只在 GCC 13 的目录里。之后的配置都加上 `-DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++`。
+
+### 2. cef-download
+
+```bash
+VER=152.0.13+g841e03d+chromium-152.0.7977.158
+PLAT=linux64
+ENC=${VER//+/%2B}
+mkdir -p third_party/cef
+cd third_party/cef
+curl -fsSL -o "cef_binary_${VER}_${PLAT}.tar.bz2.sha1" \
+  "https://cef-builds.spotifycdn.com/cef_binary_${ENC}_${PLAT}.tar.bz2.sha1"
+curl -fL -o "cef_binary_${VER}_${PLAT}.tar.bz2" \
+  "https://cef-builds.spotifycdn.com/cef_binary_${ENC}_${PLAT}.tar.bz2"
+echo "5dfbd18933fb4bc58eef4058586c03d1a3fa0e6d  cef_binary_${VER}_${PLAT}.tar.bz2" | sha1sum -c -
+tar -xf "cef_binary_${VER}_${PLAT}.tar.bz2"
+```
+
+解压后能看到 `CMakeLists.txt`、`include/`、`Release/`、`Resources/`、`libcef_dll/`。`CEF_ROOT` 就是这个解压目录。
+
+### 3. cef-build
+
+```bash
+cmake -S "$CEF_ROOT" -B "$CEF_ROOT/build" -G "Unix Makefiles" \
+  -DCMAKE_BUILD_TYPE=Release -DUSE_SANDBOX=OFF \
+  -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++
+cmake --build "$CEF_ROOT/build" --target cefsimple -j"$(nproc)"
+```
+
+可执行文件在 `$CEF_ROOT/build/tests/cefsimple/Release/cefsimple`。构建结束时 CMake 会打印一条要对 `chrome-sandbox` 执行的 `sudo chown` / `chmod 4755`。这次沙箱是关的，没有执行那条命令。缺 Doxygen 只产生警告。
+
+在 `DISPLAY=:1` 上运行后，窗口标题是 Google，页面是 Google 首页。点窗口左上角关闭后进程退出。
+
+![cefsimple 打开 Google](docs/images/cefsimple-linux64.png)
+
+### 4. 二次开发工程 src/cefdemo
+
+`src/` 是对着已解压二进制包写的独立 CMake 工程：`-DCEF_ROOT`、`find_package(CEF)`、`libcef_dll_wrapper`，再加上 `cefdemo`。入口先跑 `CefExecuteProcess`，学习构建设置 `no_sandbox`，并把 `root_cache_path` 指到输出目录下的 `root_cache/`。页面是 `src/cefdemo/web/index.html`。主框架加载结束后，`OnLoadEnd` 把页面上的 `waiting` 改成 `page loaded`。
+
+```bash
+cmake -S src -B src/build -G "Unix Makefiles" \
+  -DCMAKE_BUILD_TYPE=Release -DUSE_SANDBOX=OFF \
+  -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ \
+  -DCEF_ROOT="$CEF_ROOT"
+cmake --build src/build --target cefdemo -j"$(nproc)"
+cd src/build/cefdemo/Release
+./cefdemo
+```
+
+产物是 `src/build/cefdemo/Release/cefdemo`，旁边有 `libcef.so`、pak、`locales/` 和 `web/`。
+
+这个 `root_cache` 是第一次使用，Chrome style 先弹出 “Chromium Additional Terms of Service”。正文写着官方包才会放条款，这里是占位。点 Accept 之后出现标题为 `cefutil src` 的窗口。
+
+![首次启动时的条款窗口](docs/images/cefdemo-terms.png)
+
+页面上能看到版本号、技能顺序，以及由渲染进程改写的 `page loaded`。
+
+![cefdemo 页面](docs/images/cefdemo-linux64.png)
+
+![桌面上的 cefdemo](docs/images/cefdemo-desktop.jpg)
+
+点窗口关闭按钮后进程退出，没有残留的 `cefdemo` 子进程。日志里有 dbus 地址无法解析、UPower 服务不存在，窗口仍然显示。关掉的过程中 Chromium 可能打出 `Timeout of new browser info response`，进程随后退出。
 
 ## 归档
 

@@ -16,8 +16,9 @@ description: Configure and compile cefsimple from a CEF binary distribution or c
 cmake -B build -G "Visual Studio 17 2022" -A x64 -DUSE_SANDBOX=OFF
 cmake --build build --config Release --target cefsimple
 
-# Linux
-cmake -B build -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release
+# Linux。学习构建关闭沙箱，并钉住能找到 libstdc++ 的 g++
+cmake -B build -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release \
+  -DUSE_SANDBOX=OFF -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++
 cmake --build build --target cefsimple
 
 # macOS Apple 芯片；Intel 把 arm64 换成 x86_64，生成器仍是 Xcode
@@ -30,10 +31,14 @@ cmake --build build --config Release --target cefsimple
 产物：
 
 - Windows：`build/tests/cefsimple/Release/cefsimple.exe`
-- Linux：`build/tests/cefsimple/cefsimple`
+- Linux：`build/tests/cefsimple/Release/cefsimple`。这一版的 `SET_CEF_TARGET_OUT_DIR` 在 Unix Makefiles 下同样使用 `Release/`。
 - macOS：`build/tests/cefsimple/Release/cefsimple.app`
 
-运行它，确认窗口里出现页面。Windows 也可以打开 `build/cef.sln`。
+在有显示的环境里运行它，确认窗口里出现页面。Windows 也可以打开 `build/cef.sln`。
+
+Chrome style 第一次使用某个 `root_cache_path` 时会弹出 “Chromium Additional Terms of Service”。非官方包里正文是空白占位。点 Accept 之后才出现浏览器窗口；选择写在该缓存目录里，换目录会再问一次。Linux 默认目录是 `~/.config/cef_user_data`。
+
+cefsimple 的构建结束会打印一条手动命令：`sudo -- chown root:root` 和 `chmod 4755`，对象是 `chrome-sandbox`。`USE_SANDBOX=OFF` 的学习构建不要执行它。没有会话总线时，日志里的 dbus 和 UPower 错误不表示编译失败。
 
 ## 用 cef-project
 
@@ -50,7 +55,8 @@ mkdir build && cd build
 cmake -G "Visual Studio 17 2022" -A x64 ..
 cmake --build . --config Release --target cefsimple
 # Linux
-cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release ..
+cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release \
+  -DUSE_SANDBOX=OFF -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ ..
 cmake --build . --target cefsimple
 # macOS arm64
 cmake -G "Xcode" -DPROJECT_ARCH=arm64 ..

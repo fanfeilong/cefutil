@@ -4,7 +4,7 @@
 
 | 顺序 | Skill | 作用 |
 | --- | --- | --- |
-| 1 | `cef-setup-env` | 安装 CMake、Python 3.9–3.11 和本平台编译器 |
+| 1 | `cef-setup-env` | 安装 CMake 和本平台编译器。cef-project 另外需要 Python 3.9–3.11 |
 | 2 | `cef-download` | 按仍受支持的分支下载并校验 `cef_binary_*` |
 | 3 | `cef-build` | 编译并运行 `cefsimple`，确认工具链 |
 | 4 | `cef-create-project` | 在 cef-project 里从 cefsimple 复制出自己的目标 |
