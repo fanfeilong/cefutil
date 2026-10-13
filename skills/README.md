@@ -23,10 +23,12 @@ cp -R skills/cef-setup-env skills/cef-download skills/cef-build \
       /path/to/your-app/.cursor/skills/
 ```
 
-发布包：
+本地打包：
 
 ```bash
 scripts/pack-skills.sh
 ```
 
 生成 `dist/cef-agent-skills-<version>.zip`。版本号在 `skills/VERSION`。
+
+推到 `master` 且这次提交改了 `skills/VERSION` 时，GitHub Action 会用同一脚本打包，并发布 tag 为 `skills-v<version>` 的 Release。这个 tag 已经存在时，发布会失败，需要先把 `skills/VERSION` 改成新版本。只改技能正文、不改版本号，不会产生新的 Release。

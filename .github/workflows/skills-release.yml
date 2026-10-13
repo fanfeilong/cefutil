@@ -1,0 +1,75 @@
+name: Skills release
+
+on:
+  pull_request:
+    paths:
+      - "skills/**"
+      - "scripts/pack-skills.sh"
+      - ".github/workflows/skills-release.yml"
+  push:
+    branches: [master]
+    paths:
+      - "skills/VERSION"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: skills-release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  pack:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Package skills
+        run: ./scripts/pack-skills.sh
+
+      - name: Upload skill package
+        uses: actions/upload-artifact@v4
+        with:
+          name: cef-agent-skills
+          path: dist/cef-agent-skills-*.zip
+          if-no-files-found: error
+
+  release:
+    needs: pack
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Package skills
+        run: ./scripts/pack-skills.sh
+
+      - name: Publish skill release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -eu
+          version=$(tr -d '[:space:]' < skills/VERSION)
+          tag="skills-v${version}"
+          zip="dist/cef-agent-skills-${version}.zip"
+          test -f "$zip"
+
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "::error::Release ${tag} already exists. Bump skills/VERSION to publish a new skill package."
+            exit 1
+          fi
+
+          {
+            echo "## 安装"
+            echo
+            echo "下载 \`cef-agent-skills-${version}.zip\`，解压后把 \`skills/\` 下的 \`cef-*\` 目录复制到目标仓库的 \`.cursor/skills/\`。"
+            echo
+            echo "包含 \`cef-setup-env\`、\`cef-download\`、\`cef-build\`、\`cef-create-project\`、\`cef-integrate\`。"
+            echo
+            echo "版本号来自仓库里的 \`skills/VERSION\`。"
+          } > "$RUNNER_TEMP/notes.md"
+
+          gh release create "$tag" "$zip" \
+            --title "CEF agent skills ${version}" \
+            --notes-file "$RUNNER_TEMP/notes.md"

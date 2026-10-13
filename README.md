@@ -33,7 +33,7 @@
 | 4 | [cef-create-project](skills/cef-create-project/SKILL.md) | 从 cefsimple 创建二次开发工程 |
 | 5 | [cef-integrate](skills/cef-integrate/SKILL.md) | 集成到已经存在的程序 |
 
-安装和打包见 [skills/README.md](skills/README.md)。`scripts/pack-skills.sh` 生成 `dist/cef-agent-skills-<version>.zip`。
+安装、本地打包和自动发布见 [skills/README.md](skills/README.md)。`master` 上 `skills/VERSION` 变化后，[Skills release](.github/workflows/skills-release.yml) 会发布 `skills-v<version>`，附件是 `cef-agent-skills-<version>.zip`。
 
 全新程序走到第 4 步。已有程序在第 3 步确认能编过之后，使用第 5 步。
 
