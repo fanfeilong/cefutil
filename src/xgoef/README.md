@@ -40,14 +40,23 @@ xgoef ≈ Tauri2 的应用模型 × CEF 的 Chromium × (XGo + LLGo + llcppg)
 | `invoke` / events / plugins | `ipc` + `plugin`（同形状） |
 | `tauri.conf.json` | `xgoef.conf.json` |
 
-## 环境依赖（后续真正编译时）
+## 当前可跑通路径（Go + cgo + CEF C API）
 
-1. 按仓库 skills：`cef-setup-env` → `cef-download`（得到 `CEF_ROOT`）
-2. 安装 [XGo](https://xgo.dev) 与 [LLGo](https://github.com/xgo-dev/llgo)（llcppg 跟 LLGo main）
-3. `cd cef && export CEF_ROOT=... && llcppg llcppg.cfg`（生成绑定）
-4. `llgo build` / `llgo run` 示例（绑发生成且 runtime 接好之后）
+```bash
+# 需已下载 CEF，并编过 cefsimple_capi（作 xgoef-helper）
+./scripts/build-xgoef-hello.sh
+cd src/xgoef/build/hello && ./xgoef-hello
+```
 
-当前阶段提交的是 **调研 + 架构 + 可编译的 Go 接口骨架**（不链 libcef）。CEF 符号通过 `cef` 包的接口隔离，避免在无 CEF 环境里断掉 `go test`。
+细节见 [docs/run.md](docs/run.md)。`cef/shim` 复用官方 `cefsimple_capi` 生命周期；子进程用原生 `xgoef-helper`，默认关 GPU（`XGOEF_ENABLE_GPU=1` 可改）。
+
+## 下一步（llcppg / LLGo）
+
+1. 安装 [XGo](https://xgo.dev) 与 [LLGo](https://github.com/xgo-dev/llgo)（llcppg 跟 LLGo main）
+2. `cd cef && export CEF_ROOT=... && llcppg llcppg.cfg`
+3. 用生成绑定逐步替换 shim；IPC 接 CEF MessageRouter
+
+无 CEF 时 `go test ./...` 仍可通过（Host 接口隔离）。
 
 ## 与 cefdemo
 

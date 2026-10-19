@@ -7,8 +7,9 @@ package cef
 
 // Settings mirrors the subset of cef_settings_t xgoef needs in phase 1.
 type Settings struct {
-	NoSandbox    bool
-	RootCachePath string
+	NoSandbox      bool
+	RootCachePath  string
+	SubprocessPath string // native helper for GPU/renderer (not the Go binary)
 }
 
 // WindowBounds is the preferred content size for the first browser window.

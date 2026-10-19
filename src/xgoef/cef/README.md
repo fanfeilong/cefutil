@@ -33,8 +33,8 @@ llcppg llcppg.cfg
 
 具体文件名以当前 `CEF_ROOT/include` 为准；`llcppg.cfg` 里用 `mix: true` 并显式列出 `include`。
 
-## 本目录占位
+## 本目录
 
 - `llcppg.cfg` — 生成配置模板（`cflags`/`libs` 依赖 `CEF_ROOT`）
-- `host.go` — 绑定就绪前的 Host 接口，供 `runtime` 依赖倒置
-- `shim/` — C 回调桥（仅在 llcppg 无法直接表达时启用）
+- `host.go` / `host_cgo.go` / `host_stub.go` — Host 接口与 cgo 实现
+- `shim/` — 当前可跑通的 C 宿主（复用 `cefsimple_capi`）；llcppg 就位后逐步变薄

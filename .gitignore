@@ -38,6 +38,9 @@ root_cache/
 # llcppg output under xgoef (regenerate with CEF_ROOT set)
 /src/xgoef/cef/capi/
 
+# xgoef local build output (libcef copy + hello binary)
+/src/xgoef/build/
+
 # A distribution tarball left at the repository root
 /cef_binary_*.tar.bz2
 /cef_binary_*.tar.bz2.sha1
