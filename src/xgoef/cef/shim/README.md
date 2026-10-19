@@ -1,9 +1,10 @@
 # cef/shim
 
-极薄的 C（或 Objective-C）垫片，仅在下列情况启用：
+可运行的 CEF C API 宿主垫片（复用 `CEF_ROOT/tests/cefsimple_capi` 源码）。
 
-1. CEF Handler 回调表无法用当前 llcppg/LLGo 直接从 XGo 填充
-2. Views / 平台窗口创建必须走少量 C++ 才能接上 C API
-3. 需要把 `cef_string_t` 与 Go string 的所有权规则钉死在一处
+- `xgoef_host.h` / `xgoef_host.c`：供 Go cgo（及日后 LLGo）调用的 lifecycle API
+- `CMakeLists.txt`：编出 `libxgoef_cef.a`，并拷贝 CEF 运行时文件
 
-原则：shim **不写业务**；每个导出符号都有对应的 Go/XGo 声明，并在 RESEARCH 风险项里记一笔。
+构建入口：仓库根目录 `scripts/build-xgoef-hello.sh`。
+
+原则：shim **不写业务**；业务在 XGo/Go 的 `runtime` / `ipc`。llcppg 生成绑定后，此目录应收窄为仅保留回调/Views 难点。
