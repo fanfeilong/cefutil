@@ -38,6 +38,10 @@ root_cache/
 # llcppg output under xgoef (regenerate with CEF_ROOT set)
 /src/xgoef/cef/capi/
 
+# XGo → Go codegen (source of truth is *.xgo)
+**/xgo_autogen*.go
+
+
 # xgoef local build output (libcef copy + hello binary)
 /src/xgoef/build/
 

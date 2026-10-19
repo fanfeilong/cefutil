@@ -36,25 +36,30 @@ xgoef ≈ Tauri2 的应用模型 × CEF 的 Chromium × (XGo + LLGo + llcppg)
 | Tauri 2 | xgoef |
 | --- | --- |
 | 系统 WebView | CEF（自带 Chromium） |
-| Rust 核心 | XGo / Go（LLGo 编译） |
+| Rust 核心 | **XGo**（LLGo 编译；底层可混编 Go） |
 | `invoke` / events / plugins | `ipc` + `plugin`（同形状） |
 | `tauri.conf.json` | `xgoef.conf.json` |
 
-## 当前可跑通路径（LLGo + CEF C API，无 cgo）
+## 当前可跑通路径（XGo 应用 + LLGo + CEF C API，无 cgo）
 
 ```bash
 # 需工具链 + CEF + cefsimple_capi（作 xgoef-helper）
 ./scripts/install-xgo-toolchain.sh   # 一次
-./scripts/build-xgoef-hello.sh       # llgo build
+./scripts/build-xgoef-hello.sh       # xgo build → LLGo
 cd src/xgoef/build/hello && ./xgoef-hello
 ```
 
-细节见 [docs/run.md](docs/run.md)。`cef/host_llgo.go` 用 `go:linkname` 调 `cef/shim`；子进程用原生 `xgoef-helper`。
+- **应用一等语言**：`examples/hello/main.xgo`（XGo）
+- **编译器**：LLGo（`go.mod` 中 `// llgo 1.0`）
+- **宿主**：`cef/host_llgo.go` → `cef/shim`；子进程 `xgoef-helper`
+
+细节见 [docs/run.md](docs/run.md)。
 
 ## 下一步
 
 1. `llcppg` 扩大到更多 `include/capi` 头，收窄 shim
 2. IPC：接通 `api/js/xgoef.js` ↔ `ipc.Router`（MessageRouter）
+3. 将 `runtime` / `ipc` 等框架 API 逐步迁到 `.xgo`
 
 无 CEF 时 `go test ./...`（gc）仍可通过（`!llgo` stub）。
 

@@ -11,7 +11,7 @@
 └────────────────────────────┬─────────────────────────────┘
                              │ JSON 消息（异步）
 ┌────────────────────────────▼─────────────────────────────┐
-│  xgoef 应用层（XGo / Go）                                  │
+│  xgoef 应用层（XGo 一等；可混编 Go）                        │
 │  runtime.App · ipc.Router · plugin.Registry · conf.File  │
 └────────────────────────────┬─────────────────────────────┘
                              │ 手写 ergonomic API
@@ -43,10 +43,10 @@
 
 ### Commands
 
-```go
-// 后端
-ipc.Handle("greet", func(ctx ipc.Context, name string) (string, error) {
-    return "hello, " + name, nil
+```xgo
+// 后端（XGo）
+app.Handle("greet", func(ctx ipc.Context, argsJSON []byte) (any, error) {
+    return "hello, xgo", nil
 })
 
 // 前端
@@ -55,14 +55,14 @@ const msg = await window.__XGOEF__.invoke('greet', { name: 'xgo' })
 
 ### Events
 
-```go
-app.Emit("tick", map[string]any{"n": 1})
+```xgo
+app.Emit("tick", {"n": 1})
 app.Listen("ui-ready", func(payload any) { ... })
 ```
 
 ### Plugins
 
-```go
+```xgo
 app.Use(fsplugin.New())
 // 插件可注册命令、挂钩 OnReady / OnExit
 ```
