@@ -41,7 +41,7 @@
 
 `src/xgoef/` 是并行实验：用 [XGo](https://xgo.dev) + [LLGo](https://github.com/xgo-dev/llgo) + [llcppg](https://github.com/goplus/llcppg) 基于 CEF **C API** 做类似 [Tauri 2](https://v2.tauri.app) 的客户端框架。调研与设计见 [src/xgoef/RESEARCH.md](src/xgoef/RESEARCH.md)、[src/xgoef/DESIGN.md](src/xgoef/DESIGN.md)。C++ 基准样例仍是下面的 `cefdemo`。
 
-hello 已能在 Linux 上弹出 CEF 窗口（Go + cgo + C API shim）：
+hello 已能在 Linux 上弹出 CEF 窗口（**LLGo** + C API shim，无 cgo）：
 
 ```bash
 ./scripts/build-xgoef-hello.sh

@@ -92,7 +92,7 @@ func buildArgs(a *App) []string {
 	url := ResolveURL(win.URL)
 	args := append([]string{}, os.Args...)
 	args = append(args, "--url="+url)
-	// Go cannot host CEF GPU/renderer subprocesses reliably under cgo.
+	// LLGo (and Go) hosts are poor CEF GPU/renderer subprocesses.
 	// Prefer a native helper via SubprocessPath; these flags keep the
 	// browser process alive when the helper still cannot use GPU.
 	if os.Getenv("XGOEF_ENABLE_GPU") != "1" {
