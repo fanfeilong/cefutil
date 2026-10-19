@@ -15,6 +15,7 @@
 | 4 | **P1** Plugin 契约 + 首批系统插件 | 待做 |
 | 5 | **P1** `cmd/xgoef` create/dev/build + 资源协议 | 待做 |
 | 6 | 框架 API（`runtime`/`ipc`/…）迁 `.xgo` | 待做 |
+| 6b | **Classfile**：`xclass` + `*_app.xef`/`*_cmd.xef`（见 [classfile-design.md](classfile-design.md)） | 待做 |
 | 7 | **P2+** Channels / 托盘菜单 / 打包更新器 | 待做 |
 
 验收金样例：行为对齐 `src/cefdemo`（启动、本地页、关闭），API 对齐 Tauri 的 invoke 心智。

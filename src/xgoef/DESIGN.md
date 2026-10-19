@@ -111,3 +111,11 @@ app.Use fsplugin.New()
 分层与 API **形状**见上文；与 Tauri 2 的能力对照、优先级（P0–P3）和补齐设计见：
 
 → **[docs/tauri2-gap.md](docs/tauri2-gap.md)**
+
+## XGo Classfile / 插件作者体验
+
+XGo 的 classfile（SDF，不是新 DSL）如何服务「写应用 / 写插件」见：
+
+→ **[docs/classfile-design.md](docs/classfile-design.md)**
+
+要点：应用用 `*_app.xef` + `*_cmd.xef` 装配；可发布插件走 Go/XGo **Plugin 包契约**；应用内嵌扩展可用 `*_plugin.xef`。

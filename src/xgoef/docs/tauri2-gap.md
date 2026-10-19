@@ -258,6 +258,7 @@ type Plugin interface {
 
 - JS：约定 `api/js/plugins/<name>.js` 或打包进单一 `xgoef.js` 命名空间 `__XGOEF__.plugins.fs`。
 - 配置 `plugins: ["fs", "dialog"]` → 构建期或启动期装载。
+- **作者体验（classfile）**：应用侧用 `*_cmd.xef` / 内嵌 `*_plugin.xef`；可发布插件用包契约。详见 [classfile-design.md](classfile-design.md)。
 
 ### 5.6 CLI（P1）
 
