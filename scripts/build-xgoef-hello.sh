@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build examples/hello with LLGo (no cgo) against the CEF C API shim.
+# Build examples/hello: XGo source → LLGo (no cgo) against the CEF C API shim.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -12,7 +12,13 @@ export LLGO_ROOT="${LLGO_ROOT:-/opt/xgo-toolchain/llgo}"
 export LIBRARY_PATH="/usr/lib/gcc/x86_64-linux-gnu/14:/usr/lib/x86_64-linux-gnu${LIBRARY_PATH:+:$LIBRARY_PATH}"
 unset CGO_CFLAGS CGO_LDFLAGS CGO_CXXFLAGS CGO_CPPFLAGS CGO_FFLAGS
 export CGO_ENABLED=0
+# xgo build uses XGO_GOCMD; strip unsupported -ldflags -X before calling llgo.
+export XGO_GOCMD="${XGO_GOCMD:-$ROOT/scripts/xgo-llgo-gocmd.sh}"
 
+if ! command -v xgo >/dev/null; then
+  echo "xgo not found; run ./scripts/install-xgo-toolchain.sh first" >&2
+  exit 1
+fi
 if ! command -v llgo >/dev/null; then
   echo "llgo not found; run ./scripts/install-xgo-toolchain.sh first" >&2
   exit 1
@@ -82,11 +88,12 @@ else
   echo "NOTE: $HELPER_SRC missing; build cefsimple_capi first for a stable helper." >&2
 fi
 
-echo "==> llgo build hello (CGO_ENABLED=0)"
+echo "==> xgo build hello (XGo → LLGo, CGO_ENABLED=0)"
 cd "$ROOT/src/xgoef"
 go get github.com/goplus/lib@v0.6.3
-llgo build -o "$OUT/xgoef-hello" ./examples/hello
+# Prefer XGo entry (examples/hello/main.xgo); xgo generates xgo_autogen.go then llgo links.
+xgo build -o "$OUT/xgoef-hello" ./examples/hello
 
 echo "Built $OUT/xgoef-hello"
 echo "Run:  cd $OUT && ./xgoef-hello"
-echo "Note: LLGo host — no cgo"
+echo "Note: XGo app + LLGo host — no cgo"

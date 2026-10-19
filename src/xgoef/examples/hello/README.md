@@ -1,15 +1,21 @@
 # hello
 
-最小 xgoef 应用形状：配置 + `greet` 命令 + 本地 `web/`。
+最小 **XGo** xgoef 应用：`main.xgo` + 配置 + `greet` 命令 + 本地 `web/`。
 
-当前无 CEF 绑定时：
+```bash
+# 工具链（一次）
+./scripts/install-xgo-toolchain.sh
+
+# 构建并运行（XGo → LLGo，无 cgo）
+./scripts/build-xgoef-hello.sh
+cd src/xgoef/build/hello && ./xgoef-hello
+```
+
+应用入口是 `main.xgo`（不是 `.go`）。框架底层的 `cef` / `runtime` 等包仍可为 Go，与 XGo 同模块混编；新产品代码默认写 XGo。
+
+无 CEF 时可用 gc 测框架包：
 
 ```bash
 cd src/xgoef
 go test ./...
-go run ./examples/hello   # 预期：cef: llcppg bindings not generated
 ```
-
-绑定时机成熟后，用 `llgo run ./examples/hello`，并保证 `CEF_ROOT` 与 Resources 在可执行文件旁（流程同仓库 `cefdemo`）。
-
-XGo 语法入口可在工具链就位后新增 `main.xgo`；现阶段以 `main.go` 为准（XGo 与 Go 可混编）。
