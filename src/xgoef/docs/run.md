@@ -1,7 +1,17 @@
 # 跑通 hello
 
 当前可运行路径：**Go + cgo + CEF C API**（`cef/shim` 复用 `cefsimple_capi`）。  
-llcppg / LLGo 直连仍是下一阶段；本阶段先验证生命周期与窗口。
+llcppg / LLGo 直连是下一阶段；工具链可用 `scripts/install-xgo-toolchain.sh` 安装。
+
+## 工具链（XGo / LLGo / llcppg）
+
+```bash
+./scripts/install-xgo-toolchain.sh
+# 需要：Go 1.27、LLVM 22、LLGO_ROOT=/opt/xgo-toolchain/llgo
+xgo version && llgo version && llcppg -h | head -1
+```
+
+注意：不要用 apt 里的旧 `xgo` 配 Go 1.27（export data 版本不匹配）；脚本从源码装 XGo。
 
 ## 前提
 
