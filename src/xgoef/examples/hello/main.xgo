@@ -1,17 +1,15 @@
-// Hello — minimal xgoef application in XGo (first-class app language).
-//
-// Build: ./scripts/build-xgoef-hello.sh  →  xgo build (LLGo backend, no cgo)
+# Hello — minimal xgoef app in idiomatic XGo.
+# Spec philosophy (goplus/xgo): command style, ErrWrap, lambda, ${expr}.
+# Build: ./scripts/build-xgoef-hello.sh  →  xgo build (LLGo, no cgo)
 
 import (
 	"encoding/json"
-	"fmt"
 	"os"
 	"path/filepath"
 	"runtime"
 
 	"github.com/fanfeilong/cefutil/src/xgoef/cef"
 	"github.com/fanfeilong/cefutil/src/xgoef/conf"
-	"github.com/fanfeilong/cefutil/src/xgoef/ipc"
 	xruntime "github.com/fanfeilong/cefutil/src/xgoef/runtime"
 )
 
@@ -19,23 +17,32 @@ func isCEFSwitch(s string) bool {
 	return len(s) > 1 && s[0] == '-'
 }
 
-func fatal(err error) {
-	fmt.Fprintf(os.Stderr, "xgoef-hello: %v\n", err)
-	os.Exit(1)
+func resolveFileURL(base, u string) string {
+	if u == "" {
+		return "file://" + filepath.Join(base, "web", "index.html")
+	}
+	if len(u) >= 7 && u[:7] == "file://" {
+		p := u[7:]
+		if !filepath.IsAbs(p) {
+			return "file://" + filepath.Join(base, p)
+		}
+	}
+	return u
 }
 
-// CEF helpers re-enter this executable; hand them off early.
-runtime.LockOSThread()
+# CEF helpers re-enter this executable — pin the OS thread first.
+runtime.LockOSThread
 
 host := cef.NewNativeHost()
 if host == nil {
-	fatal(cef.ErrBindingsMissing)
+	fatal cef.ErrBindingsMissing
 }
-host.SetArgs(os.Args)
+
+host.SetArgs os.Args
 host.InitAPIHash()!
 
 if code, helper := host.ExecuteProcess(); helper {
-	os.Exit(code)
+	os.Exit code
 }
 
 cfgPath := "xgoef.conf.json"
@@ -53,35 +60,27 @@ if cfg.CEF.CacheDir != "" && !filepath.IsAbs(cfg.CEF.CacheDir) {
 	cfg.CEF.CacheDir = filepath.Join(base, cfg.CEF.CacheDir)
 }
 if len(cfg.App.Windows) > 0 {
-	w := &cfg.App.Windows[0]
-	if w.URL == "" {
-		w.URL = "file://" + filepath.Join(base, "web", "index.html")
-	} else if len(w.URL) >= 7 && w.URL[:7] == "file://" {
-		p := w.URL[7:]
-		if !filepath.IsAbs(p) {
-			w.URL = "file://" + filepath.Join(base, p)
-		}
-	}
+	cfg.App.Windows[0].URL = resolveFileURL(base, cfg.App.Windows[0].URL)
 }
 
 app := xruntime.New(cfg, host)
-app.Handle("greet", func(ctx ipc.Context, argsJSON []byte) (any, error) {
-	var args struct {
-		Name string `json:"name"`
-	}
+app.Handle "greet", (ctx, argsJSON) => {
+	name := "world"
 	if len(argsJSON) > 0 {
-		_ = json.Unmarshal(argsJSON, &args)
+		var args struct {
+			Name string `json:"name"`
+		}
+		json.Unmarshal argsJSON, &args
+		if args.Name != "" {
+			name = args.Name
+		}
 	}
-	if args.Name == "" {
-		args.Name = "world"
-	}
-	return fmt.Sprintf("hello, %s (from xgoef)", args.Name), nil
-})
+	return "hello, ${name} (from xgoef)", nil
+}
 
-err := app.Run()
-if err != nil {
+if err := app.Run(); err != nil {
 	if ee, ok := err.(*xruntime.ExitError); ok {
-		os.Exit(ee.Code)
+		os.Exit ee.Code
 	}
-	fatal(err)
+	fatal "xgoef-hello: ${err}"
 }

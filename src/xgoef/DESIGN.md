@@ -44,27 +44,29 @@
 ### Commands
 
 ```xgo
-// 后端（XGo）
-app.Handle("greet", func(ctx ipc.Context, argsJSON []byte) (any, error) {
+# 后端（XGo：命令式 + lambda + ${expr}）
+app.Handle "greet", (ctx, argsJSON) => {
     return "hello, xgo", nil
-})
+}
 
-// 前端
+# 前端
 const msg = await window.__XGOEF__.invoke('greet', { name: 'xgo' })
 ```
 
 ### Events
 
 ```xgo
-app.Emit("tick", {"n": 1})
-app.Listen("ui-ready", func(payload any) { ... })
+app.Emit "tick", {"n": 1}
+app.Listen "ui-ready", payload => {
+    echo "ready:", payload
+}
 ```
 
 ### Plugins
 
 ```xgo
-app.Use(fsplugin.New())
-// 插件可注册命令、挂钩 OnReady / OnExit
+app.Use fsplugin.New()
+# 插件可注册命令、挂钩 OnReady / OnExit
 ```
 
 ### 配置

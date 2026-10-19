@@ -46,6 +46,14 @@ cd src/xgoef/build/hello
 | 框架 API（`runtime`/`ipc`/`plugin`/`conf`） | Go 或 XGo | 可混编；新 API 优先 XGo |
 | CEF 绑定（`cef/`） | Go + LLGo `linkname` | 贴近 C ABI；llcppg 生成物同左 |
 
+应用代码应对齐 [goplus/xgo](https://github.com/goplus/xgo) 的写法哲学（见 `doc/docs.md` / Mini Spec），而不是把 Go 原样塞进 `.xgo`：
+
+- **命令式**：`echo "hi"`、`host.SetArgs os.Args`（少括号）
+- **ErrWrap**：`expr!` / `expr?` / `expr?:defval`
+- **lambda**：`app.Handle "greet", (ctx, args) => { ... }`
+- **字符串**：`"hello, ${name}"`（告别 `Sprintf`）
+- **内建**：`fatal` / `errorln` / `errorf`
+
 ## 关键行为
 
 | 现象 | 原因 |
