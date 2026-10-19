@@ -18,3 +18,5 @@
 编程代理的操作技能在 [`skills/`](../skills/README.md)，顺序是 `cef-setup-env`、`cef-download`、`cef-build`、`cef-create-project`、`cef-integrate`。动手前读第 2、5、9 篇；做 JavaScript 桥再读第 7 篇；做离屏渲染再读第 8 篇。
 
 官方说明书仍是接口细节的来源：<https://chromiumembedded.github.io/cef/>。本文不复制那套页面，只保留集成时会反复用到的结构。
+
+XGo + LLGo 方向的框架实验在 [`src/xgoef/`](../src/xgoef/README.md)（调研 [RESEARCH.md](../src/xgoef/RESEARCH.md)）。语言无关的进程与 C API 约束仍以本文第 3、5、7 篇为准。

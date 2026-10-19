@@ -1,0 +1,29 @@
+{
+  "productName": "xgoef-hello",
+  "version": "0.0.1",
+  "identifier": "com.example.xgoef.hello",
+  "build": {
+    "frontendDist": "web"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "xgoef hello",
+        "width": 960,
+        "height": 640,
+        "url": "file://./web/index.html"
+      }
+    ]
+  },
+  "cef": {
+    "rootEnv": "CEF_ROOT",
+    "noSandbox": true,
+    "cacheDir": "root_cache/xgoef-hello"
+  },
+  "plugins": [],
+  "capabilities": {
+    "main": {
+      "commands": ["greet"]
+    }
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/fanfeilong/cefutil/src/xgoef/xgoef.conf.schema.json",
+  "title": "xgoef.conf.json",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "productName": { "type": "string" },
+    "version": { "type": "string" },
+    "identifier": { "type": "string" },
+    "build": {
+      "type": "object",
+      "properties": {
+        "frontendDist": { "type": "string", "default": "web" },
+        "devUrl": { "type": "string" }
+      }
+    },
+    "app": {
+      "type": "object",
+      "properties": {
+        "windows": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "title": { "type": "string" },
+              "width": { "type": "integer", "minimum": 1 },
+              "height": { "type": "integer", "minimum": 1 },
+              "url": { "type": "string" }
+            },
+            "required": ["title", "width", "height"]
+          }
+        }
+      }
+    },
+    "cef": {
+      "type": "object",
+      "properties": {
+        "rootEnv": { "type": "string", "default": "CEF_ROOT" },
+        "noSandbox": { "type": "boolean", "default": true },
+        "cacheDir": { "type": "string" }
+      }
+    },
+    "plugins": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "capabilities": {
+      "type": "object",
+      "description": "Tauri-like allow-lists for commands (phase 2)",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "commands": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      }
+    }
+  },
+  "required": ["productName", "app"]
+}

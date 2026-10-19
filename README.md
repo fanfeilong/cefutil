@@ -37,6 +37,10 @@
 
 全新程序走到第 4 步。已有程序在第 3 步确认能编过之后，使用第 5 步。
 
+## XGo / CEF 框架实验（xgoef）
+
+`src/xgoef/` 是并行实验：用 [XGo](https://xgo.dev) + [LLGo](https://github.com/xgo-dev/llgo) + [llcppg](https://github.com/goplus/llcppg) 基于 CEF **C API** 做类似 [Tauri 2](https://v2.tauri.app) 的客户端框架。调研与设计见 [src/xgoef/RESEARCH.md](src/xgoef/RESEARCH.md)、[src/xgoef/DESIGN.md](src/xgoef/DESIGN.md)。C++ 基准样例仍是下面的 `cefdemo`。
+
 ## 用这组技能构建 src
 
 下面是 2026-10-13 在 Ubuntu 24.04 上按技能顺序走完的记录。主机是 gcc/g++ 13.3.0、CMake 3.28.3、Python 3.12.3。`/usr/bin/c++` 实际是 clang 18.1.3。选中的包是 Extended 分支上的标准 linux64 包：
