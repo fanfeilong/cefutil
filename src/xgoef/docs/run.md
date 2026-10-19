@@ -1,7 +1,12 @@
 # 跑通 hello
 
+<<<<<<< HEAD
 当前可运行路径：**LLGo + CEF C API**（`cef/host_llgo.go` → `cef/shim`，**不用 cgo**）。  
 工具链：`scripts/install-xgo-toolchain.sh`。
+=======
+当前可运行路径：**Go + cgo + CEF C API**（`cef/shim` 复用 `cefsimple_capi`）。  
+llcppg / LLGo 直连是下一阶段；工具链可用 `scripts/install-xgo-toolchain.sh` 安装。
+>>>>>>> origin/master
 
 ## 工具链（XGo / LLGo / llcppg）
 
