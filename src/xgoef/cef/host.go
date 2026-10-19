@@ -1,8 +1,8 @@
 // Package cef isolates the Chromium Embedded Framework C API.
 //
-// Bindings are intended to be produced by llcppg (see llcppg.cfg).
-// Until generation is wired to a local CEF_ROOT, runtime depends on the
-// Host interface below so the rest of xgoef stays testable.
+// The runnable Host is compiled with LLGo (see host_llgo.go) and links the
+// small C shim in cef/shim via LLGo's C ABI — not cgo. llcppg.cfg remains the
+// path toward generating broader capi bindings later.
 package cef
 
 // Settings mirrors the subset of cef_settings_t xgoef needs in phase 1.
@@ -19,8 +19,7 @@ type WindowBounds struct {
 }
 
 // Host is the ergonomic surface runtime uses.
-// A future llcppg-backed implementation will satisfy this interface
-// by calling into libcef via LLGo C ABI.
+// The LLGo build satisfies this via go:linkname to xgoef_cef_* (C ABI).
 type Host interface {
 	// ExecuteProcess runs CEF secondary-process logic.
 	// If this process is a helper, ok is true and code is the process exit code.
@@ -53,8 +52,8 @@ func (Unimplemented) RunLoop() {}
 
 func (Unimplemented) Shutdown() {}
 
-// ErrBindingsMissing is returned when CEF symbols are not linked yet.
-var ErrBindingsMissing = errBindings("cef: llcppg bindings not generated; set CEF_ROOT and run llcppg in cef/")
+// ErrBindingsMissing is returned when not building with LLGo / CEF host.
+var ErrBindingsMissing = errBindings("cef: NativeHost requires LLGo (llgo build); see scripts/build-xgoef-hello.sh")
 
 type errBindings string
 

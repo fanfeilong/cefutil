@@ -1,7 +1,12 @@
 # 跑通 hello
 
+<<<<<<< HEAD
+当前可运行路径：**LLGo + CEF C API**（`cef/host_llgo.go` → `cef/shim`，**不用 cgo**）。  
+工具链：`scripts/install-xgo-toolchain.sh`。
+=======
 当前可运行路径：**Go + cgo + CEF C API**（`cef/shim` 复用 `cefsimple_capi`）。  
 llcppg / LLGo 直连是下一阶段；工具链可用 `scripts/install-xgo-toolchain.sh` 安装。
+>>>>>>> origin/master
 
 ## 工具链（XGo / LLGo / llcppg）
 
@@ -42,10 +47,10 @@ cd src/xgoef/build/hello
 | --- | --- |
 | 首次弹出 Chromium ToS | 新的 `root_cache`；点 Accept |
 | 默认 `--disable-gpu --in-process-gpu` | Go 不宜作为 GPU 子进程；设 `XGOEF_ENABLE_GPU=1` 可关掉这些开关 |
-| `browser_subprocess_path` → `xgoef-helper` | 渲染/网络等进程走原生 helper，不重入 Go |
+| `browser_subprocess_path` → `xgoef-helper` | 渲染/网络等进程走原生 helper，不重入 LLGo 宿主 |
 | 点 invoke greet 报 host bridge | JS↔IPC 桥尚未接到 CEF MessageRouter（下一阶段） |
 
 ## 与 llcppg 的关系
 
-- `cef/llcppg.cfg` 仍是生成绑定的目标配置。
-- `cef/shim` 是在 llcppg/LLGo 工具链未齐前的 **C ABI 垫片**，供 cgo（及日后 LLGo）调用同一套 lifecycle。
+- 宿主已用 LLGo `go:linkname` 调 shim（无 cgo）。
+- `cef/llcppg.cfg` 用于后续扩大到完整 `include/capi`；shim 应收窄为仅保留回调难点。

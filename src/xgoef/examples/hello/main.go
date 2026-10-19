@@ -1,6 +1,6 @@
 // Hello is the minimal xgoef application.
 //
-// Build with scripts/build-xgoef-hello.sh (needs CEF_ROOT + cgo).
+// Build with scripts/build-xgoef-hello.sh (needs CEF_ROOT + LLGo; no cgo).
 package main
 
 import (

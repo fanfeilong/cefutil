@@ -36,5 +36,5 @@ llcppg llcppg.cfg
 ## 本目录
 
 - `llcppg.cfg` — 生成配置模板（`cflags`/`libs` 依赖 `CEF_ROOT`）
-- `host.go` / `host_cgo.go` / `host_stub.go` — Host 接口与 cgo 实现
+- `host.go` / `host_llgo.go` / `host_stub.go` — Host 接口；LLGo `go:linkname` 实现（`!llgo` stub 供 gc 测试）
 - `shim/` — 当前可跑通的 C 宿主（复用 `cefsimple_capi`）；llcppg 就位后逐步变薄
