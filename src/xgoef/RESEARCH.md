@@ -6,8 +6,8 @@
 
 | 问题 | 结论 |
 | --- | --- |
-| 宿主语言 | **XGo**（与 Go 同源可混编）；业务包用 `.go` / `.xgo` |
-| 编译器 | **LLGo**（LLVM，C ABI 直连，无标准 Go 的 cgo 切换开销） |
+| 宿主语言 | **XGo 一等**（应用写 `.xgo`）；框架/绑定可混编 Go |
+| 编译器 | **LLGo**（LLVM，C ABI 直连，无标准 Go 的 cgo 切换开销；`xgo build` 经 `// llgo 1.0`） |
 | 绑定生成 | **llcppg**，目标是 **CEF C API**，不是 `libcef_dll_wrapper` |
 | 产品定位 | 类似 Tauri 2：Web 前端 + 原生后端 + IPC/插件；渲染引擎换成自带 Chromium 的 CEF |
 | 与本仓库关系 | 与 `src/cefdemo` 并列；共用 `CEF_VERSION` / `CEF_ROOT`；demo 继续当 C++ 基准 |
@@ -32,7 +32,7 @@ CEF 的稳定出口是 C（见仓库 `docs/03-binary-boundary.md`）。llcppg �
   - 原生 goroutine **1:1 映射 OS 线程**、固定栈
   - 调 C **无需** Go↔C 栈/调度切换，适合 CEF 这种高频、强线程亲和的 C API
 - 依赖：Go 工具链、LLVM/Clang/LLD、bdwgc、libffi 等（以官方 README 为准）
-- 对本项目：框架与示例默认用 `llgo run` / `llgo build`，不依赖 cgo
+- 对本项目：应用默认 `xgo build`（LLGo 后端）；不依赖 cgo
 
 ## 3. llcppg（绑定生成）
 
