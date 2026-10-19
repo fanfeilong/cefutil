@@ -2,6 +2,9 @@ package runtime
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/fanfeilong/cefutil/src/xgoef/cef"
 	"github.com/fanfeilong/cefutil/src/xgoef/conf"
@@ -42,15 +45,13 @@ func (a *App) Handle(name string, h ipc.Handler) *App {
 	return a
 }
 
-// Run executes the CEF lifecycle.
-// Order matches docs/05-lifecycle.md and src/cefdemo/main_linux.cc.
+// Run executes the browser-process side of the CEF lifecycle.
+// Helper processes must call Host.ExecuteProcess at the start of main
+// (before Run); when Run is entered, this is already the browser process.
+// Browser URL is passed as `--url=` for OnContextInitialized.
 func (a *App) Run() error {
-	if code, helper := a.Host.ExecuteProcess(); helper {
-		// Secondary process: do not initialize the browser stack.
-		return &ExitError{Code: code}
-	}
-	if err := a.Host.InitAPIHash(); err != nil {
-		return err
+	if nh, ok := a.Host.(interface{ SetArgs([]string) }); ok {
+		nh.SetArgs(buildArgs(a))
 	}
 
 	settings := cef.Settings{
@@ -60,6 +61,10 @@ func (a *App) Run() error {
 	if a.Config.CEF.NoSandbox != nil {
 		settings.NoSandbox = *a.Config.CEF.NoSandbox
 	}
+	if settings.RootCachePath != "" {
+		_ = os.MkdirAll(settings.RootCachePath, 0o755)
+	}
+	settings.SubprocessPath = resolveSubprocess()
 
 	if err := a.Plugins.Setup(a); err != nil {
 		return fmt.Errorf("plugin setup: %w", err)
@@ -69,17 +74,8 @@ func (a *App) Run() error {
 	}
 
 	win := a.Config.FirstWindow()
-	url := win.URL
-	if url == "" {
-		url = "about:blank"
-	}
+	url := ResolveURL(win.URL)
 	bounds := cef.WindowBounds{Width: win.Width, Height: win.Height}
-	if bounds.Width <= 0 {
-		bounds.Width = 960
-	}
-	if bounds.Height <= 0 {
-		bounds.Height = 640
-	}
 	if err := a.Host.CreateBrowser(url, bounds); err != nil {
 		a.Host.Shutdown()
 		return err
@@ -89,6 +85,62 @@ func (a *App) Run() error {
 	a.Plugins.Teardown(a)
 	a.Host.Shutdown()
 	return nil
+}
+
+func buildArgs(a *App) []string {
+	win := a.Config.FirstWindow()
+	url := ResolveURL(win.URL)
+	args := append([]string{}, os.Args...)
+	args = append(args, "--url="+url)
+	// Go cannot host CEF GPU/renderer subprocesses reliably under cgo.
+	// Prefer a native helper via SubprocessPath; these flags keep the
+	// browser process alive when the helper still cannot use GPU.
+	if os.Getenv("XGOEF_ENABLE_GPU") != "1" {
+		args = append(args, "--disable-gpu", "--in-process-gpu")
+	}
+	return args
+}
+
+func resolveSubprocess() string {
+	if p := os.Getenv("XGOEF_HELPER"); p != "" {
+		if abs, err := filepath.Abs(p); err == nil {
+			return abs
+		}
+		return p
+	}
+	exe, err := os.Executable()
+	if err != nil {
+		return ""
+	}
+	candidate := filepath.Join(filepath.Dir(exe), "xgoef-helper")
+	if st, err := os.Stat(candidate); err == nil && !st.IsDir() {
+		return candidate
+	}
+	return ""
+}
+
+// ResolveURL turns relative file paths into absolute file:// URLs.
+func ResolveURL(u string) string {
+	if u == "" {
+		return "about:blank"
+	}
+	switch {
+	case u == "about:blank", strings.HasPrefix(u, "http://"), strings.HasPrefix(u, "https://"):
+		return u
+	case strings.HasPrefix(u, "file://"):
+		path := strings.TrimPrefix(u, "file://")
+		abs, err := filepath.Abs(path)
+		if err != nil {
+			return u
+		}
+		return "file://" + abs
+	default:
+		abs, err := filepath.Abs(u)
+		if err != nil {
+			return u
+		}
+		return "file://" + abs
+	}
 }
 
 // ExitError means a CEF helper process finished with an exit code.
