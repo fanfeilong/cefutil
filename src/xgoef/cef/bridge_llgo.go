@@ -3,8 +3,12 @@
 package cef
 
 import (
+	"unsafe"
+
 	"github.com/goplus/lib/c"
 )
+
+var _ = unsafe.Sizeof(0)
 
 //llgo:cdecl
 type ipcQueryFn func(queryID int64, request *c.Char)
