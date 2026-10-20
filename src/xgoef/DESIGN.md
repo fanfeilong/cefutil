@@ -80,15 +80,11 @@ app.Use fsplugin.New()
 3. UI 相关 CEF 调用在 UI 线程；LLGo 1:1 线程模型下仍应用 `runtime.LockOSThread`（或框架保证主 goroutine 钉在主线程）。
 4. 关闭：两段式（先请求关浏览器，最后一次 `OnBeforeClose` 再 `QuitLoop`），与 `docs/05-lifecycle.md` 一致。
 
-## IPC 实现路线
+## IPC 实现路线（P0 已落地）
 
-一期不做完整 `CefMessageRouter` C++ wrapper 绑定，采用：
-
-1. 渲染侧注入 `api/js/xgoef.js`（或 `OnContextCreated` 挂 `window.__XGOEF__`）。
-2. 查询走 CEF process message / 官方 message_router 的 C 等价物（绑定就绪后切换）。
-3. 载荷约定为 JSON；命令名字符串路由到 `ipc.Router`。
-
-二期对齐 Tauri capabilities：配置里声明哪些窗口可调哪些 command。
+1. `cef/shim` 内 C++ `CefMessageRouter`（浏览器 + 渲染）经 C ABI `xgoef_ipc_*` 回调到 LLGo。
+2. 前端 `api/js/xgoef.js` 用 `window.cefQuery` 发 JSON invoke；宿主 `runtime` → `acl.Guard` → `ipc.Router`。
+3. Capabilities 在 `xgoef.conf.json` 声明；默认拒绝未授权 command。详见 `docs/ipc.md` / `docs/acl.md`。
 
 ## 与 cefdemo 的分工
 
