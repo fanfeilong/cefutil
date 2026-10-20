@@ -1,9 +1,8 @@
 /**
  * xgoef frontend bridge (Tauri-like invoke / listen / emit).
  *
- * Phase 1: posts JSON to the host via a placeholder channel.
- * When CEF message-router bindings land, replace __xgoefPost with
- * the real transport (cefQuery or process message).
+ * Transport: CEF MessageRouter `window.cefQuery` (injected by the host
+ * renderer shim). Falls back to `__xgoefPost` when present.
  */
 (function (global) {
   const pending = new Map();
@@ -11,11 +10,41 @@
   const listeners = new Map();
 
   function post(msg) {
-    if (typeof global.__xgoefPost === "function") {
-      global.__xgoefPost(JSON.stringify(msg));
+    const body = JSON.stringify(msg);
+
+    if (typeof global.cefQuery === "function") {
+      global.cefQuery({
+        request: body,
+        persistent: false,
+        onSuccess: function (response) {
+          try {
+            dispatch(JSON.parse(response));
+          } catch (e) {
+            dispatch({
+              type: "response",
+              id: msg.id,
+              ok: false,
+              error: "invalid host response: " + (e && e.message ? e.message : e),
+            });
+          }
+        },
+        onFailure: function (code, message) {
+          dispatch({
+            type: "response",
+            id: msg.id,
+            ok: false,
+            error: message || "cefQuery failed (" + code + ")",
+          });
+        },
+      });
       return;
     }
-    // Dev fallback: echo reject so pages can detect missing host.
+
+    if (typeof global.__xgoefPost === "function") {
+      global.__xgoefPost(body);
+      return;
+    }
+
     queueMicrotask(function () {
       dispatch({
         type: "response",
@@ -50,7 +79,7 @@
     invoke: function (cmd, args) {
       const id = nextId++;
       return new Promise(function (resolve, reject) {
-        pending.set(id, { resolve, reject });
+        pending.set(id, { resolve: resolve, reject: reject });
         post({ type: "invoke", id: id, cmd: cmd, args: args || {} });
       });
     },

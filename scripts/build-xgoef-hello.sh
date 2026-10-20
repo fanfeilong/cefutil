@@ -42,12 +42,17 @@ cmake -S "$ROOT/src/xgoef/cef/shim" -B "$SHIM_BUILD" -G "Unix Makefiles" \
   -DCMAKE_BUILD_TYPE=Release -DUSE_SANDBOX=OFF \
   -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ \
   -DCEF_ROOT="$CEF_ROOT"
-cmake --build "$SHIM_BUILD" --target xgoef_cef -j"$(nproc)"
+cmake --build "$SHIM_BUILD" --target xgoef_cef xgoef_helper -j"$(nproc)"
 
 LIB="$(find "$SHIM_BUILD" -name 'libxgoef_cef.a' | head -n1)"
 RUNTIME_DIR="$(dirname "$LIB")"
 if [[ -z "$LIB" || ! -f "$LIB" ]]; then
   echo "libxgoef_cef.a not found under $SHIM_BUILD" >&2
+  exit 1
+fi
+HELPER_BIN="$(find "$SHIM_BUILD" -type f -name 'xgoef-helper' | head -n1)"
+if [[ -z "$HELPER_BIN" || ! -x "$HELPER_BIN" ]]; then
+  echo "xgoef-helper not found under $SHIM_BUILD" >&2
   exit 1
 fi
 
@@ -81,12 +86,9 @@ mkdir -p "$OUT/api/js"
 cp -a "$ROOT/src/xgoef/api/js/xgoef.js" "$OUT/api/js/"
 sed -i 's|src="../../../api/js/xgoef.js"|src="../api/js/xgoef.js"|' "$OUT/web/index.html"
 
-HELPER_SRC="$CEF_ROOT/build/tests/cefsimple_capi/Release/cefsimple_capi"
-if [[ -x "$HELPER_SRC" ]]; then
-  cp -f "$HELPER_SRC" "$OUT/xgoef-helper"
-else
-  echo "NOTE: $HELPER_SRC missing; build cefsimple_capi first for a stable helper." >&2
-fi
+# Helper must be our MessageRouter-enabled binary (not stock cefsimple_capi).
+cp -f "$HELPER_BIN" "$OUT/xgoef-helper"
+chmod +x "$OUT/xgoef-helper"
 
 echo "==> xgo build hello (XGo → LLGo, CGO_ENABLED=0)"
 cd "$ROOT/src/xgoef"

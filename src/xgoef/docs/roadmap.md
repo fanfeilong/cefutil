@@ -10,8 +10,8 @@
 | 1c | llcppg 扩大 capi 绑定，收窄 shim | 待做 |
 | 2 | `examples/hello` 弹出 CEF 窗口加载本地 `web/` | 完成 |
 | 2b | 对标 Tauri 2 差距分析与设计文档 | 完成 |
-| 3 | **P0** 接通 `api/js/xgoef.js` ↔ `ipc.Router` + 注入桥 | 待做 |
-| 3b | **P0** Capabilities 强制执行 | 待做 |
+| 3 | **P0** 接通 `api/js/xgoef.js` ↔ `ipc.Router` + MessageRouter 桥 | 完成 |
+| 3b | **P0** Capabilities 强制执行（`acl` + conf） | 完成 |
 | 4 | **P1** Plugin 契约 + 首批系统插件 | 待做 |
 | 5 | **P1** `cmd/xgoef` create/dev/build + 资源协议 | 待做 |
 | 6 | 框架 API（`runtime`/`ipc`/…）迁 `.xgo` | 待做 |

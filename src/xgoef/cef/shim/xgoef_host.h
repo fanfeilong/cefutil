@@ -1,10 +1,13 @@
 /* xgoef_host.h — C ABI surface for the Go/LLGo Host implementation.
  *
- * Lifecycle mirrors tests/cefsimple_capi (and docs/05-lifecycle.md).
- * Startup URL is taken from argv `--url=` (same as cefsimple_capi).
+ * Lifecycle mirrors cefsimple (C++) and docs/05-lifecycle.md.
+ * Startup URL is taken from argv `--url=` (same as cefsimple).
+ * IPC uses CefMessageRouter; see xgoef_ipc_*.
  */
 #ifndef XGOEF_HOST_H_
 #define XGOEF_HOST_H_
+
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -30,6 +33,19 @@ int xgoef_cef_initialize(int argc,
 
 void xgoef_cef_run_loop(void);
 void xgoef_cef_shutdown(void);
+
+/* ---- IPC (CefMessageRouter bridge) ---- */
+
+/* Called on the CEF UI thread when the page issues cefQuery with a JSON
+ * request body. The host must eventually call xgoef_ipc_respond. */
+typedef void (*xgoef_ipc_query_fn)(int64_t query_id, const char* request_utf8);
+
+/* Register the Go/LLGo invoke handler. Pass NULL to clear. */
+void xgoef_ipc_set_handler(xgoef_ipc_query_fn fn);
+
+/* Complete a query. ok!=0 → Success(result_utf8); else Failure(-2, result_utf8).
+ * Safe to call from any thread (posted to UI if needed). */
+void xgoef_ipc_respond(int64_t query_id, int ok, const char* result_utf8);
 
 #ifdef __cplusplus
 }
