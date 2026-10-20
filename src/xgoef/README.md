@@ -8,7 +8,9 @@
 
 1. [RESEARCH.md](RESEARCH.md) — 相关项目调研与选型
 2. [DESIGN.md](DESIGN.md) — 分层与进程模型
-3. 仓库文档 [docs/03-binary-boundary.md](../../docs/03-binary-boundary.md)、[docs/05-lifecycle.md](../../docs/05-lifecycle.md)、[docs/07-javascript.md](../../docs/07-javascript.md)
+3. [docs/tauri2-gap.md](docs/tauri2-gap.md) — **对标 Tauri 2 的能力差距与补齐设计**
+4. [docs/classfile-design.md](docs/classfile-design.md) — **XGo classfile × 应用/插件怎么写**
+5. 仓库文档 [docs/03-binary-boundary.md](../../docs/03-binary-boundary.md)、[docs/05-lifecycle.md](../../docs/05-lifecycle.md)、[docs/07-javascript.md](../../docs/07-javascript.md)
 
 ## 目录
 

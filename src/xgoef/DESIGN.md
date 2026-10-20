@@ -105,3 +105,17 @@ app.Use fsplugin.New()
 - 替代本仓库 skills 的下载逻辑（继续用 `cef-download`）
 - 完整复刻 Tauri 插件市场与签名更新器
 - 在未安装 LLGo/llcppg/CEF 的环境下保证 `llgo build` 通过（骨架以接口与文档为主）
+
+## 对标 Tauri 2 的差距
+
+分层与 API **形状**见上文；与 Tauri 2 的能力对照、优先级（P0–P3）和补齐设计见：
+
+→ **[docs/tauri2-gap.md](docs/tauri2-gap.md)**
+
+## XGo Classfile / 插件作者体验
+
+XGo 的 classfile（SDF，不是新 DSL）如何服务「写应用 / 写插件」见：
+
+→ **[docs/classfile-design.md](docs/classfile-design.md)**
+
+要点：应用用 `*_app.xef` + `*_cmd.xef` 装配；可发布插件走 Go/XGo **Plugin 包契约**；应用内嵌扩展可用 `*_plugin.xef`。
