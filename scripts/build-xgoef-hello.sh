@@ -42,7 +42,7 @@ cmake -S "$ROOT/src/xgoef/cef/shim" -B "$SHIM_BUILD" -G "Unix Makefiles" \
   -DCMAKE_BUILD_TYPE=Release -DUSE_SANDBOX=OFF \
   -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ \
   -DCEF_ROOT="$CEF_ROOT"
-cmake --build "$SHIM_BUILD" --target xgoef_cef -j"$(nproc)"
+cmake --build "$SHIM_BUILD" --target xgoef_cef xgoef_helper -j"$(nproc)"
 
 LIB="$(find "$SHIM_BUILD" -name 'libxgoef_cef.a' | head -n1)"
 RUNTIME_DIR="$(dirname "$LIB")"
@@ -50,21 +50,20 @@ if [[ -z "$LIB" || ! -f "$LIB" ]]; then
   echo "libxgoef_cef.a not found under $SHIM_BUILD" >&2
   exit 1
 fi
+HELPER_BIN="$(find "$SHIM_BUILD" -type f -name 'xgoef-helper' | head -n1)"
+if [[ -z "$HELPER_BIN" || ! -x "$HELPER_BIN" ]]; then
+  echo "xgoef-helper not found under $SHIM_BUILD" >&2
+  exit 1
+fi
 
-echo "==> write pkg-config xgoef-cef.pc"
-# Do NOT put -Wl,-rpath,$ORIGIN (or any $VAR) in Libs: LLGo runs os.Expand on
-# pkg-config output, so $ORIGIN becomes empty and "-Wl,-rpath," steals the
-# following -lffi into RUNPATH (undefined ffi_* at link time).
-# LLGo already maps every -L to a runtime -rpath; keep Libs comma-free.
-cat > "$PC_DIR/xgoef-cef.pc" <<EOF
-Name: xgoef-cef
-Description: xgoef CEF C API host shim
-Version: 0.0.1
-Libs: -L${RUNTIME_DIR} -lxgoef_cef -L${OUT} -lcef -lX11 -lpthread -ldl -lrt -lstdc++
-Cflags: -I${ROOT}/src/xgoef/cef/shim -I${CEF_ROOT}
-EOF
-export PKG_CONFIG_PATH="$PC_DIR:${PKG_CONFIG_PATH:-}"
-pkg-config --libs xgoef-cef >/dev/null
+WRAPPER_A="${CEF_ROOT}/build/libcef_dll_wrapper/libcef_dll_wrapper.a"
+if [[ ! -f "$WRAPPER_A" ]]; then
+  WRAPPER_A="$(find "$SHIM_BUILD" -name 'libcef_dll_wrapper.a' | head -n1 || true)"
+fi
+if [[ -z "$WRAPPER_A" || ! -f "$WRAPPER_A" ]]; then
+  echo "libcef_dll_wrapper.a not found; build CEF wrapper first" >&2
+  exit 1
+fi
 
 echo "==> copy CEF runtime -> $OUT"
 if [[ -f "$RUNTIME_DIR/libcef.so" ]]; then
@@ -73,20 +72,38 @@ else
   cp -a "$CEF_ROOT/Release"/. "$OUT"/
   cp -a "$CEF_ROOT/Resources"/. "$OUT"/
 fi
-# Keep the static archive available for the linker next to OUT as well.
+# Static archives for the LLGo link step (C++ MessageRouter lives in the wrapper).
 cp -f "$LIB" "$OUT"/
+cp -f "$WRAPPER_A" "$OUT"/libcef_dll_wrapper.a
+# Keep a copy next to libxgoef_cef.a in the shim out dir too (LLGo may cache -L).
+cp -f "$WRAPPER_A" "$RUNTIME_DIR"/libcef_dll_wrapper.a
+# Invalidate stale LLGo package link flags when pkg-config Libs change.
+rm -rf "${HOME}/.cache/llgo/build/"*"/github.com/fanfeilong/cefutil/src/xgoef/cef" 2>/dev/null || true
 cp -a "$ROOT/src/xgoef/examples/hello/web" "$OUT"/
 cp -a "$ROOT/src/xgoef/examples/hello/xgoef.conf.json" "$OUT"/
 mkdir -p "$OUT/api/js"
 cp -a "$ROOT/src/xgoef/api/js/xgoef.js" "$OUT/api/js/"
 sed -i 's|src="../../../api/js/xgoef.js"|src="../api/js/xgoef.js"|' "$OUT/web/index.html"
 
-HELPER_SRC="$CEF_ROOT/build/tests/cefsimple_capi/Release/cefsimple_capi"
-if [[ -x "$HELPER_SRC" ]]; then
-  cp -f "$HELPER_SRC" "$OUT/xgoef-helper"
-else
-  echo "NOTE: $HELPER_SRC missing; build cefsimple_capi first for a stable helper." >&2
-fi
+# Helper must be our MessageRouter-enabled binary (not stock cefsimple_capi).
+cp -f "$HELPER_BIN" "$OUT/xgoef-helper"
+chmod +x "$OUT/xgoef-helper"
+
+echo "==> write pkg-config xgoef-cef.pc"
+# Do NOT put -Wl,-rpath,$ORIGIN (or any $VAR) in Libs: LLGo runs os.Expand on
+# pkg-config output, so $ORIGIN becomes empty and "-Wl,-rpath," steals the
+# following -lffi into RUNPATH (undefined ffi_* at link time).
+# LLGo already maps every -L to a runtime -rpath; keep Libs comma-free.
+# Order: shim → dll_wrapper (C++ API / MessageRouter) → libcef.
+cat > "$PC_DIR/xgoef-cef.pc" <<EOF
+Name: xgoef-cef
+Description: xgoef CEF MessageRouter host shim
+Version: 0.0.1
+Libs: -L${OUT} -lxgoef_cef -lcef_dll_wrapper -lcef -lX11 -lpthread -ldl -lrt -lstdc++
+Cflags: -I${ROOT}/src/xgoef/cef/shim -I${CEF_ROOT}
+EOF
+export PKG_CONFIG_PATH="$PC_DIR:${PKG_CONFIG_PATH:-}"
+pkg-config --libs xgoef-cef >/dev/null
 
 echo "==> xgo build hello (XGo → LLGo, CGO_ENABLED=0)"
 cd "$ROOT/src/xgoef"

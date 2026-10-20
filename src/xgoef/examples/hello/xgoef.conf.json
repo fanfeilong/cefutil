@@ -8,6 +8,7 @@
   "app": {
     "windows": [
       {
+        "label": "main",
         "title": "xgoef hello",
         "width": 960,
         "height": 640,
@@ -21,9 +22,11 @@
     "cacheDir": "root_cache"
   },
   "plugins": [],
-  "capabilities": {
-    "main": {
-      "commands": ["greet"]
+  "capabilities": [
+    {
+      "identifier": "main",
+      "windows": ["main"],
+      "permissions": ["greet", "core:default"]
     }
-  }
+  ]
 }

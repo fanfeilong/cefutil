@@ -23,6 +23,7 @@
           "items": {
             "type": "object",
             "properties": {
+              "label": { "type": "string", "default": "main" },
               "title": { "type": "string" },
               "width": { "type": "integer", "minimum": 1 },
               "height": { "type": "integer", "minimum": 1 },
@@ -46,17 +47,40 @@
       "items": { "type": "string" }
     },
     "capabilities": {
-      "type": "object",
-      "description": "Tauri-like allow-lists for commands (phase 2)",
-      "additionalProperties": {
-        "type": "object",
-        "properties": {
-          "commands": {
-            "type": "array",
-            "items": { "type": "string" }
+      "description": "Tauri-like capability list (P0 ACL). Legacy map form is also accepted by the loader.",
+      "oneOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "identifier": { "type": "string" },
+              "windows": {
+                "type": "array",
+                "items": { "type": "string" }
+              },
+              "permissions": {
+                "type": "array",
+                "items": { "type": "string" }
+              }
+            },
+            "required": ["identifier", "permissions"]
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "commands": {
+                "type": "array",
+                "items": { "type": "string" }
+              }
+            }
           }
         }
-      }
+      ]
     }
   },
   "required": ["productName", "app"]

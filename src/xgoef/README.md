@@ -59,8 +59,8 @@ cd src/xgoef/build/hello && ./xgoef-hello
 
 ## 下一步
 
-1. `llcppg` 扩大到更多 `include/capi` 头，收窄 shim
-2. IPC：接通 `api/js/xgoef.js` ↔ `ipc.Router`（MessageRouter）
+1. `llcppg` 扩大到更多 `include/capi` 头，收窄 shim（MessageRouter 仍可留在 shim）
+2. **P1**：多窗口 / Event 跨进程 / 资源协议 / `xgoef` CLI
 3. 将 `runtime` / `ipc` 等框架 API 逐步迁到 `.xgo`
 
 无 CEF 时 `go test ./...`（gc）仍可通过（`!llgo` stub）。
