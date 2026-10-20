@@ -38,7 +38,8 @@ cd src/xgoef/build/hello
 
 产物目录含：`xgoef-hello`（由 `main.xgo` 经 xgo+llgo 生成）、`xgoef-helper`（本仓库 shim 编的原生子进程，含渲染侧 MessageRouter）、`libcef.so`、Resources、`web/`、`api/js/xgoef.js`。
 
-点击 **invoke greet** 应显示 `hello, xgo (from xgoef)`。未在 `capabilities` 声明的 command 会以 ACL 错误拒绝。
+点击 **invoke greet** 应显示 `hello, xgo (from xgoef)`，并更新 `event: tick …`（宿主 `EmitTo`）。
+**open aux** 会再开一个 label=`aux` 的窗口。未在 `capabilities` 声明的 command 会以 ACL 错误拒绝。
 
 ## IPC 与 ACL（P0）
 

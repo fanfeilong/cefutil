@@ -23,7 +23,7 @@ func TestHandleInvokeGreet(t *testing.T) {
 		Windows:     []string{"main"},
 		Permissions: []string{"greet"},
 	}})
-	out := handleInvoke(g, r, "main", `{"type":"invoke","id":1,"cmd":"greet","args":{"name":"xgo"}}`)
+	out := handleMessage(g, r, nil, "main", `{"type":"invoke","id":1,"cmd":"greet","args":{"name":"xgo"}}`)
 	var resp struct {
 		OK      bool   `json:"ok"`
 		Payload string `json:"payload"`
@@ -47,8 +47,24 @@ func TestHandleInvokeACLDeny(t *testing.T) {
 		Windows:     []string{"main"},
 		Permissions: []string{"greet"},
 	}})
-	out := handleInvoke(g, r, "main", `{"type":"invoke","id":2,"cmd":"secret","args":{}}`)
+	out := handleMessage(g, r, nil, "main", `{"type":"invoke","id":2,"cmd":"secret","args":{}}`)
 	if !strings.Contains(out, `"ok":false`) || !strings.Contains(out, "not permitted") {
 		t.Fatalf("%s", out)
+	}
+}
+
+func TestHandleEventToHost(t *testing.T) {
+	bus := ipc.NewBus()
+	got := ""
+	bus.Listen("ping", func(payload any) {
+		got, _ = payload.(string)
+	})
+	out := handleMessage(nil, ipc.NewRouter(), bus, "main",
+		`{"type":"event","id":3,"event":"ping","payload":"from-js"}`)
+	if !strings.Contains(out, `"ok":true`) {
+		t.Fatalf("%s", out)
+	}
+	if got != "from-js" {
+		t.Fatalf("got %q", got)
 	}
 }

@@ -25,6 +25,7 @@ set(XGOEF_CEF_SRCS
   xgoef_handler_linux.cc
   xgoef_renderer.cc
   xgoef_ipc.cc
+  xgoef_window.cc
 )
 
 ADD_LOGICAL_TARGET("libcef_lib" "${CEF_LIB_DEBUG}" "${CEF_LIB_RELEASE}")

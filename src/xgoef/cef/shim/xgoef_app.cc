@@ -9,6 +9,7 @@
 #include "include/wrapper/cef_helpers.h"
 
 #include "xgoef_handler.h"
+#include "xgoef_window.h"
 
 namespace xgoef {
 namespace {
@@ -111,6 +112,12 @@ void App::OnContextInitialized() {
   if (url.empty()) {
     url = "about:blank";
   }
+
+  std::string label = command_line->GetSwitchValue("xgoef-label");
+  if (label.empty()) {
+    label = "main";
+  }
+  WindowSetPendingLabel(label);
 
   const bool use_views = !command_line->HasSwitch("use-native");
 

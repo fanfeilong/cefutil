@@ -12,6 +12,7 @@
 | 2b | 对标 Tauri 2 差距分析与设计文档 | 完成 |
 | 3 | **P0** 接通 `api/js/xgoef.js` ↔ `ipc.Router` + MessageRouter 桥 | 完成 |
 | 3b | **P0** Capabilities 强制执行（`acl` + conf） | 完成 |
+| 3c | **P1** Event 跨进程 + Window label/`CreateWindow`/`EmitTo` | 完成 |
 | 4 | **P1** Plugin 契约 + 首批系统插件 | 待做 |
 | 5 | **P1** `cmd/xgoef` create/dev/build + 资源协议 | 待做 |
 | 6 | 框架 API（`runtime`/`ipc`/…）迁 `.xgo` | 待做 |

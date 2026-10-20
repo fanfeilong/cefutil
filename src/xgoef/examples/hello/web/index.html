@@ -35,6 +35,12 @@
         margin: 0 0 1.25rem;
         opacity: 0.8;
       }
+      .actions {
+        display: flex;
+        gap: 0.75rem;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
       button {
         font: inherit;
         border: 1px solid var(--accent);
@@ -43,9 +49,18 @@
         padding: 0.55rem 1.1rem;
         cursor: pointer;
       }
-      #out {
-        margin-top: 1rem;
+      button.secondary {
+        background: transparent;
+        color: var(--accent);
+      }
+      #out,
+      #evt {
+        margin-top: 0.75rem;
         min-height: 1.5em;
+      }
+      #evt {
+        opacity: 0.75;
+        font-size: 0.95em;
       }
     </style>
   </head>
@@ -53,15 +68,31 @@
     <main>
       <h1>xgoef</h1>
       <p>XGo · LLGo · CEF — Tauri-shaped desktop shell</p>
-      <button id="btn" type="button">invoke greet</button>
+      <div class="actions">
+        <button id="btn" type="button">invoke greet</button>
+        <button id="btn-aux" class="secondary" type="button">open aux</button>
+      </div>
       <div id="out">waiting for host</div>
+      <div id="evt">event: —</div>
     </main>
     <script src="../../../api/js/xgoef.js"></script>
     <script>
       const out = document.getElementById("out");
+      const evt = document.getElementById("evt");
+      window.__XGOEF__.listen("tick", function (payload) {
+        evt.textContent = "event: tick " + JSON.stringify(payload);
+      });
       document.getElementById("btn").onclick = async () => {
         try {
           const msg = await window.__XGOEF__.invoke("greet", { name: "xgo" });
+          out.textContent = String(msg);
+        } catch (e) {
+          out.textContent = e.message || String(e);
+        }
+      };
+      document.getElementById("btn-aux").onclick = async () => {
+        try {
+          const msg = await window.__XGOEF__.invoke("open_aux", {});
           out.textContent = String(msg);
         } catch (e) {
           out.textContent = e.message || String(e);
