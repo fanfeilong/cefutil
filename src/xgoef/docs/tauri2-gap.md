@@ -156,9 +156,9 @@
 
 ### P1 — 可做正经桌面壳
 
-5. Window API：label、多窗、关闭/聚焦、基础状态。
+5. Window API：label、多窗、关闭/聚焦、基础状态。 ✅（见 `docs/window.md`）
 6. 自定义资源协议（或严格 `asset` 根目录）替代裸 `file://`。
-7. Event 跨进程（含 `emit_to(label)`）。
+7. Event 跨进程（含 `emit_to(label)`）。 ✅（见 `docs/events.md`）
 8. Plugin 契约：注册 commands + 可选 `api/js/plugins/<name>.js`。
 9. `xgoef dev` / `xgoef build`（封装 CEF 拷贝、llgo/xgo、前端 dist）。
 

@@ -26,6 +26,11 @@
     {
       "identifier": "main",
       "windows": ["main"],
+      "permissions": ["greet", "open_aux", "core:default"]
+    },
+    {
+      "identifier": "aux",
+      "windows": ["aux"],
       "permissions": ["greet", "core:default"]
     }
   ]

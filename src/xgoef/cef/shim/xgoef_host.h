@@ -37,8 +37,11 @@ void xgoef_cef_shutdown(void);
 /* ---- IPC (CefMessageRouter bridge) ---- */
 
 /* Called on the CEF UI thread when the page issues cefQuery with a JSON
- * request body. The host must eventually call xgoef_ipc_respond. */
-typedef void (*xgoef_ipc_query_fn)(int64_t query_id, const char* request_utf8);
+ * request body. |window_label| is the bound browser label (default "main").
+ * The host must eventually call xgoef_ipc_respond. */
+typedef void (*xgoef_ipc_query_fn)(int64_t query_id,
+                                   const char* window_label,
+                                   const char* request_utf8);
 
 /* Register the Go/LLGo invoke handler. Pass NULL to clear. */
 void xgoef_ipc_set_handler(xgoef_ipc_query_fn fn);
@@ -46,6 +49,21 @@ void xgoef_ipc_set_handler(xgoef_ipc_query_fn fn);
 /* Complete a query. ok!=0 → Success(result_utf8); else Failure(-2, result_utf8).
  * Safe to call from any thread (posted to UI if needed). */
 void xgoef_ipc_respond(int64_t query_id, int ok, const char* result_utf8);
+
+/* Host → renderer events: |json_utf8| is a full event envelope, e.g.
+ * {"type":"event","event":"tick","payload":{...}} */
+int xgoef_ipc_emit_to(const char* window_label, const char* json_utf8);
+int xgoef_ipc_emit_all(const char* json_utf8);
+
+/* Window label registry (P1). Pending label binds the next OnAfterCreated. */
+void xgoef_window_set_pending_label(const char* label);
+int xgoef_window_create(const char* label,
+                        const char* title,
+                        const char* url,
+                        int width,
+                        int height);
+int xgoef_window_close(const char* label);
+int xgoef_window_focus(const char* label);
 
 #ifdef __cplusplus
 }

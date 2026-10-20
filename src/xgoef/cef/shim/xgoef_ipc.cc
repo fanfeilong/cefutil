@@ -8,6 +8,8 @@
 #include "include/wrapper/cef_closure_task.h"
 #include "include/wrapper/cef_helpers.h"
 
+#include "xgoef_window.h"
+
 namespace xgoef {
 namespace {
 
@@ -46,7 +48,6 @@ bool IpcHandler::OnQuery(CefRefPtr<CefBrowser> browser,
                          bool persistent,
                          CefRefPtr<Callback> callback) {
   CEF_REQUIRE_UI_THREAD();
-  (void)browser;
   (void)frame;
   (void)persistent;
 
@@ -66,8 +67,9 @@ bool IpcHandler::OnQuery(CefRefPtr<CefBrowser> browser,
     return true;
   }
 
+  const std::string label = WindowLabelFor(browser);
   const std::string req = request.ToString();
-  handler(query_id, req.c_str());
+  handler(query_id, label.c_str(), req.c_str());
   return true;
 }
 

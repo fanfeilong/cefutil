@@ -11,6 +11,8 @@
 #include "include/wrapper/cef_closure_task.h"
 #include "include/wrapper/cef_helpers.h"
 
+#include "xgoef_window.h"
+
 namespace xgoef {
 namespace {
 
@@ -80,6 +82,7 @@ void ClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
   }
 
   browser_list_.push_back(browser);
+  WindowBind(WindowTakePendingLabel(), browser);
 }
 
 bool ClientHandler::DoClose(CefRefPtr<CefBrowser> browser) {
@@ -97,6 +100,8 @@ void ClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
   if (message_router_) {
     message_router_->OnBeforeClose(browser);
   }
+
+  WindowUnbind(browser);
 
   for (auto bit = browser_list_.begin(); bit != browser_list_.end(); ++bit) {
     if ((*bit)->IsSame(browser)) {

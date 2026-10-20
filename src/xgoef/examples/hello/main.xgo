@@ -59,8 +59,10 @@ base := filepath.Dir(abs)
 if cfg.CEF.CacheDir != "" && !filepath.IsAbs(cfg.CEF.CacheDir) {
 	cfg.CEF.CacheDir = filepath.Join(base, cfg.CEF.CacheDir)
 }
+webURL := ""
 if len(cfg.App.Windows) > 0 {
 	cfg.App.Windows[0].URL = resolveFileURL(base, cfg.App.Windows[0].URL)
+	webURL = cfg.App.Windows[0].URL
 }
 
 app := xruntime.New(cfg, host)
@@ -75,7 +77,25 @@ app.Handle "greet", (ctx, argsJSON) => {
 			name = args.Name
 		}
 	}
+	# Host → renderer event (P1).
+	app.EmitTo "main", "tick", map[string]any{
+		"n":    1,
+		"from": "greet",
+	}
 	return "hello, ${name} (from xgoef)", nil
+}
+app.Handle "open_aux", (ctx, argsJSON) => {
+	err := app.CreateWindow(cef.WindowSpec{
+		Label:  "aux",
+		Title:  "xgoef aux",
+		URL:    webURL,
+		Width:  720,
+		Height: 480,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return "opened aux", nil
 }
 
 if err := app.Run(); err != nil {
