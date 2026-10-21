@@ -37,20 +37,13 @@
 
 全新程序走到第 4 步。已有程序在第 3 步确认能编过之后，使用第 5 步。
 
-## XGo / CEF 框架实验（xgoef）
+## XGo / CEF 框架（xgoef）
 
-`src/xgoef/` 是并行实验：用 [XGo](https://xgo.dev) + [LLGo](https://github.com/xgo-dev/llgo) + [llcppg](https://github.com/goplus/llcppg) 基于 CEF **C API** 做类似 [Tauri 2](https://v2.tauri.app) 的客户端框架。调研与设计见 [src/xgoef/RESEARCH.md](src/xgoef/RESEARCH.md)、[src/xgoef/DESIGN.md](src/xgoef/DESIGN.md)。C++ 基准样例仍是下面的 `cefdemo`。
+基于 CEF 的 Tauri-like 客户端框架 **xgoef** 已迁出本仓库，见：
 
-hello 已能在 Linux 上弹出 CEF 窗口（**XGo** 应用 + **LLGo** + C API shim，无 cgo）：
+→ **[github.com/zigslice/xgoef](https://github.com/zigslice/xgoef)**
 
-```bash
-./scripts/build-xgoef-hello.sh
-cd src/xgoef/build/hello && ./xgoef-hello
-```
-
-![xgoef hello](docs/images/xgoef-hello-linux64.png)
-
-说明见 [src/xgoef/docs/run.md](src/xgoef/docs/run.md)。
+本仓库继续提供 CEF 文档、agent skills，以及 C++ 基准样例 `src/cefdemo`。
 
 ## 用这组技能构建 src
 
