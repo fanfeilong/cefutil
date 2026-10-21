@@ -19,4 +19,4 @@
 
 官方说明书仍是接口细节的来源：<https://chromiumembedded.github.io/cef/>。本文不复制那套页面，只保留集成时会反复用到的结构。
 
-XGo + LLGo 方向的框架实验在 [`src/xgoef/`](../src/xgoef/README.md)（调研 [RESEARCH.md](../src/xgoef/RESEARCH.md)）。语言无关的进程与 C API 约束仍以本文第 3、5、7 篇为准。
+XGo + LLGo 方向的 CEF 框架见独立仓库 [zigslice/xgoef](https://github.com/zigslice/xgoef)。语言无关的进程与 C API 约束仍以本文第 3、5、7 篇为准。
